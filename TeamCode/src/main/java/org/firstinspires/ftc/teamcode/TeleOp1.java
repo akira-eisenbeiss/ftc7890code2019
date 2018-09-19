@@ -108,6 +108,10 @@ public class TeleOp1 extends OpMode {
             leftClamp.setPosition(1.0); //these no. for testing
             rightClamp.setPosition(0.0); //these no. for testing
         }
+        //MANUAL CLAMPING
+        leftClamp.setPosition(gamepad2.left_stick_x);
+        rightClamp.setPosition(-gamepad2.left_stick_x);
+
         //FLIPPING THE INTAKE UPWARDS
         armMotor.setPower(gamepad2.left_stick_y);
 
