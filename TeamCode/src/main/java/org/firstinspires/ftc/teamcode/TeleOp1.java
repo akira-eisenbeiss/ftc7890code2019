@@ -97,20 +97,20 @@ public class TeleOp1 extends OpMode {
         boolean gamepad2B = gamepad2.b;
         boolean gamepad2Y = gamepad2.y;
         if (gamepad2B) { //square clamping
-            leftClamp.setPosition(0.5); //these no. for testing
+          //  leftClamp.setPosition(0.5); //these no. for testing
             rightClamp.setPosition(0.5); //these no. for testing
         }
         else if (gamepad2A) { //circle clamping
-            leftClamp.setPosition(0.55); //these no. for testing
+          //  leftClamp.setPosition(0.55); //these no. for testing
             rightClamp.setPosition(0.55); //these no. for testing
         }
         else if (gamepad2Y) { //opening the clamp
-            leftClamp.setPosition(1.0); //these no. for testing
+           // leftClamp.setPosition(1.0); //these no. for testing
             rightClamp.setPosition(0.0); //these no. for testing
         }
         //MANUAL CLAMPING
-        leftClamp.setPosition(gamepad2.left_stick_x);
-        rightClamp.setPosition(-gamepad2.left_stick_x);
+       // leftClamp.setPosition(-gamepad2.left_stick_x);
+        rightClamp.setPosition(gamepad2.left_stick_x);
 
         //FLIPPING THE INTAKE UPWARDS
         armMotor.setPower(gamepad2.left_stick_y);
