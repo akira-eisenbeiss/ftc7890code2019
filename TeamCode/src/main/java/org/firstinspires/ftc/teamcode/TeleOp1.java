@@ -112,8 +112,16 @@ public class TeleOp1 extends OpMode {
        // leftClamp.setPosition(-gamepad2.left_stick_x);
         rightClamp.setPosition(gamepad2.left_stick_x);
 
-        //FLIPPING THE INTAKE UPWARDS
-        armMotor.setPower(gamepad2.left_stick_y);
+        //FLIPPING THE INTAKE UPWARDs
+        float rightTrigger2 = gamepad2.right_trigger;
+        if (rightTrigger2 <= 0.4) {
+            //MORE CONTROLLED, SLOWER FLIPPING
+            armMotor.setPower(gamepad2.left_stick_y/3);
+        }
+        else {
+            //NORMAL FLIPPING
+            armMotor.setPower(gamepad2.left_stick_y);
+        }
 
         //LIFT
         liftMotor.setPower(gamepad2.right_stick_y);
