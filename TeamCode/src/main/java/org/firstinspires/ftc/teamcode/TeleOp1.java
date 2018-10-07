@@ -37,12 +37,12 @@ public class TeleOp1 extends OpMode {
         leftBack = hardwareMap.dcMotor.get("left back");
         rightFront = hardwareMap.dcMotor.get("right front");
         rightBack = hardwareMap.dcMotor.get("right back");
-        //HARDWARE MAP FOR INTAKE
+/*        //HARDWARE MAP FOR INTAKE
         leftClamp = hardwareMap.servo.get("left clamp");
         rightClamp = hardwareMap.servo.get("right clamp");
-        armMotor = hardwareMap.dcMotor.get("arm motor");
+        armMotor = hardwareMap.dcMotor.get("arm motor"); */
         //HARDWARE MAP FOR LIFTING
-        liftMotor = hardwareMap.dcMotor.get("lift motor");
+        liftMotor = hardwareMap.dcMotor.get("lift motor ");
 
         //SETTING DIRECTIONS
         leftFront.setDirection(LEFTDIRECTION);
@@ -91,7 +91,7 @@ public class TeleOp1 extends OpMode {
             rightFront.setPower(rfDrive);
             rightBack.setPower(rbDrive);
         }
-
+/*
         //INTAKE
         boolean gamepad2A = gamepad2.a;
         boolean gamepad2B = gamepad2.b;
@@ -112,6 +112,7 @@ public class TeleOp1 extends OpMode {
        // leftClamp.setPosition(-gamepad2.left_stick_x);
         rightClamp.setPosition(gamepad2.left_stick_x);
 
+*/
         //FLIPPING THE INTAKE UPWARDs
         float rightTrigger2 = gamepad2.right_trigger;
         if (rightTrigger2 <= 0.4) {
