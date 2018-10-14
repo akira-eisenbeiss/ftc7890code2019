@@ -39,10 +39,10 @@ public class TeleOp1 extends OpMode {
         rightBack = hardwareMap.dcMotor.get("right back");
 /*        //HARDWARE MAP FOR INTAKE
         leftClamp = hardwareMap.servo.get("left clamp");
-        rightClamp = hardwareMap.servo.get("right clamp");
-        armMotor = hardwareMap.dcMotor.get("arm motor"); */
+        rightClamp = hardwareMap.servo.get("right clamp"); */
+        armMotor = hardwareMap.dcMotor.get("arm motor");
         //HARDWARE MAP FOR LIFTING
-        liftMotor = hardwareMap.dcMotor.get("lift motor ");
+  //      liftMotor = hardwareMap.dcMotor.get("lift motor ");
 
         //SETTING DIRECTIONS
         leftFront.setDirection(LEFTDIRECTION);
@@ -76,6 +76,7 @@ public class TeleOp1 extends OpMode {
         double lbDrive = Range.clip(drive + turn + strafe, -1.0, 1.0);
         double rfDrive = Range.clip(drive - turn + strafe, -1.0, 1.0);
         double rbDrive = Range.clip(drive - turn - strafe, -1.0, 1.0);
+
         //SLOW DRIVING
         if(gamepad1.left_trigger > 0.3){
             leftFront.setPower(lfDrive/3);
@@ -91,6 +92,8 @@ public class TeleOp1 extends OpMode {
             rightFront.setPower(rfDrive);
             rightBack.setPower(rbDrive);
         }
+
+        //TODO: code intake when able to
 /*
         //INTAKE
         boolean gamepad2A = gamepad2.a;
@@ -126,5 +129,10 @@ public class TeleOp1 extends OpMode {
 
         //LIFT
         liftMotor.setPower(gamepad2.right_stick_y);
+
+        //TELEMETRY
+        telemetry.addData("Status", "Run Time: " + runtime.toString());
+        telemetry.addData("Motors", "left (%.2f), right (%.2f)", rfDrive, rbDrive, lbDrive, rbDrive);
+        telemetry.update();
     }
 }
