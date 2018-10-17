@@ -78,13 +78,14 @@ public class TeleOp1 extends OpMode {
         double rbDrive = Range.clip(drive - turn - strafe, -1.0, 1.0);
 
         //SLOW DRIVING
-        if(gamepad1.left_trigger > 0.3){
+        if(gamepad1.left_trigger >= 0.3) {
             leftFront.setPower(lfDrive/3);
             leftBack.setPower(lbDrive/3);
             rightFront.setPower(rfDrive/3);
             rightBack.setPower(rbDrive/3);
 
         }
+
         //NORMAL DRIVING
         else{
             leftFront.setPower(lfDrive);
@@ -117,22 +118,25 @@ public class TeleOp1 extends OpMode {
 
 */
         //FLIPPING THE INTAKE UPWARDs
+        float armFlip = gamepad2.left_stick_y;
         float rightTrigger2 = gamepad2.right_trigger;
-        if (rightTrigger2 <= 0.4) {
+        if (rightTrigger2 >= 0.4) {
             //MORE CONTROLLED, SLOWER FLIPPING
-            armMotor.setPower(gamepad2.left_stick_y/3);
+            armMotor.setPower(armFlip/3);
         }
         else {
             //NORMAL FLIPPING
-            armMotor.setPower(gamepad2.left_stick_y);
+            armMotor.setPower(armFlip);
         }
 
-        //LIFT
-        liftMotor.setPower(gamepad2.right_stick_y);
-
+   /*     //LIFT
+        float liftM = gamepad2.right_stick_y;
+        liftMotor.setPower(liftM);
+*/
         //TELEMETRY
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Motors", "left (%.2f), right (%.2f)", rfDrive, rbDrive, lbDrive, rbDrive);
         telemetry.update();
     }
 }
+
