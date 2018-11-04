@@ -42,6 +42,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 public class AutoDepotSide1 extends LinearOpMode {
     private ElapsedTime     runtime = new ElapsedTime();
 
+    //test
     //motors
     DcMotor leftFront, rightFront, leftBack, rightBack;
     DcMotor armMotor;
@@ -85,13 +86,15 @@ public class AutoDepotSide1 extends LinearOpMode {
         rightBack = hardwareMap.dcMotor.get("right back");
         armMotor = hardwareMap.dcMotor.get("arm motor");
         liftMotor = hardwareMap.dcMotor.get("lift motor");
-
+/*
         markerMech = hardwareMap.servo.get("marker");
-
+        */
+/*
         //COLOR AND RANGE SENSORS
         depotSensor = hardwareMap.get(ColorSensor.class, "depot sensor");
         rangeSensorBottom = hardwareMap.get(DistanceSensor.class, "range sensor bottom");
         rangeSensorFront = hardwareMap.get(DistanceSensor.class, "range sensor front");
+        */
         //SETTING UP REV GYRO (IMU)
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
