@@ -31,7 +31,7 @@ public class TeleOpForBigKids extends OpMode {
     private DcMotor.Direction RIGHTDIRECTION = DcMotor.Direction.FORWARD;
 
     //SERVOS (only really used to make sure we can fix autonomous-generated problems)
-    CRServo ballArm;
+    CRServo padLock;
 
     @Override
     public void init() {
@@ -92,6 +92,8 @@ public class TeleOpForBigKids extends OpMode {
             armMotor.setPower(dbSpeed);
         }
         armMotor.setPower(dbSpeedSlow);
+
+        //HOOKING WITH PADLOCK
 
         // TELEMETRY
         telemetry.addData("Status", "Run Time: " + runtime.toString());
