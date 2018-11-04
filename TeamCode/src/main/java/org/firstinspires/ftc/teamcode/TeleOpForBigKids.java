@@ -33,6 +33,8 @@ public class TeleOpForBigKids extends OpMode {
     //SERVOS (only really used to make sure we can fix autonomous-generated problems)
     CRServo padLock;
 
+    float backward;
+
     @Override
     public void init() {
 
@@ -78,12 +80,15 @@ public class TeleOpForBigKids extends OpMode {
         double rfDrive = Range.clip(drive - turn + strafe, -1.0, 1.0);
         double rbDrive = Range.clip(drive - turn - strafe, -1.0, 1.0);
 
+        //BACKWARDS DRIVING
+        float backwards = gamepad1.left_trigger;
+
         //NORMAL DRIVING
         float power = gamepad1.right_trigger;
-        leftFront.setPower(dir(lfDrive)*power);
-        leftBack.setPower(dir(lbDrive)*power);
-        rightFront.setPower(dir(rfDrive)*power);
-        rightBack.setPower(dir(rbDrive)*power);
+        leftFront.setPower(dir(lfDrive,backwards)*power);
+        leftBack.setPower(dir(lbDrive,backwards)*power);
+        rightFront.setPower(dir(rfDrive,backwards)*power);
+        rightBack.setPower(dir(rbDrive,backwards)*power);
 
         //ARM MOVEMENT
         float dbSpeed = gamepad2.left_stick_y / 2;
@@ -100,6 +105,7 @@ public class TeleOpForBigKids extends OpMode {
         boolean gamepad2X = gamepad2.x;
 
         int servo = 0;
+        //ASSIGN TO BUTTONS
         if (gamepad2B) { //close padlock
             servo = 1;
         }
@@ -110,6 +116,7 @@ public class TeleOpForBigKids extends OpMode {
             servo = 3;
         }
 
+        //CODE FOR PRESSING BUTTONS
         if(servo == 1){
             padLock.setPower(1);
         }
@@ -127,7 +134,10 @@ public class TeleOpForBigKids extends OpMode {
         telemetry.update();
     }
     //FINDING DIRECTION METHOD
-    public static double dir(double motordir){
+    public static double dir(double motordir, double backwards){
+        if(backwards >= 0.15){
+            return ((motordir/Math.abs(motordir))*-1);
+        }
         return (motordir/Math.abs(motordir));
     }
 }
