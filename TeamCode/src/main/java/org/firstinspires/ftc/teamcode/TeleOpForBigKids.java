@@ -91,13 +91,13 @@ public class TeleOpForBigKids extends OpMode {
         rightBack.setPower(dir(rbDrive,backwards)*power);
 
         //ARM MOVEMENT
-        float dbSpeed = gamepad2.left_stick_y / 2;
-        float dbSpeedSlow = gamepad2.left_stick_y / 4;
+        float dbSpeed = -gamepad2.left_stick_y / 1;
+        float dbSpeedSlow = -gamepad2.left_stick_y / 2;
 
         if (gamepad2.right_trigger >= 0.3) {
-            armMotor.setPower(dbSpeed);
+            armMotor.setPower(dbSpeedSlow);
         }
-        armMotor.setPower(dbSpeedSlow);
+        armMotor.setPower(dbSpeed);
 
         //HOOKING WITH PADLOCK
         boolean gamepad2A = gamepad2.a;
