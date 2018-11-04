@@ -100,6 +100,10 @@ public class TeleOpForBigKids extends OpMode {
         }
         armMotor.setPower(dbSpeed);
 
+        //LIFTING
+        float liftpower = gamepad2.right_stick_y;
+        liftMotor.setPower(liftpower);
+
         //HOOKING WITH PADLOCK
         boolean gamepad2A = gamepad2.a;
         boolean gamepad2B = gamepad2.b;
@@ -137,8 +141,8 @@ public class TeleOpForBigKids extends OpMode {
     //FINDING DIRECTION METHOD
     public static double dir(double motordir, double backwards){
         if(backwards >= 0.15){
-            return ((motordir/Math.abs(motordir))*-1);
+            return ((motordir/Math.abs(motordir)));
         }
-        return (motordir/Math.abs(motordir));
+        return ((motordir/Math.abs(motordir))*1);
     }
 }
