@@ -38,6 +38,7 @@ public class TeleOpForBigKids extends OpMode {
     @Override
     public void init() {
 
+        //TODO; update configuration
         //HARDWARE MAP
         leftFront = hardwareMap.dcMotor.get("left front");
         leftBack = hardwareMap.dcMotor.get("left back");
@@ -45,7 +46,7 @@ public class TeleOpForBigKids extends OpMode {
         rightBack = hardwareMap.dcMotor.get("right back");
         liftMotor = hardwareMap.dcMotor.get("lift motor");
         armMotor = hardwareMap.dcMotor.get("arm motor");
-        padLock = hardwareMap.crservo.get("padlock");
+  //      padLock = hardwareMap.crservo.get("padlock");
 
         //SETTING DIRECTIONS
         leftFront.setDirection(LEFTDIRECTION);
