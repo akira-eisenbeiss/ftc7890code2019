@@ -25,7 +25,6 @@ public class TeleOpForBigKids extends OpMode {
     DcMotor rightBack;
     DcMotor liftMotor;
     DcMotor armMotor;
-    CRServo servoMotor;
 
     //DIRECTIONS
     private DcMotor.Direction LEFTDIRECTION = DcMotor.Direction.REVERSE;
@@ -44,7 +43,7 @@ public class TeleOpForBigKids extends OpMode {
         rightBack = hardwareMap.dcMotor.get("right back");
         liftMotor = hardwareMap.dcMotor.get("lift motor");
         armMotor = hardwareMap.dcMotor.get("arm motor");
-        servoMotor = hardwareMap.crservo.get("servo motor");
+        padLock = hardwareMap.crservo.get("padlock");
 
         //SETTING DIRECTIONS
         leftFront.setDirection(LEFTDIRECTION);
@@ -112,13 +111,13 @@ public class TeleOpForBigKids extends OpMode {
         }
 
         if(servo == 1){
-            servoMotor.setPower(1);
+            padLock.setPower(1);
         }
         else if (servo == 2){
-            servoMotor.setPower(-1);
+            padLock.setPower(-1);
         }
         else if (servo == 3){
-            servoMotor.setPower(0);
+            padLock.setPower(0);
         }
 
 
