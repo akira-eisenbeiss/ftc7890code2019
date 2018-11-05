@@ -60,9 +60,8 @@ public class IMUTest extends LinearOpMode {
         imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
 
         while(opModeIsActive()) {
-            isImuCorrect(90, 5, .3);
+            isImuCorrect(90, 10, .3);
         }
-
     }
         public int isImuCorrect(double imuTarget, double imuRange,/* double imuActual,*/ double speed) {
             int correctCount = 0;
