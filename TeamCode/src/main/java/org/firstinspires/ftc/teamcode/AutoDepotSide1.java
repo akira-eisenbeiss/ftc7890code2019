@@ -80,6 +80,7 @@ public class AutoDepotSide1 extends LinearOpMode {
 
     public void runOpMode() {
 
+        //TODO; update configuration, including sensors
         leftFront = hardwareMap.dcMotor.get("left front");
         rightFront = hardwareMap.dcMotor.get("right front");
         leftBack = hardwareMap.dcMotor.get("left back");

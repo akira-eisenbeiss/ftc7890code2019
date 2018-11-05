@@ -102,7 +102,7 @@ public class TeleOpForBigKids extends OpMode {
 
         //LIFTING
         float liftpower = gamepad2.right_stick_y;
-        liftMotor.setPower(liftpower);
+        liftMotor.setPower(liftpower / 4); //powered down for testing
 
         //HOOKING WITH PADLOCK
         boolean gamepad2A = gamepad2.a;
