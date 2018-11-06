@@ -50,6 +50,7 @@ public class AutoDepotSide1 extends LinearOpMode {
 
     //SERVOS
     Servo markerMech;
+    CRServo padLock;
 
     //sensors
     /*
@@ -89,6 +90,7 @@ public class AutoDepotSide1 extends LinearOpMode {
         liftMotor = hardwareMap.dcMotor.get("lift motor");
 /*
         markerMech = hardwareMap.servo.get("marker");
+        padLock = hardwareMap.crservo.get("padlock");
 
         //COLOR AND RANGE SENSORS
         depotSensor = hardwareMap.get(ColorSensor.class, "depot sensor");
@@ -129,6 +131,8 @@ public class AutoDepotSide1 extends LinearOpMode {
             liftMotor.setPower(landingValue);
         }
         if (distanceFromGround == 6) {
+            padLock.setPower(-.5); //TODO: test values to see direction of crservo but also how ong it takes
+            sleep(500);
             liftMotor.setPower(-landingValue); //basically just rewinds the motor so that we can retract the lift
         }
     }
