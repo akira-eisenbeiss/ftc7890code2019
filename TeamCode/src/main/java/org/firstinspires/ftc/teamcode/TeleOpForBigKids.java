@@ -62,18 +62,19 @@ public class TeleOpForBigKids extends OpMode {
         float drive;
         float turn;
         float strafe;
-
+/*
         //CONTROL INVERSION
         float leftTrigger1 = gamepad1.left_trigger;
         if (leftTrigger1 <= 0.4) {
             drive = gamepad1.left_stick_y;
             turn = gamepad1.right_stick_x;
             strafe = gamepad1.left_stick_x;
-        } else {
+        } else { */
             drive = -gamepad1.left_stick_y;
             turn = gamepad1.right_stick_x;
             strafe = -gamepad1.left_stick_x;
-        }
+    //    }
+        //we do control inversion in dir
 
         //DRIVING
         double lfDrive = Range.clip(drive + turn - strafe, -1.0, 1.0);
@@ -102,7 +103,9 @@ public class TeleOpForBigKids extends OpMode {
 
         //LIFTING
         float liftpower = gamepad2.right_stick_y;
-        liftMotor.setPower(liftpower / 4); //powered down for testing
+ //       liftMotor.setPower(liftpower / 4); //powered down for testing
+        float down = gamepad2.left_trigger;
+        liftMotor.setPower(liftDir(liftpower) * down);
 
         //HOOKING WITH PADLOCK
         boolean gamepad2A = gamepad2.a;
@@ -141,8 +144,16 @@ public class TeleOpForBigKids extends OpMode {
     //FINDING DIRECTION METHOD
     public static double dir(double motordir, double backwards){
         if(backwards >= 0.15){
-            return ((motordir/Math.abs(motordir)));
+            return ((motordir/Math.abs(motordir))*-1);
         }
-        return ((motordir/Math.abs(motordir))*1);
+        return (motordir/Math.abs(motordir));
     }
+
+    // BASICALLY FINDS WHETHER DRIVER IS MAKING THE MOTOR GO UP OR DOWN
+    //RETURNS EITHER A 1 OR -1
+    public static double liftDir(double liftdir) {
+            return (liftdir/Math.abs(liftdir));
+    }
+
+
 }

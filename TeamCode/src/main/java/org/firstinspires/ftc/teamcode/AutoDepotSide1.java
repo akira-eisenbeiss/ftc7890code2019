@@ -89,8 +89,7 @@ public class AutoDepotSide1 extends LinearOpMode {
         liftMotor = hardwareMap.dcMotor.get("lift motor");
 /*
         markerMech = hardwareMap.servo.get("marker");
-        */
-/*
+
         //COLOR AND RANGE SENSORS
         depotSensor = hardwareMap.get(ColorSensor.class, "depot sensor");
         rangeSensorBottom = hardwareMap.get(DistanceSensor.class, "range sensor bottom");
