@@ -118,8 +118,8 @@ public class AutoDepotSide1 extends LinearOpMode {
 
         imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
         while(opModeIsActive()) {
-            landing();
-            depositBlue();
+    //        landing();
+   //         depositBlue();
             //isImuCorrect
 
         }

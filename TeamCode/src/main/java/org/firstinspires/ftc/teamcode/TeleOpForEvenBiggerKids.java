@@ -1,4 +1,4 @@
-  package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -12,10 +12,11 @@ import com.qualcomm.robotcore.util.Range;
 7890 Space Lions 2019 "Tele Op For Big Kids"
 author: 7890 Software (akira-eisenbeiss, ErinZ)
 GOALS: 2019, deposite silver minerals, possibly also gold, lower and raise on the lander
+NOTE: a test code, trying to solve some problems with our crservo
  */
 
-@TeleOp(name="TeleOp For Big Kids", group="Tele Op")
-public class TeleOpForBigKids extends OpMode {
+@TeleOp(name="TeleOp For Even Bigger Kids", group="Tele Op")
+public class TeleOpForEvenBiggerKids extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     //MOTORS
@@ -45,7 +46,7 @@ public class TeleOpForBigKids extends OpMode {
         rightFront = hardwareMap.dcMotor.get("right front");
         rightBack = hardwareMap.dcMotor.get("right back");
         liftMotor = hardwareMap.dcMotor.get("lift motor");
-      //  armMotor = hardwareMap.dcMotor.get("arm motor");
+        //  armMotor = hardwareMap.dcMotor.get("arm motor");
         padLock = hardwareMap.crservo.get("padlock");
 
         //SETTING DIRECTIONS
@@ -70,10 +71,10 @@ public class TeleOpForBigKids extends OpMode {
             turn = gamepad1.right_stick_x;
             strafe = gamepad1.left_stick_x;
         } else { */
-            drive = -gamepad1.left_stick_y;
-            turn = gamepad1.right_stick_x;
-            strafe = -gamepad1.left_stick_x;
-    //    }
+        drive = -gamepad1.left_stick_y;
+        turn = gamepad1.right_stick_x;
+        strafe = -gamepad1.left_stick_x;
+        //    }
         //we do control inversion in dir
 
         //DRIVING
@@ -103,7 +104,7 @@ public class TeleOpForBigKids extends OpMode {
 */
         //LIFTING
         float liftpower = gamepad2.right_stick_y;
- //       liftMotor.setPower(liftpower / 4); //powered down for testing
+        //       liftMotor.setPower(liftpower / 4); //powered down for testing
         float down = gamepad2.left_trigger;
         liftMotor.setPower(liftDir(liftpower) * down);
 
@@ -151,7 +152,7 @@ public class TeleOpForBigKids extends OpMode {
     // BASICALLY FINDS WHETHER DRIVER IS MAKING THE MOTOR GO UP OR DOWN
     //RETURNS EITHER A 1 OR -1
     public static double liftDir(double liftdir) {
-            return (liftdir/Math.abs(liftdir));
+        return (liftdir/Math.abs(liftdir));
     }
 
 
