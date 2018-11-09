@@ -48,7 +48,7 @@ public class PadlockTest extends OpMode{
         else if (servo == 2) {
             padLock.setPower(1);
         }*/
-        padLock.setPower(0.01);
+        padLock.setPower(0.5);
     }
 
 
