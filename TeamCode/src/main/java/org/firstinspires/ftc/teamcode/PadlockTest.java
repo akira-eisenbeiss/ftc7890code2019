@@ -6,6 +6,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -14,6 +15,7 @@ import com.qualcomm.robotcore.util.Range;
 public class PadlockTest extends OpMode{
     private ElapsedTime runtime = new ElapsedTime();
     CRServo padLock;
+    public static int servoCntr;
 
     @Override
     public void init() {
@@ -25,31 +27,34 @@ public class PadlockTest extends OpMode{
         boolean gamepad2A = gamepad2.a;
         boolean gamepad2B = gamepad2.b;
         boolean gamepad2X = gamepad2.x;
-
-        int servo = 0;
         //ASSIGN TO BUTTONS
-     /*   if (gamepad2B) { //close padlock
-            servo = 1;
+       if (gamepad2B) { //close padlock
+            servoCntr = 1;
         }
         else if (gamepad2A) { //open padlock
-            servo = 2;
+            servoCntr = 2;
         }
-        else if (gamepad2X){
-            servo = 0;
-        }*/
+        else if (gamepad2X) {
+           servoCntr = 0;
+       }
 
         //CODE FOR PRESSING BUTTONS
-    //    if(servo == 0){
-      //      padLock.setPower(-0.0001);
-        //}
-      /*  else if (servo == 1){
+        if(servoCntr == 0){
+            padLock.setPower(0.0);
+        }
+        else if (servoCntr == 1){
             padLock.setPower(-1);
         }
-        else if (servo == 2) {
+        else if (servoCntr == 2) {
             padLock.setPower(1);
-        }*/
-        padLock.setPower(0.5);
+        }
+
+        telemetry.addData("padlock", padLock.getPower());
+        telemetry.addData("servo", servoCntr);
+        telemetry.update();
     }
+
+
 
 
 }
