@@ -32,6 +32,7 @@ public class TeleOpForBigKids extends OpMode {
 
     //SERVOS (only really used to make sure we can fix autonomous-generated problems)
     CRServo padLock;
+    public static int servoCntr;
 
     float backward;
 
