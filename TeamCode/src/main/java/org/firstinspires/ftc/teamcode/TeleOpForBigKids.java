@@ -112,26 +112,25 @@ public class TeleOpForBigKids extends OpMode {
         boolean gamepad2B = gamepad2.b;
         boolean gamepad2X = gamepad2.x;
 
-        int servo = 0;
-        //ASSIGN TO BUTTONS
+        
         if (gamepad2B) { //close padlock
-            servo = 1;
+            servoCntr = 1;
         }
         else if (gamepad2A) { //open padlock
-            servo = 2;
+            servoCntr = 2;
         }
-        else if (gamepad2X){
-            servo = 0;
+        else if (gamepad2X) {
+            servoCntr = 0;
         }
 
         //CODE FOR PRESSING BUTTONS
-        if(servo == 0){
-            padLock.setPower(0);
+        if(servoCntr == 0){
+            padLock.setPower(0.0);
         }
-        else if (servo == 2){
+        else if (servoCntr == 1){
             padLock.setPower(-1);
         }
-        else if (servo == 1){
+        else if (servoCntr == 2) {
             padLock.setPower(1);
         }
 
