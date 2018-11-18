@@ -24,7 +24,7 @@ public class TeleOpForBigKids extends OpMode {
     DcMotor leftBack;
     DcMotor rightBack;
     DcMotor liftMotor;
-    //DcMotor armMotor;
+    DcMotor armMotor;
 
     //DIRECTIONS
     private DcMotor.Direction LEFTDIRECTION = DcMotor.Direction.REVERSE;
@@ -46,7 +46,7 @@ public class TeleOpForBigKids extends OpMode {
         rightFront = hardwareMap.dcMotor.get("right front");
         rightBack = hardwareMap.dcMotor.get("right back");
         liftMotor = hardwareMap.dcMotor.get("lift motor");
-      //  armMotor = hardwareMap.dcMotor.get("arm motor");
+        armMotor = hardwareMap.dcMotor.get("arm motor");
         padLock = hardwareMap.crservo.get("padlock");
 
         //SETTING DIRECTIONS
@@ -93,7 +93,7 @@ public class TeleOpForBigKids extends OpMode {
         rightFront.setPower(dir(rfDrive,backwards)*power);
         rightBack.setPower(dir(rbDrive,backwards)*power);
 
-      /*  //ARM MOVEMENT
+        //ARM MOVEMENT
         float dbSpeed = -gamepad2.left_stick_y / 1;
         float dbSpeedSlow = -gamepad2.left_stick_y / 2;
 
@@ -101,7 +101,7 @@ public class TeleOpForBigKids extends OpMode {
             armMotor.setPower(dbSpeedSlow);
         }
         armMotor.setPower(dbSpeed);
-*/
+
         //LIFTING
         float liftpower = gamepad2.right_stick_y;
  //       liftMotor.setPower(liftpower / 4); //powered down for testing
