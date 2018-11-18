@@ -71,10 +71,10 @@ public class TeleOpForBigKids extends OpMode {
             turn = gamepad1.right_stick_x;
             strafe = gamepad1.left_stick_x;
         } else { */
-            drive = -gamepad1.left_stick_y;
-            turn = gamepad1.right_stick_x;
-            strafe = -gamepad1.left_stick_x;
-    //    }
+        drive = -gamepad1.left_stick_y;
+        turn = gamepad1.right_stick_x;
+        strafe = -gamepad1.left_stick_x;
+        //    }
         //we do control inversion in dir
 
         //DRIVING
@@ -88,58 +88,69 @@ public class TeleOpForBigKids extends OpMode {
 
         //NORMAL DRIVING
         float power = gamepad1.right_trigger;
-        leftFront.setPower(dir(lfDrive,backwards)*power);
-        leftBack.setPower(dir(lbDrive,backwards)*power);
-        rightFront.setPower(dir(rfDrive,backwards)*power);
-        rightBack.setPower(dir(rbDrive,backwards)*power);
+        leftFront.setPower(dir(lfDrive, backwards) * power);
+        leftBack.setPower(dir(lbDrive, backwards) * power);
+        rightFront.setPower(dir(rfDrive, backwards) * power);
+        rightBack.setPower(dir(rbDrive, backwards) * power);
 
         //ARM MOVEMENT
-        float dbSpeed = -gamepad2.left_stick_y / 1;
-        float dbSpeedSlow = -gamepad2.left_stick_y / 2;
+        float armSpeed = -gamepad2.right_trigger;
+        float armControl = gamepad2.right_stick_y;
+        armMotor.setPower(liftDir(armControl) * armSpeed);
 
-        if (gamepad2.right_trigger >= 0.3) {
-            armMotor.setPower(dbSpeedSlow);
-        }
-        armMotor.setPower(dbSpeed);
 
-        //LIFTING
-        float liftpower = gamepad2.right_stick_y;
- //       liftMotor.setPower(liftpower / 4); //powered down for testing
-        float down = gamepad2.left_trigger;
-        liftMotor.setPower(liftDir(liftpower) * down);
+    //LIFTING
+    float liftpower = gamepad2.left_stick_y;
+    //       liftMotor.setPower(liftpower / 4); //powered down for testing
+    float liftControl = gamepad2.left_trigger;
+        liftMotor.setPower(
 
-        //HOOKING WITH PADLOCK
-        boolean gamepad2A = gamepad2.a;
-        boolean gamepad2B = gamepad2.b;
-        boolean gamepad2X = gamepad2.x;
+    liftDir(liftpower) *liftControl);
+
+    //HOOKING WITH PADLOCK
+    boolean gamepad2A = gamepad2.a;
+    boolean gamepad2B = gamepad2.b;
+    boolean gamepad2X = gamepad2.x;
 
         
-        if (gamepad2B) { //close padlock
-            servoCntr = 1;
-        }
-        else if (gamepad2A) { //open padlock
-            servoCntr = 2;
-        }
-        else if (gamepad2X) {
-            servoCntr = 0;
-        }
+        if(gamepad2B)
 
-        //CODE FOR PRESSING BUTTONS
-        if(servoCntr == 0){
-            padLock.setPower(0.0);
-        }
-        else if (servoCntr == 1){
-            padLock.setPower(-1);
-        }
-        else if (servoCntr == 2) {
-            padLock.setPower(1);
-        }
-
-        // TELEMETRY
-        telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Motors", "left (%.2f), right (%.2f)", rfDrive, rbDrive, lbDrive, rbDrive);
-        telemetry.update();
+    { //close padlock
+        servoCntr = 1;
     }
+        else if(gamepad2A)
+
+    { //open padlock
+        servoCntr = 2;
+    }
+        else if(gamepad2X)
+
+    {
+        servoCntr = 0;
+    }
+
+    //CODE FOR PRESSING BUTTONS
+        if(servoCntr ==0)
+
+    {
+        padLock.setPower(0.0);
+    }
+        else if(servoCntr ==1)
+
+    {
+        padLock.setPower(-1);
+    }
+        else if(servoCntr ==2)
+
+    {
+        padLock.setPower(1);
+    }
+
+    // TELEMETRY
+        telemetry.addData("Status","Run Time: "+runtime.toString());
+        telemetry.addData("Motors","left (%.2f), right (%.2f)",rfDrive,rbDrive,lbDrive,rbDrive);
+        telemetry.update();
+}
     //FINDING DIRECTION METHOD
     public static double dir(double motordir, double backwards){
         if(backwards >= 0.15){
@@ -153,6 +164,4 @@ public class TeleOpForBigKids extends OpMode {
     public static double liftDir(double liftdir) {
             return (liftdir/Math.abs(liftdir));
     }
-
-
 }
