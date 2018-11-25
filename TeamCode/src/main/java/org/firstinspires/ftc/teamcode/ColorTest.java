@@ -35,12 +35,15 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
 @Autonomous(name="Color Test", group="LinearOpMode")
 public class ColorTest extends LinearOpMode{
+    private ElapsedTime     runtime = new ElapsedTime();
 
     ColorSensor depotSensor;
 
     public void runOpMode() {
-
         depotSensor = hardwareMap.get(ColorSensor.class, "depot sensor");
+
+        waitForStart();
+
         while(opModeIsActive()) {
             if (depotSensor.red() > depotSensor.blue() && depotSensor.red() > depotSensor.green()) {
                 telemetry.addData("color: ", "red");
@@ -50,8 +53,8 @@ public class ColorTest extends LinearOpMode{
                 telemetry.addData("color: ", "blue");
                 telemetry.update();
             }
-            else if (depotSensor.green() > depotSensor.red() && depotSensor.green() > depotSensor.blue()) {
-                telemetry.addData("color: ", "green");
+            else {
+                telemetry.addData("color: ", "nothing");
                 telemetry.update();
             }
         }
