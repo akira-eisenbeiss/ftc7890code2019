@@ -43,10 +43,10 @@ public class PadlockTest extends OpMode{
             padLock.setPower(0.0);
         }
         else if (servoCntr == 1){
-            padLock.setPower(-1);
+            padLock.setPower(0.5);
         }
         else if (servoCntr == 2) {
-            padLock.setPower(1);
+            padLock.setPower(-0.5);
         }
 
         telemetry.addData("padlock", padLock.getPower());

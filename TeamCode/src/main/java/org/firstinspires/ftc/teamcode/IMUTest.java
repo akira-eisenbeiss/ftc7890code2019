@@ -9,6 +9,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.util.ReadWriteFile;
+
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -17,6 +19,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+
+import java.io.File;
 
 
 /**
@@ -50,8 +55,11 @@ public class IMUTest extends LinearOpMode {
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         imu.initialize(parameters);
 
+
+
         while (!isStopRequested() && !imu.isGyroCalibrated()) {
             sleep(50);
+
             idle();
         }
 
@@ -60,22 +68,46 @@ public class IMUTest extends LinearOpMode {
         imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
 
         while(opModeIsActive()) {
-            isImuCorrect(90, 10, .3);
+
+            BNO055IMU.CalibrationData calibrationData = imu.readCalibrationData();
+
+            // Save the calibration data to a file. You can choose whatever file
+            // name you wish here, but you'll want to indicate the same file name
+            // when you initialize the IMU in an opmode in which it is used. If you
+            // have more than one IMU on your robot, you'll of course want to use
+            // different configuration file names for each.
+            String filename = "AdafruitIMUCalibration.json";
+            File file = AppUtil.getInstance().getSettingsFile(filename);
+            ReadWriteFile.writeFile(file, calibrationData.serialize());
+            telemetry.log().add("saved to '%s'", filename);
+            sleep(2000);
+
+        //    angle   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+            currentAngle();
+
+          //  isImuCorrect(90, 10, .3);
         }
 
     }
         public int isImuCorrect(double imuTarget, double imuRange,/* double imuActual,*/ double speed) {
             int correctCount = 0;
             double delta = (imuTarget - currentAngle() + 360.0) % 360.0; //HOW MUCH WE NEED TO TURN
-            if (delta > 180)
-                delta -= 360;
+            telemetry.addData("delta:", delta);
+            telemetry.addData("target:", imuTarget);
+            telemetry.addData("range:", imuRange);
+            telemetry.update();
+
+          //  if (delta > 180)
+          //      delta -= 360;
             if (Math.abs(delta) > imuRange) {
                 correctCount = 0;
-                double imuMod = delta / 45.0; //IF delta > 45, GETS SOMETHING GREATER THAN 1 OR -1
+                turning(speed);
+        /*        double imuMod = delta / 45.0; //IF delta > 45, GETS SOMETHING GREATER THAN 1 OR -1
                 if (Math.abs(imuMod) > 1.0){
                     imuMod = Math.signum(imuMod); //set gyromod to 1 or -1 if error is more than 45 degrees
                 }
-                turning(speed * Math.signum(imuMod));
+                turning(speed * Math.signum(imuMod));*/
             }
             else {
                 correctCount++;
@@ -91,14 +123,18 @@ public class IMUTest extends LinearOpMode {
         MAKES IT SO THAT POSITIVE SPEEDS MAKE US TURN CLOCKWISE,
         NEGATIVE SPEEDS MAKE US TURN COUNTERCLOCKWISE
          */
-            leftFront.setPower(speed);
-            leftBack.setPower(speed);
+            leftFront.setPower(-speed);
+            leftBack.setPower(-speed);
             rightFront.setPower(-speed);
             rightBack.setPower(-speed);
         }
 
         public double currentAngle() {
+            angle   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            gravity  = imu.getGravity();
+
             double globalAngle = 0;
+
             double deltaAngle = angle.firstAngle - lastAngle.firstAngle;
 
             //MAKES CHANGE IN ANGLE BETWEEN -180 AND 180
@@ -111,7 +147,10 @@ public class IMUTest extends LinearOpMode {
 
             lastAngle = angle;
 
+            telemetry.addData("angle:", globalAngle);
+            telemetry.update();
             return globalAngle;
+
 
         }
 }
