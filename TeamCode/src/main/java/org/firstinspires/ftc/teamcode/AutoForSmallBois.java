@@ -123,7 +123,7 @@ public class AutoForSmallBois extends LinearOpMode {
         public void landing () {
             double distanceFromGround = rangeSensorBottom.getDistance(DistanceUnit.CM);
             while (distanceFromGround > 6) { //this value is for testing
-                liftMotor.setPower(landingValue);
+                liftMotor.setPower(landingValue); //TODO: test landingValue
             }
             if (distanceFromGround <= 6.0) {
                 liftMotor.setPower(0);
