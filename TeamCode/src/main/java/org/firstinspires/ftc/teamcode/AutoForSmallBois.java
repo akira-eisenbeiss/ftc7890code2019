@@ -109,14 +109,13 @@ public class AutoForSmallBois extends LinearOpMode {
         landing();
         MRGyro.calibrate();
 
-
     }
 
     public void gyro(int angle) {
         int heading = MRGyro.getHeading();
         turn(leftFront, leftBack, rightFront, rightBack, true, 0.3);
         if (heading > targetHeadingGlyph - 10 && heading < targetHeadingGlyph + 10) {
-            //stop
+            move(leftFront, leftBack, rightFront, rightBack,true,0);
             sleep(5000);
         }
     }
