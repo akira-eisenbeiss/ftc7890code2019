@@ -46,27 +46,50 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 public class AutoForSmallBois extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
-    //MOTORS
+    //-----MOTORS and SERVOS-----
+
+    /*
+      WHEEL MOTORS:
+      These motors control our mechanum wheels. The front
+    of the robot is the side with our lifting mech
+  */
     DcMotor leftFront, leftBack, rightFront, rightBack;
+    /*
+      MECHANISM MOTORS:
+    These motors control our primary point-scoring
+    mechanisms. The intake mechanism and the lifting mech.
+  */
     DcMotor armMotor;
     DcMotor liftMotor;
-
-    //SERVOS
+    /*
+        MECHANISM SERVOS:
+    These servos control smaller tasks, such as unlatching
+    the hook on the robot and releasing the marker from the robot.
+    */
     CRServo padLock;
     Servo markerMech;
 
-    //SENSORS
+    //-----SENSORS and VARIABLES-----
+
+    //SENSORS:
+    //Our range sensor is used to detect our distance to the wall.
+    //DistanceSensor rangeSensorBottom, rangeSensorFront;
+    ModernRoboticsI2cRangeSensor rangeSensor;
+    //The optical distance sensor is used to detect our height off the grou n d.
+    OpticalDistanceSensor odsSensor;
+    //Our gyro sensor allows us to detect and make accurate turns.
     ModernRoboticsI2cGyro MRGyro;
     IntegratingGyroscope gyro;
+    //Our color sensor is used to detect colored lines on the ground.
     ColorSensor depotSensor;
-    DistanceSensor rangeSensorBottom, rangeSensorFront;
-
-    //GYRO SENSOR CODES
+    //VARIABLES
+    //These variables are used in our gyro sensor code in order to find
+    //the correct angle and turn to them.
     int balanceMove = 250;
     int targetHeadingGlyph = 180;
     int targetHeading = 270;
-
     //ENCODERS
+    //These encoders are used to see how much we are moving.
     static final double COUNTS_PER_MOTOR_REV = 1440;    // eg: TETRIX Motor Encoder
     static final double DRIVE_GEAR_REDUCTION = 2.0;     // This is < 1.0 if geared UP
     static final double WHEEL_DIAMETER_INCHES = 4.0;     // For figuring circumference
@@ -92,10 +115,12 @@ public class AutoForSmallBois extends LinearOpMode {
 
         //SENSORS
         MRGyro = hardwareMap.get(ModernRoboticsI2cGyro.class, "gyro");
-        gyro = (IntegratingGyroscope) MRGyro;
         depotSensor = hardwareMap.get(ColorSensor.class, "depot sensor");
-        rangeSensorBottom = hardwareMap.get(DistanceSensor.class, "range sensor bottom");
+     /*   rangeSensorBottom = hardwareMap.get(DistanceSensor.class, "range sensor bottom");
         rangeSensorFront = hardwareMap.get(DistanceSensor.class, "range sensor front");
+*/
+        rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range sensor");
+        odsSensor = hardwareMap.get(OpticalDistanceSensor.class, "ODS");
 
         //SERVOS
         padLock = hardwareMap.crservo.get("padlock");
@@ -113,97 +138,85 @@ public class AutoForSmallBois extends LinearOpMode {
 
     public void gyro(int angle) {
         int heading = MRGyro.getHeading();
-        turn(leftFront, leftBack, rightFront, rightBack, true, 0.3);
+        move(leftFront, leftBack, rightFront, rightBack, "RIGHT", 0.3);
         if (heading > targetHeadingGlyph - 10 && heading < targetHeadingGlyph + 10) {
-            move(leftFront, leftBack, rightFront, rightBack,true,0);
+            move(leftFront, leftBack, rightFront, rightBack,"FORWARD",0);
             sleep(5000);
         }
     }
 
-        public void landing () {
-            double distanceFromGround = rangeSensorBottom.getDistance(DistanceUnit.CM);
-            while (distanceFromGround > 6) { //this value is for testing
-                liftMotor.setPower(landingValue); //TODO: test landingValue
-            }
-            if (distanceFromGround <= 6.0) {
-                liftMotor.setPower(0);
-                padLock.setPower(-0.5); //TODO: test values to see direction of crservo but also how long it takes
-                sleep(500);
-                liftMotor.setPower(-landingValue); //basically just rewinds the motor so that we can retract the lift
-            }
+    public void landing () {
+        double distanceFromGround = rangeSensor.getDistance(DistanceUnit.CM);
+        while (distanceFromGround > 6) { //this value is for testing
+            liftMotor.setPower(landingValue); //TODO: test landingValue
         }
+        if (distanceFromGround <= 6.0) {
+            liftMotor.setPower(0);
+            padLock.setPower(-0.5); //TODO: test values to see direction of crservo but also how long it takes
+            sleep(500);
+            liftMotor.setPower(-landingValue); //basically just rewinds the motor so that we can retract the lift
+        }
+    }
 
-        public void depositBlue () {
-            while (!(depotSensor.blue() > depotSensor.green()) && !(depotSensor.blue() > depotSensor.red())) {
-                move(leftFront, rightFront, leftBack, rightBack, true, .5);
-            }
-            depositing();
+    public void depositBlue () {
+        while (!(depotSensor.blue() > depotSensor.green()) && !(depotSensor.blue() > depotSensor.red())) {
+            move(leftFront, rightFront, leftBack, rightBack, "FORWARD", .5);
         }
-        public void depositRed () {
-            while (!(depotSensor.red() > depotSensor.green()) && !(depotSensor.red() > depotSensor.blue())) {
-                move(leftFront, rightFront, leftBack, rightBack, true, .5);
-            }
-            depositing();
+        depositing();
+    }
+    public void depositRed () {
+        while (!(depotSensor.red() > depotSensor.green()) && !(depotSensor.red() > depotSensor.blue())) {
+            move(leftFront, rightFront, leftBack, rightBack, "FORWARD", .5);
         }
+        depositing();
+    }
 
-        public void depositing () {
-            //TODO: test servo, preferably w/ test code
-            markerMech.setPosition(0.5); //value for testing
-        }
+    public void depositing () {
+        //TODO: test servo, preferably w/ test code
+        markerMech.setPosition(0.5); //value for testing
+    }
 
 
 
 //---------------------------//
 //BASIC MOVEMENT METHODS
 
-        public void move (DcMotor motorlf, DcMotor motorrf, DcMotor motorlb, DcMotor motorrb,
-        boolean direction, double speed){
-            //ONE METHOD TO MOVE FORWARDS AND BACKWARDS
-            //values for testing
-            if (!direction) { //hopefully makes robo go backwards
-                motorlf.setPower(-speed);
-                motorrf.setPower(-speed);
-                motorlb.setPower(speed);
-                motorrb.setPower(speed);
-            } else if (direction) {
-                motorlf.setPower(speed);
-                motorrf.setPower(speed);
-                motorlb.setPower(-speed);
-                motorrb.setPower(-speed);
-            }
+    public void move (DcMotor motorlf, DcMotor motorrf, DcMotor motorlb, DcMotor motorrb,
+                      String direction, double speed){
+        //ONE METHOD TO MOVE FORWARDS AND BACKWARDS
+        //values for testing
+        if (direction == "BACK") { //hopefully makes robo go backwards
+            motorlf.setPower(-speed);
+            motorrf.setPower(-speed);
+            motorlb.setPower(speed);
+            motorrb.setPower(speed);
+        } else if (direction == "FORWARDS") {
+            motorlf.setPower(speed);
+            motorrf.setPower(speed);
+            motorlb.setPower(-speed);
+            motorrb.setPower(-speed);
         }
-
-        public void strafe (DcMotor motorlf, DcMotor motorrf, DcMotor motorlb, DcMotor motorrb,
-        boolean direction, double speed){
-            //ONE METHOD TO MOVE FORWARDS AND BACKWARDS
-            //values for testing
-            if (!direction) { //hopefully makes robo go to the right
-                motorlf.setPower(speed);
-                motorrf.setPower(-speed);
-                motorlb.setPower(speed);
-                motorrb.setPower(-speed);
-            } else if (direction) {
-                motorlf.setPower(-speed);
-                motorrf.setPower(speed);
-                motorlb.setPower(-speed);
-                motorrb.setPower(speed);
-            }
+        else if (direction == "RIGHT") { //hopefully makes robo go to the right
+            motorlf.setPower(speed);
+            motorrf.setPower(-speed);
+            motorlb.setPower(speed);
+            motorrb.setPower(-speed);
+        } else if (direction == "LEFT") {
+            motorlf.setPower(-speed);
+            motorrf.setPower(speed);
+            motorlb.setPower(-speed);
+            motorrb.setPower(speed);
         }
-
-        public void turn (DcMotor motorlf, DcMotor motorrf, DcMotor motorlb, DcMotor motorrb,
-        boolean direction, double speed){
-            //ONE METHOD TO MOVE FORWARDS AND BACKWARDS
-            //values for testing
-            if (!direction) { //hopefully makes robo turn to the right
-                motorlf.setPower(-speed);
-                motorrf.setPower(-speed);
-                motorlb.setPower(-speed);
-                motorrb.setPower(-speed);
-            } else if (direction) {
-                motorlf.setPower(speed);
-                motorrf.setPower(speed);
-                motorlb.setPower(speed);
-                motorrb.setPower(speed);
-            }
+        else if (direction == "TURN RIGHT") { //hopefully makes robo turn to the right
+            motorlf.setPower(-speed);
+            motorrf.setPower(-speed);
+            motorlb.setPower(-speed);
+            motorrb.setPower(-speed);
+        } else if (direction == "TURN LEFT") {
+            motorlf.setPower(speed);
+            motorrf.setPower(speed);
+            motorlb.setPower(speed);
+            motorrb.setPower(speed);
         }
+    }
 }
