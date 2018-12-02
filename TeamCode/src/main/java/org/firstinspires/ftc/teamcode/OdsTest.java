@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 
 @TeleOp(name = "ODS Test", group = "LinearOpMode")
+@Disabled
 public class OdsTest extends LinearOpMode {
 
     OpticalDistanceSensor odsSensor;  // Hardware Device Object

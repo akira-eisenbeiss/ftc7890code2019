@@ -57,7 +57,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
  * Created by u on 11/24/18.
  */
 
-@Autonomous(name="Color Test", group="LinearOpMode")
+@Autonomous(name="Color Range Test", group="LinearOpMode")
 public class ColorRangeTest extends LinearOpMode{
     private ElapsedTime     runtime = new ElapsedTime();
 

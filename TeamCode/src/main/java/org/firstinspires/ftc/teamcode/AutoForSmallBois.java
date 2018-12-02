@@ -76,12 +76,14 @@ public class AutoForSmallBois extends LinearOpMode {
     //DistanceSensor rangeSensorBottom, rangeSensorFront;
     ModernRoboticsI2cRangeSensor rangeSensor;
     //The optical distance sensor is used to detect our height off the grou n d.
-    OpticalDistanceSensor odsSensor;
+   // OpticalDistanceSensor odsSensor;
     //Our gyro sensor allows us to detect and make accurate turns.
     ModernRoboticsI2cGyro MRGyro;
     IntegratingGyroscope gyro;
     //Our color sensor is used to detect colored lines on the ground.
     ColorSensor depotSensor;
+
+    DistanceSensor distanceSensor;
     //VARIABLES
     //These variables are used in our gyro sensor code in order to find
     //the correct angle and turn to them.
@@ -120,7 +122,8 @@ public class AutoForSmallBois extends LinearOpMode {
         rangeSensorFront = hardwareMap.get(DistanceSensor.class, "range sensor front");
 */
         rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range sensor");
-        odsSensor = hardwareMap.get(OpticalDistanceSensor.class, "ODS");
+     //   odsSensor = hardwareMap.get(OpticalDistanceSensor.class, "ODS");
+        distanceSensor = hardwareMap.get(DistanceSensor.class, "distance sensor");
 
         //SERVOS
         padLock = hardwareMap.crservo.get("padlock");
