@@ -149,7 +149,7 @@ public class AutoForSmallBois extends LinearOpMode {
     }
 
     public void landing () {
-        double distanceFromGround = rangeSensor.getDistance(DistanceUnit.CM);
+        double distanceFromGround = distanceSensor.getDistance(DistanceUnit.CM);
         while (distanceFromGround > 6) { //this value is for testing
             liftMotor.setPower(landingValue); //TODO: test landingValue
         }
@@ -179,6 +179,15 @@ public class AutoForSmallBois extends LinearOpMode {
         markerMech.setPosition(0.5); //value for testing
     }
 
+    public void crater() {
+        double distanceValue = rangeSensor.getDistance(DistanceUnit.INCH);
+        while(distanceValue > 6){
+            move(leftFront, leftBack, rightFront, rightBack, "FORWARDS", 0.5);
+        }
+        while(distanceValue <= 6){
+        }
+    }
+
 
 
 //---------------------------//
@@ -188,38 +197,42 @@ public class AutoForSmallBois extends LinearOpMode {
                       String direction, double speed){
         //ONE METHOD TO MOVE FORWARDS AND BACKWARDS
         //values for testing
-        if (direction == "BACK") { //hopefully makes robo go backwards
+        if (direction.equals("BACK")) { //hopefully makes robo go backwards
             motorlf.setPower(-speed);
             motorrf.setPower(-speed);
             motorlb.setPower(speed);
             motorrb.setPower(speed);
-        } else if (direction == "FORWARDS") {
+        } else if (direction.equals("FORWARDS")) {
             motorlf.setPower(speed);
             motorrf.setPower(speed);
             motorlb.setPower(-speed);
             motorrb.setPower(-speed);
         }
-        else if (direction == "RIGHT") { //hopefully makes robo go to the right
+        else if (direction.equals("RIGHT")) { //hopefully makes robo go to the right
             motorlf.setPower(speed);
             motorrf.setPower(-speed);
             motorlb.setPower(speed);
             motorrb.setPower(-speed);
-        } else if (direction == "LEFT") {
+        } else if (direction.equals(("LEFT")){
             motorlf.setPower(-speed);
             motorrf.setPower(speed);
             motorlb.setPower(-speed);
             motorrb.setPower(speed);
-        }
-        else if (direction == "TURN RIGHT") { //hopefully makes robo turn to the right
+        } else if (direction.equals("TURN RIGHT")) { //hopefully makes robo turn to the right i hope so too
             motorlf.setPower(-speed);
             motorrf.setPower(-speed);
             motorlb.setPower(-speed);
             motorrb.setPower(-speed);
-        } else if (direction == "TURN LEFT") {
+        } else if (direction.equals("TURN LEFT")) {
             motorlf.setPower(speed);
             motorrf.setPower(speed);
             motorlb.setPower(speed);
             motorrb.setPower(speed);
+        } else if (direction.equals("STOP")) {
+        motorlf.setPower(0.0);
+        motorrf.setPower(0.0);
+        motorlb.setPower(0.0);
+        motorrb.setPower(0.0);
         }
     }
 }
