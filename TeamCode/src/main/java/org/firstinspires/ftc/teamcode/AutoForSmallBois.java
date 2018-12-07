@@ -213,7 +213,7 @@ public class AutoForSmallBois extends LinearOpMode {
             motorrf.setPower(-speed);
             motorlb.setPower(speed);
             motorrb.setPower(-speed);
-        } else if (direction.equals(("LEFT")){
+        } else if (direction.equals("LEFT")){
             motorlf.setPower(-speed);
             motorrf.setPower(speed);
             motorlb.setPower(-speed);
