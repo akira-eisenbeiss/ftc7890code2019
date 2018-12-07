@@ -35,6 +35,7 @@ public class TeleOpForBigKids extends OpMode {
     public static int servoCntr;
 
     float backward;
+    int armValue = 0;
 
     @Override
     public void init() {
@@ -94,32 +95,46 @@ public class TeleOpForBigKids extends OpMode {
         rightBack.setPower(dir(rbDrive, backwards) * power);
 
         //ARM MOVEMENT
-        float armSpeed = -gamepad2.right_trigger;
-        float armControl = gamepad2.right_stick_y;
+        float armSpeed = -gamepad2.left_trigger;
+        float armControl = gamepad2.left_stick_y;
         armMotor.setPower(liftDir(armControl) * armSpeed);
 
+        boolean gamepad2X = gamepad2.x;
+        if (gamepad2X) {
+            if(armValue == 1){
+                armValue ^= 1;
+                telemetry.addData("ARM", "FULL");
+                armSpeed = armSpeed*2;
+                telemetry.update();
+            }
+            else if(armValue == 0){
+                armSpeed = armSpeed/2;
+                armValue ^= 0;
+                telemetry.addData("ARM", "HALF");
+                telemetry.update();
+            }
+        }
 
     //LIFTING
-    float liftpower = gamepad2.left_stick_y;
+    float liftpower = gamepad2.right_stick_y;
     //       liftMotor.setPower(liftpower / 4); //powered down for testing
-    float liftControl = gamepad2.left_trigger;
-        liftMotor.setPower(
+    float liftControl = gamepad2.right_trigger;
+    liftMotor.setPower(liftDir(liftpower) *liftControl);
 
-    liftDir(liftpower) *liftControl);
 
     //HOOKING WITH PADLOCK
-    boolean gamepad2A = gamepad2.a;
-    boolean gamepad2B = gamepad2.b;
-    boolean gamepad2X = gamepad2.x;
+    boolean gamepad1B = gamepad1.b;
+    boolean gamepad1Y = gamepad1.y;
+    boolean gamepad1X = gamepad1.x;
 
         //ASSIGN TO BUTTONS
-        if (gamepad2B) { //close padlock
+        if (gamepad1Y) { //close padlock
             servoCntr = 1;
         }
-        else if (gamepad2A) { //open padlock
+        else if (gamepad1B) { //open padlock
             servoCntr = 2;
         }
-        else if (gamepad2X) {
+        else if (gamepad1X) {
             servoCntr = 0;
         }
 
