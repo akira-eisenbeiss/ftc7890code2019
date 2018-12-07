@@ -97,7 +97,7 @@ public class TeleOpForBigKids extends OpMode {
         //ARM MOVEMENT
         float armSpeed = -gamepad2.left_trigger;
         float armControl = gamepad2.left_stick_y;
-        armMotor.setPower(liftDir(armControl) * armSpeed);
+        armMotor.setPower(-liftDir(armControl) * armSpeed);
 
         boolean gamepad2X = gamepad2.x;
         if (gamepad2X) {
