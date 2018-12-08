@@ -184,7 +184,8 @@ public class AutoForSmallBois extends LinearOpMode {
         while(distanceValue > 6){
             move(leftFront, leftBack, rightFront, rightBack, "FORWARDS", 0.5);
         }
-        while(distanceValue <= 6){
+        if (distanceValue <= 6){
+            stop(leftFront, leftBack, rightFront, rightBack);
         }
     }
 
@@ -195,44 +196,51 @@ public class AutoForSmallBois extends LinearOpMode {
 
     public void move (DcMotor motorlf, DcMotor motorrf, DcMotor motorlb, DcMotor motorrb,
                       String direction, double speed){
-        //ONE METHOD TO MOVE FORWARDS AND BACKWARDS
+        //ONE METHOD TO IN ALL DIRECTIONS
         //values for testing
-        if (direction.equals("BACK")) { //hopefully makes robo go backwards
-            motorlf.setPower(-speed);
-            motorrf.setPower(-speed);
-            motorlb.setPower(speed);
-            motorrb.setPower(speed);
-        } else if (direction.equals("FORWARDS")) {
-            motorlf.setPower(speed);
-            motorrf.setPower(speed);
-            motorlb.setPower(-speed);
-            motorrb.setPower(-speed);
+        switch(direction) {
+            case "BACK":
+                motorlf.setPower(-speed);
+                motorrf.setPower(-speed);
+                motorlb.setPower(speed);
+                motorrb.setPower(speed);
+                break;
+            case "FORWARDS":
+                motorlf.setPower(speed);
+                motorrf.setPower(speed);
+                motorlb.setPower(-speed);
+                motorrb.setPower(-speed);
+                break;
+            case "RIGHT":
+                motorlf.setPower(speed);
+                motorrf.setPower(-speed);
+                motorlb.setPower(speed);
+                motorrb.setPower(-speed);
+                break;
+            case "LEFT":
+                motorlf.setPower(-speed);
+                motorrf.setPower(speed);
+                motorlb.setPower(-speed);
+                motorrb.setPower(speed);
+                break;
+            case "TURN RIGHT":
+                motorlf.setPower(-speed);
+                motorrf.setPower(-speed);
+                motorlb.setPower(-speed);
+                motorrb.setPower(-speed);
+                break;
+            case "TURN LEFT":
+                motorlf.setPower(speed);
+                motorrf.setPower(speed);
+                motorlb.setPower(speed);
+                motorrb.setPower(speed);
+                break;
         }
-        else if (direction.equals("RIGHT")) { //hopefully makes robo go to the right
-            motorlf.setPower(speed);
-            motorrf.setPower(-speed);
-            motorlb.setPower(speed);
-            motorrb.setPower(-speed);
-        } else if (direction.equals("LEFT")){
-            motorlf.setPower(-speed);
-            motorrf.setPower(speed);
-            motorlb.setPower(-speed);
-            motorrb.setPower(speed);
-        } else if (direction.equals("TURN RIGHT")) { //hopefully makes robo turn to the right i hope so too
-            motorlf.setPower(-speed);
-            motorrf.setPower(-speed);
-            motorlb.setPower(-speed);
-            motorrb.setPower(-speed);
-        } else if (direction.equals("TURN LEFT")) {
-            motorlf.setPower(speed);
-            motorrf.setPower(speed);
-            motorlb.setPower(speed);
-            motorrb.setPower(speed);
-        } else if (direction.equals("STOP")) {
+    }
+    public void stop(DcMotor motorlf, DcMotor motorrf, DcMotor motorlb, DcMotor motorrb){
         motorlf.setPower(0.0);
         motorrf.setPower(0.0);
         motorlb.setPower(0.0);
         motorrb.setPower(0.0);
-        }
     }
 }
