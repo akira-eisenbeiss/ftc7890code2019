@@ -62,3 +62,19 @@ public class ColorTest extends LinearOpMode{
     }
 
 }
+
+
+//
+/*
+move(leftFront, leftBack, rightFront, rightBack, "BACK", 0.5);
+sleep(3000);
+gyro(90);
+move(leftFront, leftBack, rightFront, rightBack, "BACK", 0.5);
+sleep(3500);
+gyro(45);
+depositBlue();
+ */
+/*
+padLock.setPower(0.5);
+sleep(2000);
+*/

@@ -70,8 +70,8 @@ public class ColorRangeTest extends LinearOpMode{
         waitForStart();
 
         while(opModeIsActive()) {
-            telemetry.addData("rev color/range cm", distanceSensor.getDistance(DistanceUnit.CM));
-            telemetry.addData("range cm", rangeSensor.getDistance(DistanceUnit.CM));
+            telemetry.addData("rev color/range in", distanceSensor.getDistance(DistanceUnit.INCH));
+            telemetry.addData("range in", rangeSensor.getDistance(DistanceUnit.INCH));
             telemetry.update();
 
         }

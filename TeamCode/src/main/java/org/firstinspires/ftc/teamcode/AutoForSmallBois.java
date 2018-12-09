@@ -46,19 +46,20 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 public class AutoForSmallBois extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
+
     //-----MOTORS and SERVOS-----
 
     /*
       WHEEL MOTORS:
       These motors control our mechanum wheels. The front
-    of the robot is the side with our lifting mech
-  */
+      of the robot is the side with our lifting mech
+    */
     DcMotor leftFront, leftBack, rightFront, rightBack;
     /*
       MECHANISM MOTORS:
-    These motors control our primary point-scoring
-    mechanisms. The intake mechanism and the lifting mech.
-  */
+      These motors control our primary point-scoring
+      mechanisms. The intake mechanism and the lifting mech.
+    */
     DcMotor armMotor;
     DcMotor liftMotor;
     /*
@@ -69,29 +70,23 @@ public class AutoForSmallBois extends LinearOpMode {
     CRServo padLock;
     Servo markerMech;
 
+
     //-----SENSORS and VARIABLES-----
 
     //SENSORS:
     //Our range sensor is used to detect our distance to the wall.
-    //DistanceSensor rangeSensorBottom, rangeSensorFront;
     ModernRoboticsI2cRangeSensor rangeSensor;
-    //The optical distance sensor is used to detect our height off the grou n d.
-   // OpticalDistanceSensor odsSensor;
     //Our gyro sensor allows us to detect and make accurate turns.
     ModernRoboticsI2cGyro MRGyro;
     IntegratingGyroscope gyro;
     //Our color sensor is used to detect colored lines on the ground.
     ColorSensor depotSensor;
-
+    //Our distance sensor is used to detect our distance off the ground.
     DistanceSensor distanceSensor;
-    //VARIABLES
-    //These variables are used in our gyro sensor code in order to find
-    //the correct angle and turn to them.
-    int balanceMove = 250;
-    int targetHeadingGlyph = 180;
-    int targetHeading = 270;
+
     //ENCODERS
     //These encoders are used to see how much we are moving.
+    //This allows us to avoid hardcoding values.
     static final double COUNTS_PER_MOTOR_REV = 1440;    // eg: TETRIX Motor Encoder
     static final double DRIVE_GEAR_REDUCTION = 2.0;     // This is < 1.0 if geared UP
     static final double WHEEL_DIAMETER_INCHES = 4.0;     // For figuring circumference
@@ -103,7 +98,7 @@ public class AutoForSmallBois extends LinearOpMode {
     //VUFORIA
     VuforiaLocalizer vuforia;
 
-    //LANDING VALUE
+    //POWER OF THE LIFT MOTOR WHILE WE LAND
     double landingValue = 0.5;
 
     @Override
@@ -118,49 +113,56 @@ public class AutoForSmallBois extends LinearOpMode {
         //SENSORS
         MRGyro = hardwareMap.get(ModernRoboticsI2cGyro.class, "gyro");
         depotSensor = hardwareMap.get(ColorSensor.class, "depot sensor");
-     /*   rangeSensorBottom = hardwareMap.get(DistanceSensor.class, "range sensor bottom");
-        rangeSensorFront = hardwareMap.get(DistanceSensor.class, "range sensor front");
-*/
         rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range sensor");
-     //   odsSensor = hardwareMap.get(OpticalDistanceSensor.class, "ODS");
         distanceSensor = hardwareMap.get(DistanceSensor.class, "distance sensor");
 
         //SERVOS
         padLock = hardwareMap.crservo.get("padlock");
         markerMech = hardwareMap.servo.get("marker");
+
         waitForStart();
-          /*
+
+        /*
           Below are our methods for
           autonomous...
-          */
-
+        */
         landing();
         MRGyro.calibrate();
-
+        depositBlue();
+        depositing();
     }
 
-    public void gyro(int angle) {
+    //METHOD FOR OUR GYRO SENSOR
+    //Our gyro sensor is used to allow us to make accurate
+    //turns without having to test time values.
+    public void gyro(int targetHeading) {
         int heading = MRGyro.getHeading();
         move(leftFront, leftBack, rightFront, rightBack, "RIGHT", 0.3);
-        if (heading > targetHeadingGlyph - 10 && heading < targetHeadingGlyph + 10) {
-            move(leftFront, leftBack, rightFront, rightBack,"FORWARD",0);
+        if (heading > targetHeading - 10 && heading < targetHeading + 10) {
+            stop(leftFront, leftBack, rightFront, rightBack);
             sleep(5000);
         }
     }
 
+    //METHOD FOR OUR LANDING MECH
+    //This method is used to let us land and unhook
+    //ourselves from the lander.
     public void landing () {
         double distanceFromGround = distanceSensor.getDistance(DistanceUnit.CM);
-        while (distanceFromGround > 6) { //this value is for testing
-            liftMotor.setPower(landingValue); //TODO: test landingValue
+        while (distanceFromGround > 2.5) {
+            liftMotor.setPower(landingValue);
         }
-        if (distanceFromGround <= 6.0) {
+        if (distanceFromGround <= 2.5) {
             liftMotor.setPower(0);
-            padLock.setPower(-0.5); //TODO: test values to see direction of crservo but also how long it takes
-            sleep(500);
-            liftMotor.setPower(-landingValue); //basically just rewinds the motor so that we can retract the lift
+            padLock.setPower(0.5);
+            sleep(2000);
+            liftMotor.setPower(-landingValue); //rewinds the motor so that we can retract the lift
         }
     }
 
+    //METHOD FOR MOVING TO DEPOT
+    //This method allows us to move towards the depot,
+    //using the colored lines on the ground.
     public void depositBlue () {
         while (!(depotSensor.blue() > depotSensor.green()) && !(depotSensor.blue() > depotSensor.red())) {
             move(leftFront, rightFront, leftBack, rightBack, "FORWARD", .5);
@@ -174,11 +176,16 @@ public class AutoForSmallBois extends LinearOpMode {
         depositing();
     }
 
+    //METHOD FOR DEPLOYING MARKER
+    //This method allows us to deploy our marker
+    //into the depot, using a servo arm.
     public void depositing () {
-        //TODO: test servo, preferably w/ test code
         markerMech.setPosition(0.5); //value for testing
     }
 
+    //METHOD FOR PARKING
+    //This method moves us to the crater and then
+    //parks our robot.
     public void crater() {
         double distanceValue = rangeSensor.getDistance(DistanceUnit.INCH);
         while(distanceValue > 6){
@@ -190,46 +197,52 @@ public class AutoForSmallBois extends LinearOpMode {
     }
 
 
-
 //---------------------------//
-//BASIC MOVEMENT METHODS
-
+//BASIC MOVEMENT METHOD
+    //We use a case-switch to create movement code
+    //without using separate methods or loops for each.
     public void move (DcMotor motorlf, DcMotor motorrf, DcMotor motorlb, DcMotor motorrb,
                       String direction, double speed){
         //ONE METHOD TO IN ALL DIRECTIONS
         //values for testing
         switch(direction) {
             case "BACK":
+                //robot moves backwards
                 motorlf.setPower(-speed);
                 motorrf.setPower(-speed);
                 motorlb.setPower(speed);
                 motorrb.setPower(speed);
                 break;
             case "FORWARDS":
+                //robot moves forwards
                 motorlf.setPower(speed);
                 motorrf.setPower(speed);
                 motorlb.setPower(-speed);
                 motorrb.setPower(-speed);
                 break;
             case "RIGHT":
+                //robot strafes right
                 motorlf.setPower(speed);
                 motorrf.setPower(-speed);
                 motorlb.setPower(speed);
                 motorrb.setPower(-speed);
                 break;
             case "LEFT":
+                //robot strafes left
                 motorlf.setPower(-speed);
                 motorrf.setPower(speed);
                 motorlb.setPower(-speed);
                 motorrb.setPower(speed);
                 break;
             case "TURN RIGHT":
+                //robot turns clockwise(to the right)
                 motorlf.setPower(-speed);
                 motorrf.setPower(-speed);
                 motorlb.setPower(-speed);
                 motorrb.setPower(-speed);
                 break;
             case "TURN LEFT":
+                //robot turns counterclockwise(to the left)
                 motorlf.setPower(speed);
                 motorrf.setPower(speed);
                 motorlb.setPower(speed);
@@ -238,6 +251,7 @@ public class AutoForSmallBois extends LinearOpMode {
         }
     }
     public void stop(DcMotor motorlf, DcMotor motorrf, DcMotor motorlb, DcMotor motorrb){
+        //robot stops moving
         motorlf.setPower(0.0);
         motorrf.setPower(0.0);
         motorlb.setPower(0.0);

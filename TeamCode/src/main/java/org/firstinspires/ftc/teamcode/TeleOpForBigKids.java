@@ -10,8 +10,7 @@ import com.qualcomm.robotcore.util.Range;
 
 /*
 7890 Space Lions 2019 "Tele Op For Big Kids"
-author: 7890 Software (akira-eisenbeiss, ErinZ)
-GOALS: 2019, deposite silver minerals, possibly also gold, lower and raise on the lander
+GOALS: 2019, deposit silver minerals, possibly also gold, lower and raise on the lander
  */
 
 @TeleOp(name="TeleOp For Big Kids", group="Tele Op")
@@ -27,20 +26,25 @@ public class TeleOpForBigKids extends OpMode {
     DcMotor armMotor;
 
     //DIRECTIONS
+    //sets directions to the wheels
     private DcMotor.Direction LEFTDIRECTION = DcMotor.Direction.REVERSE;
     private DcMotor.Direction RIGHTDIRECTION = DcMotor.Direction.FORWARD;
 
-    //SERVOS (only really used to make sure we can fix autonomous-generated problems)
+    //SERVOS
+    //this servo is used to latch us onto the lander
     CRServo padLock;
+
+    //USED TO TOGGLE BETWEEN DIFFERENT
+    //MODES WHICH CHANGE THE DIRECTION OF
+    //OUR SERVO, ex: Padlock in, Padlock out
     public static int servoCntr;
 
-    float backward;
+    //USED IN XOR GATE [see later lines]
     int armValue = 0;
 
     @Override
     public void init() {
 
-        //TODO; update configuration
         //HARDWARE MAP
         leftFront = hardwareMap.dcMotor.get("left front");
         leftBack = hardwareMap.dcMotor.get("left back");
@@ -64,19 +68,10 @@ public class TeleOpForBigKids extends OpMode {
         float drive;
         float turn;
         float strafe;
-/*
-        //CONTROL INVERSION
-        float leftTrigger1 = gamepad1.left_trigger;
-        if (leftTrigger1 <= 0.4) {
-            drive = gamepad1.left_stick_y;
-            turn = gamepad1.right_stick_x;
-            strafe = gamepad1.left_stick_x;
-        } else { */
+
         drive = -gamepad1.left_stick_y;
         turn = gamepad1.right_stick_x;
         strafe = -gamepad1.left_stick_x;
-        //    }
-        //we do control inversion in dir
 
         //DRIVING
         double lfDrive = Range.clip(drive + turn - strafe, -1.0, 1.0);
@@ -99,6 +94,10 @@ public class TeleOpForBigKids extends OpMode {
         float armControl = gamepad2.left_stick_y;
         armMotor.setPower(-liftDir(armControl) * armSpeed);
 
+
+        //USES AN XOR GATE IN ORDER TO TOGGLE BETWEEN BUTTONS
+        //With 0 and 1 or 1 and 0 we get --> 1
+        //With 0 and 0 or 1 and 1 we get --> 0
         boolean gamepad2X = gamepad2.x;
         if (gamepad2X) {
             if(armValue == 1){
@@ -117,7 +116,6 @@ public class TeleOpForBigKids extends OpMode {
 
     //LIFTING
     float liftpower = gamepad2.right_stick_y;
-    //       liftMotor.setPower(liftpower / 4); //powered down for testing
     float liftControl = gamepad2.right_trigger;
     liftMotor.setPower(liftDir(liftpower) *liftControl);
 
@@ -154,7 +152,14 @@ public class TeleOpForBigKids extends OpMode {
         telemetry.addData("Motors","left (%.2f), right (%.2f)",rfDrive,rbDrive,lbDrive,rbDrive);
         telemetry.update();
 }
-    //FINDING DIRECTION METHOD
+    /*
+     //FINDING DIRECTION METHOD
+     divides the value of our joystick by the absolute value
+     of itself to get either a 1 or -1, this gives us the direction
+     that the motor should turn in ex: forward/backward, left/right
+     USING THIS METHOD, drivers will be able to separate speed and
+     direction when driving the robot.
+    */
     public static double dir(double motordir, double backwards){
         if(backwards >= 0.15){
             return ((motordir/Math.abs(motordir))*-1);
@@ -163,7 +168,7 @@ public class TeleOpForBigKids extends OpMode {
     }
 
     // BASICALLY FINDS WHETHER DRIVER IS MAKING THE MOTOR GO UP OR DOWN
-    //RETURNS EITHER A 1 OR -1
+    // RETURNS EITHER A 1 OR -1
     public static double liftDir(double liftdir) {
             return (liftdir/Math.abs(liftdir));
     }
