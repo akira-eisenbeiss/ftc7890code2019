@@ -24,6 +24,7 @@ public class TeleOpForBigKids extends OpMode {
     DcMotor rightBack;
     DcMotor liftMotor;
     DcMotor armMotor;
+    DcMotor sArm;
 
     //DIRECTIONS
     //sets directions to the wheels
@@ -41,6 +42,8 @@ public class TeleOpForBigKids extends OpMode {
 
     //USED IN XOR GATE [see later lines]
     int armValue = 0;
+    int armValue2 = 0;
+    int armDir = 0;
 
     @Override
     public void init() {
@@ -52,6 +55,7 @@ public class TeleOpForBigKids extends OpMode {
         rightBack = hardwareMap.dcMotor.get("right back");
         liftMotor = hardwareMap.dcMotor.get("lift motor");
         armMotor = hardwareMap.dcMotor.get("arm motor");
+        sArm = hardwareMap.dcMotor.get("support arm");
         padLock = hardwareMap.crservo.get("padlock");
 
         //SETTING DIRECTIONS
@@ -80,7 +84,30 @@ public class TeleOpForBigKids extends OpMode {
         double rbDrive = Range.clip(drive - turn - strafe, -1.0, 1.0);
 
         //BACKWARDS DRIVING
-        float backwards = gamepad1.left_trigger;
+        float backwards = 0;
+        //float backwards = gamepad1.left_trigger;
+
+
+        //SUPPORT ARM
+        if (gamepad1.dpad_up) { //close padlock
+            armValue2 = 1;
+        }
+        else if (gamepad1.dpad_down) { //open padlock
+            armValue2 = 2;
+        }
+
+        //Changes the direction of the support arm
+        if (armValue2 == 1){
+            armDir = 1;
+        }
+        else if (armValue2 == 2) {
+            armDir = -1;
+        }
+
+        //Applies power and direction to the support arm
+        float supportArm = gamepad1.left_trigger;
+        sArm.setPower(supportArm*armDir);
+
 
         //NORMAL DRIVING
         float power = gamepad1.right_trigger;
