@@ -117,7 +117,7 @@ public class TeleOpForBigKids extends OpMode {
         rightBack.setPower(dir(rbDrive, backwards) * power);
 
         //ARM MOVEMENT
-        float armSpeed = -gamepad2.left_trigger;
+        float armSpeed = -gamepad2.left_trigger/2;
         float armControl = gamepad2.left_stick_y;
         armMotor.setPower(-liftDir(armControl) * armSpeed);
 
@@ -143,7 +143,7 @@ public class TeleOpForBigKids extends OpMode {
 
     //LIFTING
     float liftpower = gamepad2.right_stick_y;
-    float liftControl = gamepad2.right_trigger;
+    float liftControl = gamepad2.right_trigger/2;
     liftMotor.setPower(liftDir(liftpower) *liftControl);
 
 

@@ -126,10 +126,12 @@ public class AutoForSmallBois extends LinearOpMode {
           Below are our methods for
           autonomous...
         */
+
         landing();
-        MRGyro.calibrate();
+     /*   MRGyro.calibrate();
         depositBlue();
-        depositing();
+        depositing();*/
+
     }
 
     //METHOD FOR OUR GYRO SENSOR
@@ -149,13 +151,13 @@ public class AutoForSmallBois extends LinearOpMode {
     //ourselves from the lander.
     public void landing () {
         double distanceFromGround = distanceSensor.getDistance(DistanceUnit.CM);
-        while (distanceFromGround > 2.5) {
+        while (distanceFromGround > 3.3) {
             liftMotor.setPower(landingValue);
         }
-        if (distanceFromGround <= 2.5) {
+        if (distanceFromGround <= 2.8) {
             liftMotor.setPower(0);
             padLock.setPower(0.5);
-            sleep(2000);
+            sleep(4000);
             liftMotor.setPower(-landingValue); //rewinds the motor so that we can retract the lift
         }
     }
@@ -180,7 +182,7 @@ public class AutoForSmallBois extends LinearOpMode {
     //This method allows us to deploy our marker
     //into the depot, using a servo arm.
     public void depositing () {
-        markerMech.setPosition(0.5); //value for testing
+        markerMech.setPosition(0.5); //TODO: test value
     }
 
     //METHOD FOR PARKING
