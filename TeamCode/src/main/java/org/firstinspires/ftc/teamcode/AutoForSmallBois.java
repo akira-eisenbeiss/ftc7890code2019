@@ -109,16 +109,16 @@ public class AutoForSmallBois extends LinearOpMode {
         leftBack = hardwareMap.dcMotor.get("left back");
         rightFront = hardwareMap.dcMotor.get("right front");
         rightBack = hardwareMap.dcMotor.get("right back");
-
-        //SENSORS
+           //SENSORS /*
         MRGyro = hardwareMap.get(ModernRoboticsI2cGyro.class, "gyro");
         depotSensor = hardwareMap.get(ColorSensor.class, "depot sensor");
         rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range sensor");
+
         distanceSensor = hardwareMap.get(DistanceSensor.class, "distance sensor");
 
         //SERVOS
-        padLock = hardwareMap.crservo.get("padlock");
-        markerMech = hardwareMap.servo.get("marker");
+      //  padLock = hardwareMap.crservo.get("padlock");
+        //markerMech = hardwareMap.servo.get("marker");
 
         waitForStart();
 

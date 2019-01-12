@@ -54,9 +54,9 @@ public class TeleOpForBigKids extends OpMode {
         rightFront = hardwareMap.dcMotor.get("right front");
         rightBack = hardwareMap.dcMotor.get("right back");
         liftMotor = hardwareMap.dcMotor.get("lift motor");
-        armMotor = hardwareMap.dcMotor.get("arm motor");
-        sArm = hardwareMap.dcMotor.get("support arm");
-        padLock = hardwareMap.crservo.get("padlock");
+       // armMotor = hardwareMap.dcMotor.get("arm motor");
+       // sArm = hardwareMap.dcMotor.get("support arm");
+       // padLock = hardwareMap.crservo.get("padlock");
 
         //SETTING DIRECTIONS
         leftFront.setDirection(LEFTDIRECTION);
@@ -87,7 +87,7 @@ public class TeleOpForBigKids extends OpMode {
         float backwards = 0;
         //float backwards = gamepad1.left_trigger;
 
-
+/*
         //SUPPORT ARM
         if (gamepad1.dpad_up) { //close padlock
             armValue2 = 1;
@@ -107,7 +107,7 @@ public class TeleOpForBigKids extends OpMode {
         //Applies power and direction to the support arm
         float supportArm = gamepad1.left_trigger;
         sArm.setPower(supportArm*armDir);
-
+*/
 
         //NORMAL DRIVING
         float power = gamepad1.right_trigger;
@@ -115,13 +115,14 @@ public class TeleOpForBigKids extends OpMode {
         leftBack.setPower(dir(lbDrive, backwards) * power);
         rightFront.setPower(dir(rfDrive, backwards) * power);
         rightBack.setPower(dir(rbDrive, backwards) * power);
-
+/*
         //ARM MOVEMENT
         float armSpeed = -gamepad2.left_trigger/2;
         float armControl = gamepad2.left_stick_y;
         armMotor.setPower(-liftDir(armControl) * armSpeed);
 
-
+*/
+/*
         //USES AN XOR GATE IN ORDER TO TOGGLE BETWEEN BUTTONS
         //With 0 and 1 or 1 and 0 we get --> 1
         //With 0 and 0 or 1 and 1 we get --> 0
@@ -140,13 +141,13 @@ public class TeleOpForBigKids extends OpMode {
                 telemetry.update();
             }
         }
-
+*/
     //LIFTING
     float liftpower = gamepad2.right_stick_y;
     float liftControl = gamepad2.right_trigger/2;
     liftMotor.setPower(liftDir(liftpower) *liftControl);
 
-
+/*
     //HOOKING WITH PADLOCK
     boolean gamepad1B = gamepad1.b;
     boolean gamepad1Y = gamepad1.y;
@@ -173,6 +174,7 @@ public class TeleOpForBigKids extends OpMode {
         else if (servoCntr == 2) {
             padLock.setPower(-0.5);
         }
+        */
 
     // TELEMETRY
         telemetry.addData("Status","Run Time: "+runtime.toString());

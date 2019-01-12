@@ -62,16 +62,15 @@ public class ColorRangeTest extends LinearOpMode{
     private ElapsedTime     runtime = new ElapsedTime();
 
     DistanceSensor distanceSensor;
-    ModernRoboticsI2cRangeSensor rangeSensor;
+
 
     public void runOpMode() {
         distanceSensor = hardwareMap.get(DistanceSensor.class, "distance sensor");
-        rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range sensor");
+
         waitForStart();
 
         while(opModeIsActive()) {
             telemetry.addData("rev color/range in", distanceSensor.getDistance(DistanceUnit.INCH));
-            telemetry.addData("range in", rangeSensor.getDistance(DistanceUnit.INCH));
             telemetry.update();
 
         }
