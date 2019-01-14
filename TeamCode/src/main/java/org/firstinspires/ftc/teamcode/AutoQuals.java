@@ -16,7 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  * Created by wenhuizhao on 1/11/19.
  */
 
-@Autonomous(name="autonomous for quals", group="LinearOpMode")
+@Autonomous(name="autonomous for quals 2.0", group="LinearOpMode")
 public class AutoQuals extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -26,6 +26,11 @@ public class AutoQuals extends LinearOpMode {
     DistanceSensor distanceSensor;
 
     double distanceFromGround;
+    double distanceCrater;
+    double power = 0.3;
+
+    boolean l;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -40,35 +45,65 @@ public class AutoQuals extends LinearOpMode {
 
         distanceSensor = hardwareMap.get(DistanceSensor.class, "distance sensor");
 
+
         waitForStart();
 
         while(opModeIsActive()) {
             landing();
-
+            break;
         }
 
     }
     public void landing () {
-        distanceFromGround = distanceSensor.getDistance(DistanceUnit.CM);
-
-
-
-        if (distanceFromGround <= 2.8) {
-            liftMotor.setPower(0);
-            sleep(4000);
-            liftMotor.setPower(-0.3); //rewinds the motor so that we can retract the lift
-
-            liftMotor.setPower(0.3);
-            telemetry.addData("loop", "if");
-            telemetry.addData("distance from ground", distanceFromGround);
-            telemetry.update();
-        }
-        else {
-
-            liftMotor.setPower(0.3);
-            telemetry.addData("loop", "else");
-            telemetry.addData("distance from ground", distanceFromGround);
-            telemetry.update();
-        }
+        /* distanceFromGround = distanceSensor.getDistance(DistanceUnit.CM);
+        liftMotor.setPower(0.3);
+        sleep(3000);
+        liftMotor.setPower(0.0);
+        sleep(2000);
+        liftMotor.setPower(0.3);
+        sleep(1000);
+        liftMotor.setPower(0.0);
+        leftFront.setPower(0.6);
+        rightFront.setPower(0.6);
+        leftBack.setPower(0.6);
+        rightBack.setPower(0.6);
+        sleep(1000);
+        liftMotor.setPower(0.3);
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        leftBack.setPower(0);
+        rightBack.setPower(0);
+        */
+        liftMotor.setPower(0.3);
+        sleep(3000);
+        liftMotor.setPower(0.0);
+        sleep(2000);
+        //strafe
+        liftMotor.setPower(0.0);
+        leftFront.setPower(0.4);
+        rightFront.setPower(0.4);
+        leftBack.setPower(-0.4);
+        rightBack.setPower(-0.4);
+        //turn
+        leftFront.setPower(0.6);
+        rightFront.setPower(0.6);
+        leftBack.setPower(0.6);
+        rightBack.setPower(0.6);
+        sleep(1500);
+        //stop and raise
+        liftMotor.setPower(0.3);
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        leftBack.setPower(0);
+        rightBack.setPower(0);
+        //turn
+        sleep(1500);
+        liftMotor.setPower(0.0);
+        leftFront.setPower(0.3);
+        rightFront.setPower(0.3);
+        leftBack.setPower(0.3);
+        rightBack.setPower(0.3);
+        sleep(3000);
     }
+
 }

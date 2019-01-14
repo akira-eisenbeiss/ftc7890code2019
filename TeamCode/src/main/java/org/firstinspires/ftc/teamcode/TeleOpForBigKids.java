@@ -143,8 +143,8 @@ public class TeleOpForBigKids extends OpMode {
         }
 */
     //LIFTING
-    float liftpower = gamepad2.right_stick_y;
-    float liftControl = gamepad2.right_trigger/2;
+    float liftControl = -gamepad2.right_stick_y;
+    float liftpower = gamepad2.right_trigger/2;
     liftMotor.setPower(liftDir(liftpower) *liftControl);
 
 /*
