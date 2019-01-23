@@ -39,8 +39,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
-@Autonomous(name="deposit marker closer side", group="LinearOpMode")
-public class DepositMarker extends LinearOpMode {
+@Autonomous(name="depositing marker far side", group="LinearOpMode")
+public class DepositMarkerFarSide extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     @Override
@@ -51,7 +51,7 @@ public class DepositMarker extends LinearOpMode {
         rightFront = hardwareMap.dcMotor.get("right front");
         rightBack = hardwareMap.dcMotor.get("right back");
         //distance sensor
-        distanceSensor = hardwareMap.get(DistanceSensor.class, "distance sensor");
+        rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range sensor");
         depotSensor = hardwareMap.get(ColorSensor.class, "depot sensor");
         //arm motors
         motorArm1 = hardwareMap.dcmotor.get("ARM MOTOR NAME 1");
@@ -59,9 +59,20 @@ public class DepositMarker extends LinearOpMode {
         intakeMotor = hardwareMap.dcmotor.get("INTAKE MOTOR NAME");
 
         waitForStart();
+        gyro(315);
+        //turns towards wall
+        while (rangeSensor.getDistance(DistanceUnit.CM) >= 20){
+          move ( leftFront,  rightFront, leftBack,  rightBack,
+                     FORWARD, 0.3);
+                     //drives up to wall
+        }
+        gyro(270);
+        //turns towards depot
+
         while(!(depotSensor.blue() > depotSensor.green()) && !(depotSensor.red() > depotSensor.green())){
           move ( leftFront,  rightFront, leftBack,  rightBack,
                      FORWARD, 0.3);
+                     //drives forward until depot tape
         }
         //unfolds arm, spins intake to deposit
         motorArm1.setPower(0.5);
@@ -71,13 +82,14 @@ public class DepositMarker extends LinearOpMode {
         motorIntake.setPower(0.5);
         sleep(2000);
     }
+    }
 }
 /*
-* Senario 1 [This Class]:
+* Senario 1 [Other Class]:
 *   * Drive forward until ~35cm from wall
 *   DROP THE Marker (
 * Senario 2:
-* On the far side [Different Class]
+* On the far side [This Class]
 * Senario 3:[Worse Case, Supernatural Chain of Unfortune Leaves Us Here]
 * https://youtu.be/mWWAZBKvizg?t=255
 */
