@@ -39,8 +39,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
-@Autonomous(name="autonomous for small", group="LinearOpMode")
-public class AutoForSmallBois extends LinearOpMode {
+@Autonomous(name="Deposit Marker Closer Side", group="LinearOpMode")
+public class DepositMarker extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     @Override
