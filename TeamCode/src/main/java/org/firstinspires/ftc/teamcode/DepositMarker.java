@@ -45,16 +45,23 @@ public class AutoForSmallBois extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
+        //wheel motors
+        leftFront = hardwareMap.dcMotor.get("left front");
+        leftBack = hardwareMap.dcMotor.get("left back");
+        rightFront = hardwareMap.dcMotor.get("right front");
+        rightBack = hardwareMap.dcMotor.get("right back");
         //distance sensor
         distanceSensor = hardwareMap.get(DistanceSensor.class, "distance sensor");
+        depotSensor = hardwareMap.get(ColorSensor.class, "depot sensor");
         //arm motors
         motorArm1 = hardwareMap.dcmotor.get("ARM MOTOR NAME 1");
         motorArm2 = hardwareMap.dcmotor.get("ARM MOTOR NAME 2");
         intakeMotor = hardwareMap.dcmotor.get("INTAKE MOTOR NAME");
 
         waitForStart();
-        while(distanceSensor.getDistance(DistanceUnit.CM) <= 35){
-            //drive forward
+        while(!(depotSensor.blue() > depotSensor.green()) && !(depotSensor.red() > depotSensor.green())){
+          move ( leftFront,  rightFront, leftBack,  rightBack,
+                     FORWARD, 9001);
         }
         //unfolds arm, spins intake to deposit
         motorArm1.setPower(0.5);
@@ -70,4 +77,4 @@ public class AutoForSmallBois extends LinearOpMode {
 *   * Drive forward until ~35cm from wall
 *   DROP THE Marker (
 * Senario 2:
-* */
+*  https://youtu.be/mWWAZBKvizg?t=206
