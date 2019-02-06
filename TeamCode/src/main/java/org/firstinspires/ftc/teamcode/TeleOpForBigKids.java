@@ -81,7 +81,7 @@ public class TeleOpForBigKids extends OpMode {
 
         //ARM MOVEMENT
         float armControl = gamepad2.right_stick_y;
-        float armControl2 = gamepad2.left_stick_x;
+        float armControl2 = gamepad2.left_stick_y;
         armMotor1.setPower(armControl);
         armMotor2.setPower(armControl2);
 
