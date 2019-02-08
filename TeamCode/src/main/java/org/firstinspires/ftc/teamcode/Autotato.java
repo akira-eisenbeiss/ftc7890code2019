@@ -46,6 +46,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.Came
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 
+/*
+7890 Space Lions 2019 "Tele Op For Big Kids"
+author: 7890 Software (Akira, Erin, Stephen, Kyra, Anthony)
+GOALS: 2019, land, sample, deposit team marker, park in crater
+ */
+
 @Autonomous(name="potato auto", group="LinearOpMode")
 public class Autotato extends LinearOpMode {
 
@@ -54,7 +60,7 @@ public class Autotato extends LinearOpMode {
      * In this section of the code, we declare our motors, servos, and sensors
      */
 
-    //The four wheels on our robot:
+    //This code declares the four wheels on our robot:
     DcMotor leftFront, leftBack, rightFront, rightBack;
 
     //The motor for our lift:
