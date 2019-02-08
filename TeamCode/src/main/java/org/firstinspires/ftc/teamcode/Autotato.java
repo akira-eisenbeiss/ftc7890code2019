@@ -375,14 +375,14 @@ public class Autotato extends LinearOpMode {
                 motorlb.setPower(-speed);
                 motorrb.setPower(speed);
                 break;
-            case "TURN RIGHT":
+            case "CLOCKWISE":
                 //robot turns clockwise(to the right)
                 motorlf.setPower(-speed);
                 motorrf.setPower(-speed);
                 motorlb.setPower(-speed);
                 motorrb.setPower(-speed);
                 break;
-            case "TURN LEFT":
+            case "COUNTERCLOCKWISE":
                 //robot turns counterclockwise(to the left)
                 motorlf.setPower(speed);
                 motorrf.setPower(speed);
@@ -406,7 +406,7 @@ public class Autotato extends LinearOpMode {
      */
     public void gyro(int targetHeading) {
         int heading = MRGyro.getHeading();
-        move(leftFront, leftBack, rightFront, rightBack, "TURN RIGHT", 0.3);
+        move(leftFront, leftBack, rightFront, rightBack, "CLOCKWISE", 0.3);
         if (heading > targetHeading - 10 && heading < targetHeading + 10) {
             stop(leftFront, leftBack, rightFront, rightBack);
             sleep(5000);
