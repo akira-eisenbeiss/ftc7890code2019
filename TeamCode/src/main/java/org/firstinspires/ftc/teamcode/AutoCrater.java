@@ -45,21 +45,51 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.Came
 
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+/*
+7890 Space Lions 2019 "Crater Autonomous for Big Kids"
+author: 7890 Software (Akira, Erin, Stephen, Kyra, Anthony)
+GOALS: 2019, land, sample, deposit team marker, park in crater
+ */
+
 
 @Autonomous(name="crater auto", group="LinearOpMode")
 public class AutoCrater extends LinearOpMode {
 
+    /*
+     * MOTORS, SERVOS, and SENSORS
+     * In this section of the code, we declare our motors, servos, and sensors
+     */
+    
+    //This code declares the four wheels on our robot:
     DcMotor leftFront, leftBack, rightFront, rightBack;
+    
+    //The motor for our lift:
     DcMotor liftMotor;
-    //arm motor 1 is the motor closer to the robot
-    DcMotor armMotor1, armMotor2;
+    
+    //This code shows the two motors on our double jointed robot arm.
+    //Arm Motor 1 is the motor directly attached to the robot
+    DcMotor armMotor1, armMotor2
+    
+    //The motor on our intake box that is responsible for controlling the intake:
     DcMotor intakeMotor;
-
+    
+    //Our range sensor that uses ODS and ultrasonic to detect our distance from objects:
     ModernRoboticsI2cRangeSensor rangeSensor;
+    
+    //Our gyro sensor that calibrates at a target heading and detects our angle away from that heading
+    //We can use this to accurately turn
     ModernRoboticsI2cGyro MRGyro;
+    
+    //Our color sensor which we use to detect changes in color:
     ColorSensor depotSensor;
+    // The color sensors tell us where in the field we are
+    // We utilize the red and blue tape on the floor as reference points on the field.
 
 
+    /*
+     * VUFORIA Setup
+     * We use VUFORIA to detect the different colored minerals and choose the correct one when sampling.
+     */
 
     private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
     private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
@@ -82,7 +112,13 @@ public class AutoCrater extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
+        /*
+         * The HARDWARE MAP
+         * Here we hook up the hardware pieces (Motors, Servos, Sensors) to their names on the phone.
+         */
+
         //MOTORS
+        //These motors are hooked up to their respective names that we assigned them during hardware mapping on the phone.
         leftFront = hardwareMap.dcMotor.get("left front");
         leftBack = hardwareMap.dcMotor.get("left back");
         rightFront = hardwareMap.dcMotor.get("right front");
@@ -97,7 +133,7 @@ public class AutoCrater extends LinearOpMode {
         MRGyro = hardwareMap.get(ModernRoboticsI2cGyro.class, "gyro");
         rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range sensor");
         depotSensor = hardwareMap.get(ColorSensor.class, "depot sensor");
-
+        //Vuforia
         initVuforia();
 
         if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
@@ -106,6 +142,10 @@ public class AutoCrater extends LinearOpMode {
         else {
             telemetry.addData("sorry", "not compatible with TFOD");
         }
+        /*
+         * AUTONOMOUS MAIN METHOD
+         * The start of our autonomous code
+         */
 
         waitForStart();
 
@@ -113,7 +153,7 @@ public class AutoCrater extends LinearOpMode {
 
         MRGyro.calibrate();
 
-        //gets us off the hook
+        //Gets us off the hook
         gyro(45);
         liftMotor.setPower(0.3);
         sleep(3000);
@@ -124,7 +164,12 @@ public class AutoCrater extends LinearOpMode {
         crater();
 
     }
-
+        /*
+        * LANDING Method
+        * This method allows us to land our robot by detecting our distance
+        * from the ground using our MR range sensor. Once we reach the ground
+        * we rotate our robot in order to unhook.
+        */
     public void landing() {
         //cases, naming, data types
         double distanceFromGround = rangeSensor.getDistance(DistanceUnit.INCH);
@@ -136,6 +181,13 @@ public class AutoCrater extends LinearOpMode {
             liftMotor.setPower(0);
         }
     }
+    /*
+     * SAMPLING Method
+     * This method uses VUFORIA in order to detect which
+     * minerals are silver and which are gold. Our robot
+     * uses this information to then rotate and knock the
+     * gold mineral out of its starting position.
+     */
     public void sampling() {
         if(opModeIsActive()) {
             if (tfod != null) {
@@ -237,7 +289,16 @@ public class AutoCrater extends LinearOpMode {
         }
 
     }
+    /*
+     * DEPOSITING Method
+     * This method is used to deposit our
+     * team marker into the depot. We use
+     * a color sensor to detect the depot
+     * box by scanning for the colored
+     * tape on the floor.
+     */
     public void deposit() {
+        //in this portion of the deposit method the robot backs up from the lander and finds its current angle. 
         move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
         sleep(3000);
         switch(pos){
@@ -251,41 +312,42 @@ public class AutoCrater extends LinearOpMode {
                 gyro(315);
                 break;
         }
-
+        //the robot checks hwo far it is from the crater
         double distanceValue = rangeSensor.getDistance(DistanceUnit.INCH);
         while(distanceValue > 3){
-            //to turn towards crater
+            //the robot approaches the crater
             move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
              }
         if (distanceValue <= 3){
+           //stops once the robot is close enough to the crater and turns towards the deposit area
             stop(leftFront, leftBack, rightFront, rightBack);
         }
         gyro(315);
 
         while(distanceValue > 3){
-            //to turn towards crater
+            //backs away from the lander, approaches the crater
             move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
 
         }
         if (distanceValue <= 3) {
+          //stops once the robot is close enough to the crater and turns towards the deposit area
             stop(leftFront, leftBack, rightFront, rightBack);
             gyro(315);
         }
 
-            //declare, strings, naming consistency
+            //the robot keeps moving forward until it senses the tape on the floor which marks the deposit zone, which can either be blue or red.
         while(!(depotSensor.blue() > depotSensor.green()) && !(depotSensor.red() > depotSensor.green())){
             move ( leftFront,  rightFront, leftBack,  rightBack,
                     "BACKWARDS", 0.3);
         }
         //unfolds arm, spins intake to deposit
-        //values for testing
         armMotor1.setPower(0.5);
         sleep(2000);
         armMotor2.setPower(0.5);
         sleep(2000);
         intakeMotor.setPower(0.5);
         sleep(2000);
-
+        //folds and retracts arm
         armMotor1.setPower(-0.5);
         sleep(2000);
         armMotor2.setPower(-0.5);
@@ -294,6 +356,13 @@ public class AutoCrater extends LinearOpMode {
         sleep(2000);
 
     }
+
+    /*
+     * CRATER Method
+     * In our crater method we turn our robot
+     * so that it is facing the crater and then
+     * drive our robot to park.
+     */
     public void crater() {
         double distanceValue = rangeSensor.getDistance(DistanceUnit.INCH);
         while(distanceValue > 6){
@@ -310,8 +379,18 @@ public class AutoCrater extends LinearOpMode {
             stop(leftFront, leftBack, rightFront, rightBack);
         }
     }
-    public void move(DcMotor motorlf, DcMotor motorrf, DcMotor motorlb, DcMotor motorrb,
-                     String direction, double speed) {
+    /*
+    * MOVEMENT Method
+    * In this code we use a switch case in order to create
+    * more code-efficient robot driving. This means that instead
+    * of having to individually control each motor everytime we
+    * want to move, we can instead just call the move() method. And specify the wanted direction with a case-valid string.
+    * This makes our program a lot shorter than it would
+    * normally have been, and makes it easier to program and read our code. It 
+    * assigns the proper motor speed assigned when the method is called, and sets the rotation of the motors so that the robot moves in the specified direction
+    *(with either positive or negative speed)
+    */
+    public void move(DcMotor motorlf, DcMotor motorrf, DcMotor motorlb, DcMotor motorrb, String direction, double speed) {
         switch(direction) {
             case "BACKWARDS":
                 //robot moves backwards
@@ -357,7 +436,18 @@ public class AutoCrater extends LinearOpMode {
                 break;
         }
     }
-
+    /*
+     * GYRO Method
+     * Our gyro method uses the gyro sensor in order
+     * to accurately turn our robot. We save a target
+     * heading, which is the angle that our robot saves when
+     * we calibrate the sensor. We can then compare all
+     * subsequent angles to this target heading allowing us
+     * to know how much we have rotated. This means that we can
+     * make angle-perfect turns such as 90 degrees or 180 degrees.
+     * This leaves less of our autonomous to chance and more to
+     * the technology behind our gyro sensor.
+     */
     public void gyro(int targetHeading) {
         int heading = MRGyro.getHeading();
         move(leftFront, leftBack, rightFront, rightBack, "TURN RIGHT", 0.3);
@@ -366,7 +456,14 @@ public class AutoCrater extends LinearOpMode {
             sleep(5000);
         }
     }
-
+    /*
+    * STOP Method
+    * Similar to the move method, our stop method
+    * takes in the different wheels as parameters
+    * and sets all of their powers to 0, stopping
+    * them. This reduces the number of lines needed
+    * to stop the robot from four to only one.
+    */
     public void stop(DcMotor motorlf, DcMotor motorrf, DcMotor motorlb, DcMotor motorrb) {
         //robot stops moving
         motorlf.setPower(0.0);
@@ -374,7 +471,14 @@ public class AutoCrater extends LinearOpMode {
         motorlb.setPower(0.0);
         motorrb.setPower(0.0);
     }
-
+    /*
+     * VUFORIA Methods
+     * This method initializes our VUFORIA using the license key
+     * we registered on the vuforia website. The next method,
+     * initTFOD, is used to init code that is needed to detect
+     * the differences in gold and silver minerals.
+     */
+     
     private void initVuforia() {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
