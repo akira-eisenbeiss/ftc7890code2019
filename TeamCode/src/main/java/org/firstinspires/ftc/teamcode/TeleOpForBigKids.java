@@ -47,6 +47,7 @@ public class TeleOpForBigKids extends OpMode {
         liftMotor = hardwareMap.dcMotor.get("lift motor");
         armMotor1 = hardwareMap.dcMotor.get("arm motor 1");
         armMotor2 = hardwareMap.dcMotor.get("arm motor 2");
+        intake = hardwareMap.dcMotor.get("intake motor");
 
         //SETTING DIRECTIONS
         leftFront.setDirection(LEFTDIRECTION);
