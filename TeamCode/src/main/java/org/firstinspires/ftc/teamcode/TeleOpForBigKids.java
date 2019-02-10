@@ -46,6 +46,8 @@ public class TeleOpForBigKids extends OpMode {
     // [Core Hex Motor]
     DcMotor intake;
 
+    Servo lock;
+
     //DIRECTIONS
     //Controls the directions of our robot's motors.
     private DcMotor.Direction LEFTDIRECTION = DcMotor.Direction.REVERSE;
@@ -64,12 +66,14 @@ public class TeleOpForBigKids extends OpMode {
         
         leftFront = hardwareMap.dcMotor.get("left front");
         leftBack = hardwareMap.dcMotor.get("left back");
-        rightFront = hardwareMap.dcMotor.get("right front";
+        rightFront = hardwareMap.dcMotor.get("right front");
         rightBack = hardwareMap.dcMotor.get("right back");
         liftMotor = hardwareMap.dcMotor.get("lift motor");
         armMotor1 = hardwareMap.dcMotor.get("arm motor 1");
         armMotor2 = hardwareMap.dcMotor.get("arm motor 2");
         intake = hardwareMap.dcMotor.get("intake motor");
+
+        lock = hardwareMap.servo.get("lock");
 
         /*
         In this section, we are setting directions for the motors on the robot.
@@ -82,6 +86,8 @@ public class TeleOpForBigKids extends OpMode {
         leftBack.setDirection(LEFTDIRECTION);
         rightFront.setDirection(RIGHTDIRECTION);
         rightBack.setDirection(RIGHTDIRECTION);
+
+        lock.setPosition(0.1);
     }
 
     @Override
@@ -152,6 +158,13 @@ public class TeleOpForBigKids extends OpMode {
             intake.setPower(-1);
         }
 
+        boolean gamepad1b = gamepad1.b;
+        boolean gamepad1a = gamepad1.a;
+        if (gamepad1a){
+            lock.setPosition(0.1);
+        }else if(gamepad1b){
+            lock.setPosition(-1);
+        }
 
         //LIFTING
         /*

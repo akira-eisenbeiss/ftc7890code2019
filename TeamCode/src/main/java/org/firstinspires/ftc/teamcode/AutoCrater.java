@@ -85,6 +85,8 @@ public class AutoCrater extends LinearOpMode {
     // The color sensors tell us where in the field we are
     // We utilize the red and blue tape on the floor as reference points on the field.
 
+    //This servo is used to lock our extending intake.
+    Servo lock;
 
     /*
      * VUFORIA Setup
@@ -133,6 +135,10 @@ public class AutoCrater extends LinearOpMode {
         MRGyro = hardwareMap.get(ModernRoboticsI2cGyro.class, "gyro");
         rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range sensor");
         depotSensor = hardwareMap.get(ColorSensor.class, "depot sensor");
+
+        //SERVOS
+        lock = hardwareMap.servo.get("lock");
+
         //Vuforia
         initVuforia();
 
@@ -154,6 +160,14 @@ public class AutoCrater extends LinearOpMode {
         liftMotor.setPower(0.3);
         sleep(3000);
         gyro(315);
+
+        lock.setPosition(-1);
+        armMotor1.setPower(1.0);
+        armMotor2.setPower(1.0);
+        sleep(2000);
+        armMotor1.setPower(0.0);
+        armMotor2.setPower(0.0);
+        lock.setPosition(0.1);
 
         sampling();
         deposit();
