@@ -139,7 +139,6 @@ public class Autotato extends LinearOpMode {
          */
         waitForStart();
         landing();
-        MRGyro.calibrate();
         move(leftFront, rightFront, leftBack, rightBack, "RIGHT", 0.3);
         sleep(3000);
         move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
@@ -411,12 +410,14 @@ public class Autotato extends LinearOpMode {
      * the technology behind our gyro sensor.
      */
     public void gyro(int targetHeading) {
+        MRGyro.calibrate();
         int heading = MRGyro.getHeading();
         move(leftFront, leftBack, rightFront, rightBack, "CLOCKWISE", 0.3);
         if (heading > targetHeading - 10 && heading < targetHeading + 10) {
             stop(leftFront, leftBack, rightFront, rightBack);
             sleep(5000);
         }
+
     }
 
     /*

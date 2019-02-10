@@ -68,7 +68,7 @@ public class AutoCrater extends LinearOpMode {
     
     //This code shows the two motors on our double jointed robot arm.
     //Arm Motor 1 is the motor directly attached to the robot
-    DcMotor armMotor1, armMotor2
+    DcMotor armMotor1, armMotor2;
     
     //The motor on our intake box that is responsible for controlling the intake:
     DcMotor intakeMotor;
@@ -148,11 +148,7 @@ public class AutoCrater extends LinearOpMode {
          */
 
         waitForStart();
-
         landing();
-
-        MRGyro.calibrate();
-
         //Gets us off the hook
         gyro(45);
         liftMotor.setPower(0.3);
@@ -449,6 +445,7 @@ public class AutoCrater extends LinearOpMode {
      * the technology behind our gyro sensor.
      */
     public void gyro(int targetHeading) {
+        MRGyro.calibrate();
         int heading = MRGyro.getHeading();
         move(leftFront, leftBack, rightFront, rightBack, "TURN RIGHT", 0.3);
         if (heading > targetHeading - 10 && heading < targetHeading + 10) {
