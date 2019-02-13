@@ -52,8 +52,8 @@ author: 7890 Software (Akira, Erin, Stephen, Kyra, Anthony)
 GOALS: 2019, land, sample, deposit team marker, park in crater
  */
 
-@Autonomous(name="potato auto", group="LinearOpMode")
-public class Autotato extends LinearOpMode {
+@Autonomous(name="new vuforia", group="LinearOpMode")
+public class Autonewvuf extends LinearOpMode {
 
     /*
      * MOTORS, SERVOS, and SENSORS
@@ -102,12 +102,10 @@ public class Autotato extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-
         /*
          * The HARDWARE MAP
          * Here we hook up the hardware pieces (Motors, Servos, Sensors) to their names on the phone.
          */
-
         //Motors
         leftFront = hardwareMap.dcMotor.get("left front");
         leftBack = hardwareMap.dcMotor.get("left back");
@@ -123,7 +121,7 @@ public class Autotato extends LinearOpMode {
         rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range sensor");
         depotSensor = hardwareMap.get(ColorSensor.class, "depot sensor");
 
-        //Setting up vuforia
+
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
@@ -133,6 +131,7 @@ public class Autotato extends LinearOpMode {
 
         //Vuforia
        // initVuforia();
+
         if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
             initTfod();
         } else {
@@ -144,37 +143,10 @@ public class Autotato extends LinearOpMode {
          * The start of our autonomous code
          */
         waitForStart();
-        landing();
-        move(leftFront, rightFront, leftBack, rightBack, "RIGHT", 0.3);
-        sleep(3000);
-        move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
-        sleep(3000);
-        move(leftFront, rightFront, leftBack, rightBack, "LEFT", 0.3);
-        sleep(3000);
+
         sampling();
-        deposit();
-        crater();
 
     }
-
-    /*
-     * LANDING Method
-     * This method allows us to land our robot by detecting our distance
-     * from the ground using our MR range sensor. Once we reach the ground
-     * we rotate our robot in order to unhook.
-     */
-    public void landing() {
-        //cases, naming, data types
-            double distanceFromGround = rangeSensor.getDistance(DistanceUnit.CM);
-            while (distanceFromGround > 2.8) {
-                double landingspeed = 0.3;
-                liftMotor.setPower(landingspeed);
-            }
-            if (distanceFromGround <= 2.8){
-            liftMotor.setPower(0);
-        }
-    }
-
     /*
      * SAMPLING Method
      * This method uses VUFORIA in order to detect which
@@ -227,62 +199,6 @@ public class Autotato extends LinearOpMode {
 
         if (tfod != null) {
             tfod.shutdown();
-        }
-    }
-
-    /*
-     * DEPOSITING Method
-     * This method is used to deposit our
-     * team marker into the depot. We use
-     * a color sensor to detect the depot
-     * box by scanning for the colored
-     * tape on the floor.
-     */
-    public void deposit() {
-        //declare, strings, naming consistency
-        while(!(depotSensor.blue() > depotSensor.green()) && !(depotSensor.red() > depotSensor.green())){
-            move ( leftFront,  rightFront, leftBack,  rightBack,
-                    "FORWARDS", 0.3);
-        }
-        //unfolds arm, spins intake to deposit
-        //values for testing
-        armMotor1.setPower(0.5);
-        sleep(2000);
-        armMotor2.setPower(0.5);
-        sleep(2000);
-        intakeMotor.setPower(0.5);
-        sleep(2000);
-
-        armMotor1.setPower(-0.5);
-        sleep(2000);
-        armMotor2.setPower(-0.5);
-        sleep(2000);
-        intakeMotor.setPower(0.5);
-        sleep(2000);
-
-
-    }
-
-    /*
-     * CRATER Method
-     * In our crater method we turn our robot
-     * so that it is facing the crater and then
-     * drive our robot to park.
-     */
-    public void crater() {
-        double distanceValue = rangeSensor.getDistance(DistanceUnit.INCH);
-        while(distanceValue > 6){
-            //to turn towards crater
-            if(pos == 0){
-                gyro(45); //TODO: make sure we are close enough to the wall
-                pos = 2;
-            }
-            else{
-                move(leftFront, rightFront, leftBack, rightBack, "FORWARDS", 0.5);
-            }
-        }
-        if (distanceValue <= 6){
-            stop(leftFront, leftBack, rightFront, rightBack);
         }
     }
 
@@ -342,30 +258,6 @@ public class Autotato extends LinearOpMode {
                 break;
         }
     }
-
-    /*
-     * GYRO Method
-     * Our gyro method uses the gyro sensor in order
-     * to accurately turn our robot. We save a target
-     * heading, which is the angle that our robot saves when
-     * we calibrate the sensor. We can then compare all
-     * subsequent angles to this target heading allowing us
-     * to know how much we have rotated. This means that we can
-     * make angle-perfect turns such as 90 degrees or 180 degrees.
-     * This leaves less of our autonomous to chance and more to
-     * the technology behind our gyro sensor.
-     */
-    public void gyro(int targetHeading) {
-        MRGyro.calibrate();
-        int heading = MRGyro.getHeading();
-        move(leftFront, leftBack, rightFront, rightBack, "CLOCKWISE", 0.3);
-        if (heading > targetHeading - 10 && heading < targetHeading + 10) {
-            stop(leftFront, leftBack, rightFront, rightBack);
-            sleep(5000);
-        }
-
-    }
-
     /*
      * STOP Method
      * Similar to the move method, our stop method
