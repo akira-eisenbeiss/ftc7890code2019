@@ -81,7 +81,7 @@ public class AutoCrater extends LinearOpMode {
     ModernRoboticsI2cGyro MRGyro;
     
     //Our color sensor which we use to detect changes in color:
-    ColorSensor depotSensor;
+    ModernRoboticsI2cRangeSensor depotSensor;
     // The color sensors tell us where in the field we are
     // We utilize the red and blue tape on the floor as reference points on the field.
 
@@ -134,7 +134,7 @@ public class AutoCrater extends LinearOpMode {
         //SENSORS
         MRGyro = hardwareMap.get(ModernRoboticsI2cGyro.class, "gyro");
         rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range sensor");
-        depotSensor = hardwareMap.get(ColorSensor.class, "depot sensor");
+        depotSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "depot sensor");
 
         //SERVOS
         lock = hardwareMap.servo.get("lock");
@@ -183,7 +183,7 @@ public class AutoCrater extends LinearOpMode {
         */
     public void landing() {
         //cases, naming, data types
-        double distanceFromGround = rangeSensor.getDistance(DistanceUnit.INCH);
+        double distanceFromGround = depotSensor.getDistance(DistanceUnit.INCH);
         while (distanceFromGround > 2.8) { //TODO: TEST VALUES
             double landingspeed = 0.3;
             liftMotor.setPower(landingspeed);
@@ -200,105 +200,71 @@ public class AutoCrater extends LinearOpMode {
      * gold mineral out of its starting position.
      */
     public void sampling() {
-        if(opModeIsActive()) {
+        if (opModeIsActive()) {
+            /** Activate Tensor Flow Object Detection. */
             if (tfod != null) {
                 tfod.activate();
             }
-            while(opModeIsActive()) {
-                if (!runOnce) {
-                    pos = 1000;
-                    boolean isSensed = false;
-                    while (1<2) {
-                        if (tfod != null) {
-                            List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                            if (updatedRecognitions != null) {
 
-                                telemetry.addData("# Object Detected", updatedRecognitions.size());
-
-                                if (updatedRecognitions.size() == 2) {
-                                    int goldMineralX = -1;
-                                    int silverMineral1X = -1;
-
-                                    for (Recognition recognition : updatedRecognitions) {
-                                        if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
-                                            goldMineralX = (int) (recognition.getLeft());
-                                        } else if (silverMineral1X == -1) {
-                                            silverMineral1X = (int) (recognition.getLeft());
-                                        }
-                                    }
-
-                                    //if two silver seen, gold must be on right
-                                    if (goldMineralX == -1 && silverMineral1X != -1) { //ask
-
-                                        pos = 1;
-                                        isSensed = true;
-
-                                        telemetry.addData("gold pos", "Right");
-                                        telemetry.update();
-                                    }
-                                    //if one gold and 1 silver
-                                    else if (goldMineralX != -1 && silverMineral1X != -1) {
-                                        //if gold is on right of silver, gold is in the center
-                                        if (goldMineralX < silverMineral1X) {
-
-
-                                            gold = goldMineralX;
-                                            silver = silverMineral1X;
-                                            pos = 0;
-                                            isSensed = true;
-
-                                            telemetry.addData("gold pos", goldMineralX);
-                                            telemetry.addData("silver pos", silverMineral1X);
-                                            telemetry.update();
-                                        } else {
-
-
-                                            gold = goldMineralX;
-                                            silver = silverMineral1X;
-                                            pos = 2;
-                                            isSensed = true;
-
-                                            telemetry.addData("gold pos", goldMineralX);
-                                            telemetry.addData("silver pos", silverMineral1X);
-                                            telemetry.update();
-
-                                        }
-
-                                    }
-
-                                    telemetry.addData("gold pos", goldMineralX);
-                                    telemetry.addData("silver pos", silverMineral1X);
-                                    telemetry.addData("pos", "position is" + pos);
-                                    telemetry.update();
-
-                                    /*if (isSensed) {
-                                        pos = 2;
-                                    }*/
-
-
-                                    if (pos == 1) { //right
-                                        gyro(45); //value for testing
-                                        move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
-                                        sleep(3000);
-                                    } else if (pos == 2) { //left
-
-                                        gyro(135); //value for testing
-                                        move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
-                                        sleep(3000);
-                                    } else if (pos == 0) {
-                                        move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
-                                        sleep(5000);
-                                    } else {
-                                        telemetry.addData("Error Report", "Error, fix pos va;ue :(");
-                                    }
+            while (opModeIsActive()) {
+                if (tfod != null) {
+                    // getUpdatedRecognitions() will return null if no new information is available since
+                    // the last time that call was made.
+                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                    if (updatedRecognitions != null) {
+                        telemetry.addData("# Object Detected", updatedRecognitions.size());
+                        if (updatedRecognitions.size() == 3) {
+                            int goldMineralX = -1;
+                            int silverMineral1X = -1;
+                            int silverMineral2X = -1;
+                            for (Recognition recognition : updatedRecognitions) {
+                                if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
+                                    goldMineralX = (int) recognition.getLeft();
+                                } else if (silverMineral1X == -1) {
+                                    silverMineral1X = (int) recognition.getLeft();
+                                } else {
+                                    silverMineral2X = (int) recognition.getLeft();
                                 }
                             }
+                            if (goldMineralX != -1 && silverMineral1X != -1 && silverMineral2X != -1) {
+                                if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
+                                    telemetry.addData("Gold Mineral Position", "Left");
+                                    pos = 2;
+                                } else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
+                                    telemetry.addData("Gold Mineral Position", "Right");
+                                    pos = 1;
+                                } else {
+                                    telemetry.addData("Gold Mineral Position", "Center");
+                                    pos = 0;
+                                }
+                            }
+                            //MOVES BASED OFF OF WHAT WE DETECT
+                            if (pos == 1) { //right
+                                gyro(45); //value for testing
+                                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
+                                sleep(3000);
+                            } else if (pos == 2) { //left
+
+                                gyro(135); //value for testing
+                                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
+                                sleep(3000);
+                            } else if (pos == 0) {
+                                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
+                                sleep(5000);
+                            } else {
+                                telemetry.addData("Error Report", "Error, fix pos va;ue :(");
+                            }
+
                         }
+                        telemetry.update();
                     }
                 }
             }
         }
 
+        if (tfod != null) {
+            tfod.shutdown();
+        }
     }
     /*
      * DEPOSITING Method
@@ -341,16 +307,16 @@ public class AutoCrater extends LinearOpMode {
 
         }
         if (distanceValue <= 3) {
-          //stops once the robot is close enough to the crater and turns towards the deposit area
+          //stops once the robot is close enough to the depot and turns towards the crater
             stop(leftFront, leftBack, rightFront, rightBack);
             gyro(315);
         }
-
+/*
             //the robot keeps moving forward until it senses the tape on the floor which marks the deposit zone, which can either be blue or red.
         while(!(depotSensor.blue() > depotSensor.green()) && !(depotSensor.red() > depotSensor.green())){
             move ( leftFront,  rightFront, leftBack,  rightBack,
                     "BACKWARDS", 0.3);
-        }
+        }*/
         //unfolds arm, spins intake to deposit
         armMotor1.setPower(0.5);
         sleep(2000);

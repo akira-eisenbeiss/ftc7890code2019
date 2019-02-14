@@ -165,7 +165,7 @@ public class TeleOpForBigKids extends OpMode {
         if (gamepad1a){
             lock.setPosition(1);
         }else if(gamepad1b){
-            lock.setPosition(-2);
+            lock.setPosition(-1);
         }
         else if(gamepad1x){
             lock.setPosition(2.0);
