@@ -38,9 +38,11 @@ public class GyroTest extends LinearOpMode {
         rightBack = hardwareMap.dcMotor.get("right back");
 
         MRGyro.calibrate();
+        //IT TAKE 4 SECONDS TO CALIBRATE
 
         waitForStart();
         while(opModeIsActive()){
+            gyro(270);
             gyro(90);
             int heading = MRGyro.getHeading();
             telemetry.addData("heading: ", heading);
@@ -51,10 +53,13 @@ public class GyroTest extends LinearOpMode {
     public void gyro(int targetHeading) {
         //MRGyro.calibrate();
         int heading = MRGyro.getHeading();
-        move(leftFront, leftBack, rightFront, rightBack, "CLOCKWISE", 0.5);
+            move(leftFront, leftBack, rightFront, rightBack, "CLOCKWISE", 0.5);
+        telemetry.addData("heading: ", heading);
+        telemetry.update();
         if (heading > targetHeading - 10 && heading < targetHeading + 10) {
             stop(leftFront, leftBack, rightFront, rightBack);
-            sleep(5000);
+            sleep(3000);
+
         }
 
     }
