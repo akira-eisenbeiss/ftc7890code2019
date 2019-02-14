@@ -53,33 +53,33 @@ GOALS: 2019, land, sample, deposit team marker, park in crater
 
 
 @Autonomous(name="crater auto", group="LinearOpMode")
-public class AutoCrater extends LinearOpMode {
+public class AutoDepot extends LinearOpMode {
 
     /*
      * MOTORS, SERVOS, and SENSORS
      * In this section of the code, we declare our motors, servos, and sensors
      */
-    
+
     //This code declares the four wheels on our robot:
     DcMotor leftFront, leftBack, rightFront, rightBack;
-    
+
     //The motor for our lift:
     DcMotor liftMotor;
-    
+
     //This code shows the two motors on our double jointed robot arm.
     //Arm Motor 1 is the motor directly attached to the robot
     DcMotor armMotor1, armMotor2;
-    
+
     //The motor on our intake box that is responsible for controlling the intake:
     DcMotor intakeMotor;
-    
+
     //Our range sensor that uses ODS and ultrasonic to detect our distance from objects:
     ModernRoboticsI2cRangeSensor rangeSensor;
-    
+
     //Our gyro sensor that calibrates at a target heading and detects our angle away from that heading
     //We can use this to accurately turn
     ModernRoboticsI2cGyro MRGyro;
-    
+
     //Our color sensor which we use to detect changes in color:
     ColorSensor depotSensor;
     // The color sensors tell us where in the field we are
@@ -173,18 +173,17 @@ public class AutoCrater extends LinearOpMode {
         sampling();
         deposit();
         crater();
-
     }
-        /*
-        * LANDING Method
-        * This method allows us to land our robot by detecting our distance
-        * from the ground using our MR range sensor. Once we reach the ground
-        * we rotate our robot in order to unhook.
-        */
+    /*
+     * LANDING Method
+     * This method allows us to land our robot by detecting our distance
+     * from the ground using our MR range sensor. Once we reach the ground
+     * we rotate our robot in order to unhook.
+     */
     public void landing() {
         //cases, naming, data types
-        double distanceFromGround = rangeSensor.getDistance(DistanceUnit.INCH);
-        while (distanceFromGround > 2.8) { //TODO: TEST VALUES
+        double distanceFromGround = rangeSensor.getDistance(DistanceUnit.CM);
+        while (distanceFromGround > 2.8) {
             double landingspeed = 0.3;
             liftMotor.setPower(landingspeed);
         }
@@ -309,62 +308,27 @@ public class AutoCrater extends LinearOpMode {
      * tape on the floor.
      */
     public void deposit() {
-        //in this portion of the deposit method the robot backs up from the lander and finds its current angle. 
-        move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
-        sleep(3000);
-        switch(pos){
-            case 0:
-                gyro(270);
-                break;
-            case 1:
-                gyro(225);
-                break;
-            case 2:
-                gyro(315);
-                break;
-        }
-        //the robot checks hwo far it is from the crater
-        double distanceValue = rangeSensor.getDistance(DistanceUnit.INCH);
-        while(distanceValue > 3){
-            //the robot approaches the crater
-            move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
-             }
-        if (distanceValue <= 3){
-           //stops once the robot is close enough to the crater and turns towards the deposit area
-            stop(leftFront, leftBack, rightFront, rightBack);
-        }
-        gyro(315);
-
-        while(distanceValue > 3){
-            //backs away from the lander, approaches the crater
-            move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
-
-        }
-        if (distanceValue <= 3) {
-          //stops once the robot is close enough to the crater and turns towards the deposit area
-            stop(leftFront, leftBack, rightFront, rightBack);
-            gyro(315);
-        }
-
-            //the robot keeps moving forward until it senses the tape on the floor which marks the deposit zone, which can either be blue or red.
+        //declare, strings, naming consistency
         while(!(depotSensor.blue() > depotSensor.green()) && !(depotSensor.red() > depotSensor.green())){
             move ( leftFront,  rightFront, leftBack,  rightBack,
-                    "BACKWARDS", 0.3);
+                    "FORWARDS", 0.3);
         }
         //unfolds arm, spins intake to deposit
+        //values for testing
         armMotor1.setPower(0.5);
         sleep(2000);
         armMotor2.setPower(0.5);
         sleep(2000);
         intakeMotor.setPower(0.5);
         sleep(2000);
-        //folds and retracts arm
+
         armMotor1.setPower(-0.5);
         sleep(2000);
         armMotor2.setPower(-0.5);
         sleep(2000);
         intakeMotor.setPower(0.5);
         sleep(2000);
+
 
     }
 
@@ -383,7 +347,7 @@ public class AutoCrater extends LinearOpMode {
                 pos = 2;
             }
             else{
-                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
+                move(leftFront, rightFront, leftBack, rightBack, "FORWARDS", 0.5);
             }
         }
         if (distanceValue <= 6){
@@ -391,16 +355,16 @@ public class AutoCrater extends LinearOpMode {
         }
     }
     /*
-    * MOVEMENT Method
-    * In this code we use a switch case in order to create
-    * more code-efficient robot driving. This means that instead
-    * of having to individually control each motor everytime we
-    * want to move, we can instead just call the move() method. And specify the wanted direction with a case-valid string.
-    * This makes our program a lot shorter than it would
-    * normally have been, and makes it easier to program and read our code. It 
-    * assigns the proper motor speed assigned when the method is called, and sets the rotation of the motors so that the robot moves in the specified direction
-    *(with either positive or negative speed)
-    */
+     * MOVEMENT Method
+     * In this code we use a switch case in order to create
+     * more code-efficient robot driving. This means that instead
+     * of having to individually control each motor everytime we
+     * want to move, we can instead just call the move() method. And specify the wanted direction with a case-valid string.
+     * This makes our program a lot shorter than it would
+     * normally have been, and makes it easier to program and read our code. It
+     * assigns the proper motor speed assigned when the method is called, and sets the rotation of the motors so that the robot moves in the specified direction
+     *(with either positive or negative speed)
+     */
     public void move(DcMotor motorlf, DcMotor motorrf, DcMotor motorlb, DcMotor motorrb, String direction, double speed) {
         switch(direction) {
             case "BACKWARDS":
@@ -471,13 +435,13 @@ public class AutoCrater extends LinearOpMode {
         }
     }
     /*
-    * STOP Method
-    * Similar to the move method, our stop method
-    * takes in the different wheels as parameters
-    * and sets all of their powers to 0, stopping
-    * them. This reduces the number of lines needed
-    * to stop the robot from four to only one.
-    */
+     * STOP Method
+     * Similar to the move method, our stop method
+     * takes in the different wheels as parameters
+     * and sets all of their powers to 0, stopping
+     * them. This reduces the number of lines needed
+     * to stop the robot from four to only one.
+     */
     public void stop(DcMotor motorlf, DcMotor motorrf, DcMotor motorlb, DcMotor motorrb) {
         //robot stops moving
         motorlf.setPower(0.0);
@@ -492,7 +456,7 @@ public class AutoCrater extends LinearOpMode {
      * initTFOD, is used to init code that is needed to detect
      * the differences in gold and silver minerals.
      */
-     
+
     private void initVuforia() {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
