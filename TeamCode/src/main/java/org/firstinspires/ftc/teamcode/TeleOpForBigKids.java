@@ -87,7 +87,7 @@ public class TeleOpForBigKids extends OpMode {
         rightFront.setDirection(RIGHTDIRECTION);
         rightBack.setDirection(RIGHTDIRECTION);
 
-        lock.setPosition(0.1);
+        lock.setPosition(1.0);
     }
 
     @Override
@@ -160,10 +160,18 @@ public class TeleOpForBigKids extends OpMode {
 
         boolean gamepad1b = gamepad1.b;
         boolean gamepad1a = gamepad1.a;
+        boolean gamepad1x = gamepad1.x;
+        boolean gamepad1y = gamepad1.y;
         if (gamepad1a){
-            lock.setPosition(0.1);
+            lock.setPosition(1);
         }else if(gamepad1b){
-            lock.setPosition(-1);
+            lock.setPosition(-2);
+        }
+        else if(gamepad1x){
+            lock.setPosition(2.0);
+        }
+        else if(gamepad1y){
+            lock.setPosition(0);
         }
 
         //LIFTING
