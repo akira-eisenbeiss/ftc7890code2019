@@ -240,17 +240,22 @@ public class AutoCrater extends LinearOpMode {
                             }
                             //MOVES BASED OFF OF WHAT WE DETECT
                             if (pos == 1) { //right
+                                gyro(315); //value for testing
+                                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
+                                sleep(3000);
+                                move(leftFront, rightFront, leftBack, rightBack, "FORWARDS", 0.3);
+                                sleep(3000);
+                            } else if (pos == 2) { //left
                                 gyro(45); //value for testing
                                 move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
                                 sleep(3000);
-                            } else if (pos == 2) { //left
-
-                                gyro(135); //value for testing
-                                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
+                                move(leftFront, rightFront, leftBack, rightBack, "FORWARDS", 0.3);
                                 sleep(3000);
                             } else if (pos == 0) {
                                 move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
                                 sleep(5000);
+                                move(leftFront, rightFront, leftBack, rightBack, "FORWARDS", 0.3);
+                                sleep(3000);
                             } else {
                                 telemetry.addData("Error Report", "Error, fix pos va;ue :(");
                             }
@@ -276,40 +281,52 @@ public class AutoCrater extends LinearOpMode {
      */
     public void deposit() {
         //in this portion of the deposit method the robot backs up from the lander and finds its current angle. 
-        move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
-        sleep(3000);
+        MRGyro.calibrate();
+        sleep(4000);
         switch(pos){
             case 0:
-                gyro(270);
+                gyro(45);
                 break;
             case 1:
-                gyro(225);
+                gyro(135);
+
                 break;
             case 2:
-                gyro(315);
+                gyro(45);
                 break;
         }
+
         //the robot checks hwo far it is from the crater
         double distanceValue = rangeSensor.getDistance(DistanceUnit.INCH);
+
         while(distanceValue > 3){
-            //the robot approaches the crater
+            //the robot approaches the wall
             move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
              }
         if (distanceValue <= 3){
-           //stops once the robot is close enough to the crater and turns towards the deposit area
+           //stops once the robot is close enough to the wall and turns towards the depot
             stop(leftFront, leftBack, rightFront, rightBack);
         }
-        gyro(315);
+        switch(pos) {
+            case 0:
+                gyro(135);
+                break;
+            case 1:
+                gyro(180);
 
+                break;
+            case 2:
+                gyro(90);
+                break;
+        }
         while(distanceValue > 3){
-            //backs away from the lander, approaches the crater
+            //goes towards depot
             move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
 
         }
         if (distanceValue <= 3) {
           //stops once the robot is close enough to the depot and turns towards the crater
             stop(leftFront, leftBack, rightFront, rightBack);
-            gyro(315);
         }
 /*
             //the robot keeps moving forward until it senses the tape on the floor which marks the deposit zone, which can either be blue or red.
@@ -341,6 +358,18 @@ public class AutoCrater extends LinearOpMode {
      * drive our robot to park.
      */
     public void crater() {
+        switch(pos) {
+            case 0:
+                gyro(225);
+                break;
+            case 1:
+                gyro(270);
+
+                break;
+            case 2:
+                gyro(180);
+                break;
+        }
         double distanceValue = rangeSensor.getDistance(DistanceUnit.INCH);
         while(distanceValue > 6){
             //to turn towards crater
