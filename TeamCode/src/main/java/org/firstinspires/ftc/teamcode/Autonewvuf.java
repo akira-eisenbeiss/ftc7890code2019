@@ -103,9 +103,11 @@ public class Autonewvuf extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         /*
+        /*
          * The HARDWARE MAP
          * Here we hook up the hardware pieces (Motors, Servos, Sensors) to their names on the phone.
          */
+        /*
         //Motors
         leftFront = hardwareMap.dcMotor.get("left front");
         leftBack = hardwareMap.dcMotor.get("left back");
@@ -120,7 +122,7 @@ public class Autonewvuf extends LinearOpMode {
         MRGyro = hardwareMap.get(ModernRoboticsI2cGyro.class, "gyro");
         rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range sensor");
         depotSensor = hardwareMap.get(ColorSensor.class, "depot sensor");
-
+*/
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
@@ -168,6 +170,7 @@ public class Autonewvuf extends LinearOpMode {
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
                         telemetry.addData("# Object Detected", updatedRecognitions.size());
+                        telemetry.update();
                         if (updatedRecognitions.size() == 3) {
                             int goldMineralX = -1;
                             int silverMineral1X = -1;
@@ -184,14 +187,17 @@ public class Autonewvuf extends LinearOpMode {
                             if (goldMineralX != -1 && silverMineral1X != -1 && silverMineral2X != -1) {
                                 if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
                                     telemetry.addData("Gold Mineral Position", "Left");
+                                    telemetry.update();
                                 } else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
                                     telemetry.addData("Gold Mineral Position", "Right");
+                                    telemetry.update();
                                 } else {
                                     telemetry.addData("Gold Mineral Position", "Center");
+                                    telemetry.update();
                                 }
                             }
                         }
-                        telemetry.update();
+                        //telemetry.update();
                     }
                 }
             }

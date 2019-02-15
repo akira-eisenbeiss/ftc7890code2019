@@ -139,8 +139,15 @@ public class AutoDepot extends LinearOpMode {
         //SERVOS
         lock = hardwareMap.servo.get("lock");
 
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
         //Vuforia
-        initVuforia();
+        //initVuforia();
 
         if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
             initTfod();
@@ -170,9 +177,12 @@ public class AutoDepot extends LinearOpMode {
         armMotor2.setPower(0.0);
         lock.setPosition(0.1);
 
+
         sampling();
+
         deposit();
         crater();
+
     }
     /*
      * LANDING Method
@@ -214,6 +224,7 @@ public class AutoDepot extends LinearOpMode {
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
                         telemetry.addData("# Object Detected", updatedRecognitions.size());
+                        telemetry.update();
                         if (updatedRecognitions.size() == 3) {
                             int goldMineralX = -1;
                             int silverMineral1X = -1;
@@ -231,12 +242,15 @@ public class AutoDepot extends LinearOpMode {
                                 if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
                                     pos = 2;
                                     telemetry.addData("Gold Mineral Position", "Left");
+                                    telemetry.update();
                                 } else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
                                     pos = 1;
                                     telemetry.addData("Gold Mineral Position", "Right");
+                                    telemetry.update();
                                 } else {
                                     pos = 0;
                                     telemetry.addData("Gold Mineral Position", "Center");
+                                    telemetry.update();
                                 }
                             }
                             //MOVES BASED OFF OF WHAT WE DETECT
@@ -259,10 +273,11 @@ public class AutoDepot extends LinearOpMode {
                                 sleep(3000);
                             } else {
                                 telemetry.addData("Error Report", "Error, fix pos va;ue :(");
+                                telemetry.update();
                             }
 
                         }
-                        telemetry.update();
+
                     }
                 }
             }
