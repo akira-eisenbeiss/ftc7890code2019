@@ -155,12 +155,12 @@ public class AutoDepot extends LinearOpMode {
 
         MRGyro.calibrate();
         waitForStart();
-        landing();
+       // landing();
         //Gets us off the hook
-        gyro(45);
+        gyro(315);
         liftMotor.setPower(0.3);
         sleep(3000);
-        gyro(315);
+        gyro(0);
 
         lock.setPosition(-1);
         armMotor1.setPower(1.0);
@@ -183,6 +183,8 @@ public class AutoDepot extends LinearOpMode {
     public void landing() {
         //cases, naming, data types
         double distanceFromGround = depotSensor.getDistance(DistanceUnit.INCH);
+        telemetry.addData("distance", distanceFromGround);
+        telemetry.update();
         while (distanceFromGround > 2.8) {
             double landingspeed = 0.3;
             liftMotor.setPower(landingspeed);
