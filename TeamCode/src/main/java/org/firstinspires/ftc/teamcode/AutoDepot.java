@@ -118,7 +118,6 @@ public class AutoDepot extends LinearOpMode {
          * The HARDWARE MAP
          * Here we hook up the hardware pieces (Motors, Servos, Sensors) to their names on the phone.
          */
-
         //MOTORS
         //These motors are hooked up to their respective names that we assigned them during hardware mapping on the phone.
         leftFront = hardwareMap.dcMotor.get("left front");
@@ -139,6 +138,7 @@ public class AutoDepot extends LinearOpMode {
         //SERVOS
         lock = hardwareMap.servo.get("lock");
 
+        //VUFORIA
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
@@ -146,42 +146,41 @@ public class AutoDepot extends LinearOpMode {
         parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
 
-        //Vuforia
-        //initVuforia();
-
         if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
             initTfod();
         }
         else {
             telemetry.addData("sorry", "not compatible with TFOD");
         }
+
         /*
          * AUTONOMOUS MAIN METHOD
          * The start of our autonomous code
          */
-
         MRGyro.calibrate();
         waitForStart();
-       // landing();
-        //Gets us off the hook
+        //landing();
+
+        //GETS US OFF THE HOOK
         gyro(315);
         liftMotor.setPower(0.3);
         sleep(3000);
         gyro(0);
-
-        lock.setPosition(-1);
+/*
+        //UNLOCKS AND EXTENDS INTAKE, THEN LOCKS IT AGAIN
+        lock.setPosition(0);
         armMotor1.setPower(1.0);
         armMotor2.setPower(1.0);
         sleep(2000);
         armMotor1.setPower(0.0);
         armMotor2.setPower(0.0);
-        lock.setPosition(0.1);
-
+        lock.setPosition(1.0);
 
         sampling();
 
         deposit();
         crater();
+        */
 
     }
     /*
@@ -191,7 +190,6 @@ public class AutoDepot extends LinearOpMode {
      * we rotate our robot in order to unhook.
      */
     public void landing() {
-        //cases, naming, data types
         double distanceFromGround = depotSensor.getDistance(DistanceUnit.INCH);
         telemetry.addData("distance", distanceFromGround);
         telemetry.update();
@@ -212,7 +210,7 @@ public class AutoDepot extends LinearOpMode {
      */
     public void sampling() {
         if (opModeIsActive()) {
-            /** Activate Tensor Flow Object Detection. */
+
             if (tfod != null) {
                 tfod.activate();
             }
@@ -240,33 +238,36 @@ public class AutoDepot extends LinearOpMode {
                             }
                             if (goldMineralX != -1 && silverMineral1X != -1 && silverMineral2X != -1) {
                                 if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
+                                    //GOLD IS ON THE LEFT
                                     pos = 2;
                                     telemetry.addData("Gold Mineral Position", "Left");
                                     telemetry.update();
                                 } else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
+                                    //GOLD IS ON THE RIGHT
                                     pos = 1;
                                     telemetry.addData("Gold Mineral Position", "Right");
                                     telemetry.update();
                                 } else {
+                                    //GOLD IS IN THE CENTER
                                     pos = 0;
                                     telemetry.addData("Gold Mineral Position", "Center");
                                     telemetry.update();
                                 }
                             }
                             //MOVES BASED OFF OF WHAT WE DETECT
-                            if (pos == 1) { //right
+                            if (pos == 1) { //RIGHT
                                 gyro(315); //value for testing
                                 move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
                                 sleep(3000);
                                 move(leftFront, rightFront, leftBack, rightBack, "FORWARDS", 0.3);
                                 sleep(3000);
-                            } else if (pos == 2) { //left
+                            } else if (pos == 2) { //LEFT
                                 gyro(45); //value for testing
                                 move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
                                 sleep(3000);
                                 move(leftFront, rightFront, leftBack, rightBack, "FORWARDS", 0.3);
                                 sleep(3000);
-                            } else if (pos == 0) {
+                            } else if (pos == 0) { //CENTER
                                 move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
                                 sleep(5000);
                                 move(leftFront, rightFront, leftBack, rightBack, "FORWARDS", 0.3);
@@ -275,14 +276,11 @@ public class AutoDepot extends LinearOpMode {
                                 telemetry.addData("Error Report", "Error, fix pos va;ue :(");
                                 telemetry.update();
                             }
-
                         }
-
                     }
                 }
             }
         }
-
         if (tfod != null) {
             tfod.shutdown();
         }
@@ -298,18 +296,17 @@ public class AutoDepot extends LinearOpMode {
     public void deposit() {
         MRGyro.calibrate();
         sleep(4000);
+        //TURNS ROBOT TOWARDS DEPOT
         switch(pos){
-            case 0:
+            case 0: //CENTER
                 break;
-            case 1:
+            case 1: //RIGHT
                 gyro(45);
                 break;
-            case 2:
+            case 2: //LEFT
                 gyro(315);
                 break;
         }
-
-        //declare, strings, naming consistency
         double distanceValue = rangeSensor.getDistance(DistanceUnit.INCH);
         while(distanceValue > 3){
             //the robot approaches the depot
@@ -335,10 +332,7 @@ public class AutoDepot extends LinearOpMode {
         sleep(2000);
         intakeMotor.setPower(0.5);
         sleep(2000);
-
-
     }
-
     /*
      * CRATER Method
      * In our crater method we turn our robot
@@ -348,27 +342,18 @@ public class AutoDepot extends LinearOpMode {
     public void crater() {
         double distanceValue = rangeSensor.getDistance(DistanceUnit.INCH);
         while(distanceValue > 6) {
+            //TURNS US TOWARDS CRATER
             switch(pos){
-                case 0:
+                case 0: //CENTER
                     gyro(135);
                     break;
-                case 1:
+                case 1: //RIGHT
                     gyro(270);
                     break;
-                case 2:
+                case 2: //LEFT
                     gyro(180);
                     break;
             }
-            //to turn towards crater
-            /*
-            if(pos == 0){
-                gyro(45); //TODO: make sure we are close enough to the wall
-                pos = 2;
-            }
-            else{
-                move(leftFront, rightFront, leftBack, rightBack, "FORWARDS", 0.5);
-            }
-        */
         }
         if (distanceValue <= 6){
             stop(leftFront, leftBack, rightFront, rightBack);
@@ -444,15 +429,15 @@ public class AutoDepot extends LinearOpMode {
      * the technology behind our gyro sensor.
      */
     public void gyro(int targetHeading) {
-        //MRGyro.calibrate();
         int heading = MRGyro.getHeading();
-        move(leftFront, leftBack, rightFront, rightBack, "TURN RIGHT", 0.3);
-        telemetry.addData("heading: ", heading);
-        telemetry.update();
-        if (heading > targetHeading - 10 && heading < targetHeading + 10) {
-            stop(leftFront, leftBack, rightFront, rightBack);
-            sleep(5000);
+        while(heading < targetHeading - 10 || heading > targetHeading + 10) {
+            heading = MRGyro.getHeading();
+
+            move(leftFront, leftBack, rightFront, rightBack, "TURN RIGHT", 0.3);
+            telemetry.addData("heading: ", heading);
+            telemetry.update();
         }
+        stop(leftFront, leftBack, rightFront, rightBack);
     }
     /*
      * STOP Method
@@ -476,16 +461,6 @@ public class AutoDepot extends LinearOpMode {
      * initTFOD, is used to init code that is needed to detect
      * the differences in gold and silver minerals.
      */
-
-    private void initVuforia() {
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraDirection = CameraDirection.FRONT;
-
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-    }
-
     private void initTfod() {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier( "tfodMonitorViewId", "Id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);

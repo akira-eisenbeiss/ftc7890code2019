@@ -128,8 +128,8 @@ public class TeleOpForBigKids extends OpMode {
         rightBack.setPower(rbDrive);
 
         //This code controls the movement of the arm
-        float armControl = gamepad2.left_stick_y;
-        float armControl2 = gamepad2.right_stick_y;
+        float armControl = -gamepad2.left_stick_y;
+        float armControl2 = -gamepad2.right_stick_y;
         armMotor1.setPower(-armControl);
         armMotor2.setPower(armControl2);
 
@@ -183,8 +183,8 @@ public class TeleOpForBigKids extends OpMode {
         */
         float liftControlUp = gamepad1.right_trigger;
         float liftControlDown = gamepad1.left_trigger;
-        liftMotor.setPower(liftControlUp);
         liftMotor.setPower(-liftControlDown);
+        liftMotor.setPower(liftControlUp);
 
         // TELEMETRY
         /* The telemetry displays useful information on the phone such as
