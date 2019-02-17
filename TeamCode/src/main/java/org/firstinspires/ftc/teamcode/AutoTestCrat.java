@@ -52,8 +52,8 @@ GOALS: 2019, land, sample, deposit team marker, park in crater
  */
 
 
-@Autonomous(name="auto depot", group="LinearOpMode")
-public class AutoDepot extends LinearOpMode {
+@Autonomous(name="TEST CRAT AUTo", group="LinearOpMode")
+public class AutoTestCrat extends LinearOpMode {
 
     /*
      * MOTORS, SERVOS, and SENSORS
@@ -65,13 +65,6 @@ public class AutoDepot extends LinearOpMode {
 
     //The motor for our lift:
     DcMotor liftMotor;
-
-    //This code shows the two motors on our double jointed robot arm.
-    //Arm Motor 1 is the motor directly attached to the robot
-    DcMotor armMotor1, armMotor2;
-
-    //The motor on our intake box that is responsible for controlling the intake:
-    DcMotor intakeMotor;
 
     //Our range sensor that uses ODS and ultrasonic to detect our distance from objects:
     ModernRoboticsI2cRangeSensor rangeSensor;
@@ -86,7 +79,7 @@ public class AutoDepot extends LinearOpMode {
     // We utilize the red and blue tape on the floor as reference points on the field.
 
     //This servo is used to lock our extending intake.
-    Servo lock;
+    Servo outtake;
 
     /*
      * VUFORIA Setup
@@ -126,17 +119,14 @@ public class AutoDepot extends LinearOpMode {
         rightBack = hardwareMap.dcMotor.get("right back");
         liftMotor = hardwareMap.dcMotor.get("lift motor");
 
-        armMotor1 = hardwareMap.dcMotor.get("arm motor 1");
-        armMotor2 = hardwareMap.dcMotor.get("arm motor 2");
-        intakeMotor = hardwareMap.dcMotor.get("intake motor");
-
         //SENSORS
         MRGyro = hardwareMap.get(ModernRoboticsI2cGyro.class, "gyro");
         rangeSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range sensor");
         depotSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "depot sensor");
 
         //SERVOS
-        lock = hardwareMap.servo.get("lock");
+        outtake = hardwareMap.servo.get("outtake");
+        outtake.setPosition(1.0);
 
         //VUFORIA
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
@@ -157,30 +147,15 @@ public class AutoDepot extends LinearOpMode {
          * AUTONOMOUS MAIN METHOD
          * The start of our autonomous code
          */
-        MRGyro.calibrate();
+
         waitForStart();
-        //landing();
+        landing();
 
-        //GETS US OFF THE HOOK
-        gyro(315);
-        liftMotor.setPower(0.3);
-        sleep(3000);
-        gyro(0);
-
-        //UNLOCKS AND EXTENDS INTAKE, THEN LOCKS IT AGAIN
-        lock.setPosition(0);
-        armMotor1.setPower(1.0);
-        armMotor2.setPower(1.0);
-        sleep(2000);
-        armMotor1.setPower(0.0);
-        armMotor2.setPower(0.0);
-        lock.setPosition(1.0);
-/*
         sampling();
+
+
         deposit();
         crater();
-        */
-
     }
     /*
      * LANDING Method
@@ -189,16 +164,38 @@ public class AutoDepot extends LinearOpMode {
      * we rotate our robot in order to unhook.
      */
     public void landing() {
-        double distanceFromGround = depotSensor.getDistance(DistanceUnit.INCH);
-        telemetry.addData("distance", distanceFromGround);
+        //cases, naming, data types
+        //double distanceFromGround = depotSensor.getDistance(DistanceUnit.INCH);
+        telemetry.addData("distance", depotSensor.getDistance(DistanceUnit.INCH));
         telemetry.update();
-        while (distanceFromGround > 2.8) {
+        boolean landed = false;
+        while(!landed){
+            if(depotSensor.getDistance(DistanceUnit.INCH) < 2.5){
+                liftMotor.setPower(0);
+                MRGyro.calibrate();
+                sleep(4000);
+                //GETS US OFF THE HOOK
+                liftMotor.setPower(0.2);
+                sleep(100);
+                gyro(315);
+                liftMotor.setPower(-0.3);
+                sleep(1000);
+                liftMotor.setPower(0.0);
+                gyro(0);
+                landed = true;
+            }
+            else if(depotSensor.getDistance(DistanceUnit.INCH) >= 2.5){
+                liftMotor.setPower(0.3);
+            }
+        }
+        /*
+        while (distanceFromGround > 2.5) {
             double landingspeed = 0.3;
             liftMotor.setPower(landingspeed);
         }
         if (distanceFromGround <= 2.8){
             liftMotor.setPower(0);
-        }
+        }*/
     }
     /*
      * SAMPLING Method
@@ -209,17 +206,17 @@ public class AutoDepot extends LinearOpMode {
      */
     public void sampling() {
         if (opModeIsActive()) {
-
             if (tfod != null) {
                 tfod.activate();
             }
-
             while (opModeIsActive()) {
                 if (tfod != null) {
+
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
+
                         telemetry.addData("# Object Detected", updatedRecognitions.size());
                         telemetry.update();
                         if (updatedRecognitions.size() == 3) {
@@ -253,24 +250,103 @@ public class AutoDepot extends LinearOpMode {
                                     telemetry.update();
                                 }
                             }
-                            //MOVES BASED OFF OF WHAT WE DETECT
+                            pos = 2;
+                            //MOVES BASED OFF OF WHAT WE DETECT, HITTING THE GOLD ORE
                             if (pos == 1) { //RIGHT
+                                /*
+                                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.4);
+                                sleep(400);
+                                stop(leftFront, rightFront, leftBack, rightBack);
+                                sleep(500);
                                 gyro(315); //value for testing
+                                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
+                                sleep(700);
+                                stop(leftFront, rightFront, leftBack, rightBack);
+                                sleep(500);
+                                move(leftFront, rightFront, leftBack, rightBack, "FORWARDS", 0.5);
+                                sleep(700);
+                                stop(leftFront, rightFront, leftBack, rightBack);
+                                break;
+                                */
                                 move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
-                                sleep(3000);
+                                telemetry.addLine("moving backwards");
+                                telemetry.update();
+                                sleep(400);
+                                stop(leftFront, rightFront, leftBack, rightBack);
+                                telemetry.addLine("stop");
+                                telemetry.update();
+                                sleep(500);
+                                outtake.setPosition(1.0);
+                                gyro(315); //value for testing
+                                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
+                                telemetry.addLine("moving backwards");
+                                telemetry.update();
+                                sleep(700);
+                                stop(leftFront, rightFront, leftBack, rightBack);
+                                telemetry.addLine("stop");
+                                telemetry.update();
+                                sleep(500);
                                 move(leftFront, rightFront, leftBack, rightBack, "FORWARDS", 0.3);
-                                sleep(3000);
+                                telemetry.addLine("moving forwards");
+                                telemetry.update();
+                                sleep(700);
+                                stop(leftFront, rightFront, leftBack, rightBack);
+                                telemetry.addLine("stop");
+                                break;
                             } else if (pos == 2) { //LEFT
+                                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
+                                telemetry.addLine("moving backwards");
+                                telemetry.update();
+                                sleep(400);
+                                stop(leftFront, rightFront, leftBack, rightBack);
+                                telemetry.addLine("stop");
+                                telemetry.update();
+                                sleep(500);
+                                outtake.setPosition(1.0);
                                 gyro(45); //value for testing
-                                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
-                                sleep(3000);
+                                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
+                                telemetry.addLine("moving backwards");
+                                telemetry.update();
+                                sleep(700);
+                                stop(leftFront, rightFront, leftBack, rightBack);
+                                telemetry.addLine("stop");
+                                telemetry.update();
+                                sleep(500);
                                 move(leftFront, rightFront, leftBack, rightBack, "FORWARDS", 0.3);
-                                sleep(3000);
+                                telemetry.addLine("moving forwards");
+                                telemetry.update();
+                                sleep(700);
+                                stop(leftFront, rightFront, leftBack, rightBack);
+                                telemetry.addLine("stop");
+                                telemetry.update();
+                                break;
                             } else if (pos == 0) { //CENTER
-                                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
-                                sleep(5000);
+                                /*
+                                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.4);
+                                sleep(400);
+                                stop(leftFront, rightFront, leftBack, rightBack);
+                                sleep(500);
+                                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
+                                sleep(700);
+                                stop(leftFront, rightFront, leftBack, rightBack);
+                                sleep(500);
                                 move(leftFront, rightFront, leftBack, rightBack, "FORWARDS", 0.3);
-                                sleep(3000);
+                                sleep(700);
+                                stop(leftFront, rightFront, leftBack, rightBack);
+                                */
+                                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
+                                sleep(400);
+                                stop(leftFront, rightFront, leftBack, rightBack);
+                                sleep(500);
+                                outtake.setPosition(1.0);
+                                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
+                                sleep(700);
+                                stop(leftFront, rightFront, leftBack, rightBack);
+                                sleep(500);
+                                move(leftFront, rightFront, leftBack, rightBack, "FORWARDS", 0.3);
+                                sleep(700);
+                                stop(leftFront, rightFront, leftBack, rightBack);
+                                break;
                             } else {
                                 telemetry.addData("Error Report", "Error, fix pos va;ue :(");
                                 telemetry.update();
@@ -293,44 +369,64 @@ public class AutoDepot extends LinearOpMode {
      * tape on the floor.
      */
     public void deposit() {
+        // in this portion of the deposit method the robot backs up from the lander
+        // and finds its current angle.
         MRGyro.calibrate();
-        sleep(4000);
-        //TURNS ROBOT TOWARDS DEPOT
+        sleep(3000);
+        /*
+         * We use a switch-case because depending on where the gold ore was in sampling,
+         * we have to turn a different angle.
+         */
         switch(pos){
             case 0: //CENTER
-                break;
-            case 1: //RIGHT
                 gyro(45);
                 break;
+            case 1: //RIGHT
+                gyro(135);
+                break;
             case 2: //LEFT
-                gyro(315);
+                gyro(45);
                 break;
         }
-        double distanceValue = rangeSensor.getDistance(DistanceUnit.INCH);
-        while(distanceValue > 3){
-            //the robot approaches the depot
-            move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
+        //the robot checks how far it is from the wall
+        boolean wallcheck = false;
+        while(!wallcheck){
+            if(rangeSensor.getDistance(DistanceUnit.INCH) < 10.0){
+                stop(leftFront,rightFront,leftBack,rightBack);
+                wallcheck = true;
+            }
+            else if(rangeSensor.getDistance(DistanceUnit.INCH) >= 10.0) {
+                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.8);
+                telemetry.addData("distance", depotSensor.getDistance(DistanceUnit.INCH));
+                telemetry.update();
+            }
         }
-        if (distanceValue <= 3){
-            //stops once the robot is close enough to the depot
-            stop(leftFront, leftBack, rightFront, rightBack);
+        switch(pos) {
+            case 0: //CENTER
+                gyro(135);
+                break;
+            case 1://RIGHT
+                gyro(180);
+                break;
+            case 2://LEFT
+                gyro(90);
+                break;
         }
-
-        //unfolds arm, spins intake to deposit
-        //values for testing
-        armMotor1.setPower(0.5);
-        sleep(2000);
-        armMotor2.setPower(0.5);
-        sleep(2000);
-        intakeMotor.setPower(0.5);
-        sleep(2000);
-
-        armMotor1.setPower(-0.5);
-        sleep(2000);
-        armMotor2.setPower(-0.5);
-        sleep(2000);
-        intakeMotor.setPower(0.5);
-        sleep(2000);
+        //the robot checks how far it is from the depot
+        boolean wallcheck2 = false;
+        while(!wallcheck2){
+            if(rangeSensor.getDistance(DistanceUnit.INCH) < 20){
+                stop(leftFront,rightFront,leftBack,rightBack);
+                outtake.setPosition(0.0);
+                sleep(500);
+                wallcheck2 = true;
+            }
+            else if(rangeSensor.getDistance(DistanceUnit.INCH) >= 20) {
+                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.8);
+                telemetry.addData("distance", depotSensor.getDistance(DistanceUnit.INCH));
+                telemetry.update();
+            }
+        }
     }
     /*
      * CRATER Method
@@ -339,23 +435,51 @@ public class AutoDepot extends LinearOpMode {
      * drive our robot to park.
      */
     public void crater() {
+        /*
+         * We have a switch-case because we have to turn a different angle depending
+         * on where the gold ore is. This is because we reset the gyro sensor's zero at different
+         * places depending on where the gold ore was in sampling.
+         */
+
+        switch(pos) {
+            case 0: //CENTER
+                gyro(315);
+                break;
+            case 1: //RIGHT
+                gyro(0);
+                break;
+            case 2: //LEFT
+                gyro(270);
+                break;
+        }
+/*
         double distanceValue = rangeSensor.getDistance(DistanceUnit.INCH);
-        while(distanceValue > 6) {
-            //TURNS US TOWARDS CRATER
-            switch(pos){
-                case 0: //CENTER
-                    gyro(135);
-                    break;
-                case 1: //RIGHT
-                    gyro(270);
-                    break;
-                case 2: //LEFT
-                    gyro(180);
-                    break;
+        while(distanceValue > 6){
+            //to turn towards crater
+            if(pos == 0){
+                gyro(45); //TODO: make sure we are close enough to the wall
+                pos = 2;
+            }
+            else{
+                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
             }
         }
         if (distanceValue <= 6){
             stop(leftFront, leftBack, rightFront, rightBack);
+        }
+        */
+        boolean wallcheck3 = false;
+        while(!wallcheck3){
+            if(rangeSensor.getDistance(DistanceUnit.INCH) < 6.0){
+                stop(leftFront,rightFront,leftBack,rightBack);
+                //outtake.setPosition(0.0);
+                wallcheck3 = true;
+            }
+            else if(rangeSensor.getDistance(DistanceUnit.INCH) >= 6.0) {
+                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.8);
+                telemetry.addData("distance", depotSensor.getDistance(DistanceUnit.INCH));
+                telemetry.update();
+            }
         }
     }
     /*
@@ -363,41 +487,44 @@ public class AutoDepot extends LinearOpMode {
      * In this code we use a switch case in order to create
      * more code-efficient robot driving. This means that instead
      * of having to individually control each motor everytime we
-     * want to move, we can instead just call the move() method. And specify the wanted direction with a case-valid string.
+     * want to move, we can instead just call the move() method.
+     * And specify the wanted direction with a case-valid string.
      * This makes our program a lot shorter than it would
      * normally have been, and makes it easier to program and read our code. It
-     * assigns the proper motor speed assigned when the method is called, and sets the rotation of the motors so that the robot moves in the specified direction
+     * assigns the proper motor speed assigned when the method is called,
+     * and sets the rotation of the motors so that the robot moves in the specified direction
      *(with either positive or negative speed)
      */
-    public void move(DcMotor motorlf, DcMotor motorrf, DcMotor motorlb, DcMotor motorrb, String direction, double speed) {
+    public void move(DcMotor motorlf, DcMotor motorrf, DcMotor motorlb, DcMotor motorrb,
+                     String direction, double speed) {
         switch(direction) {
             case "BACKWARDS":
                 //robot moves backwards
-                motorlf.setPower(-speed);
+                motorlf.setPower(speed);
                 motorrf.setPower(-speed);
                 motorlb.setPower(speed);
-                motorrb.setPower(speed);
+                motorrb.setPower(-speed);
                 break;
             case "FORWARDS":
                 //robot moves forwards
-                motorlf.setPower(speed);
-                motorrf.setPower(speed);
-                motorlb.setPower(-speed);
-                motorrb.setPower(-speed);
-                break;
-            case "RIGHT":
-                //robot strafes right
-                motorlf.setPower(speed);
-                motorrf.setPower(-speed);
-                motorlb.setPower(speed);
-                motorrb.setPower(-speed);
-                break;
-            case "LEFT":
-                //robot strafes left
                 motorlf.setPower(-speed);
                 motorrf.setPower(speed);
                 motorlb.setPower(-speed);
                 motorrb.setPower(speed);
+                break;
+            case "RIGHT":
+                //robot strafes right
+                motorlf.setPower(-speed);
+                motorrf.setPower(-speed);
+                motorlb.setPower(speed);
+                motorrb.setPower(speed);
+                break;
+            case "LEFT":
+                //robot strafes left
+                motorlf.setPower(speed);
+                motorrf.setPower(speed);
+                motorlb.setPower(-speed);
+                motorrb.setPower(-speed);
                 break;
             case "TURN RIGHT":
                 //robot turns clockwise(to the right)
@@ -461,11 +588,12 @@ public class AutoDepot extends LinearOpMode {
      * the differences in gold and silver minerals.
      */
     private void initTfod() {
-        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier( "tfodMonitorViewId", "Id", hardwareMap.appContext.getPackageName());
-        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "tfodMonitorViewId", "Id", hardwareMap.appContext.getPackageName());
+        TFObjectDetector.Parameters tfodParameters =
+                new TFObjectDetector.Parameters(tfodMonitorViewId);
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
 
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
-
     }
 }
