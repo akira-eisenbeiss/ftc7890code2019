@@ -52,8 +52,8 @@ GOALS: 2019, land, sample, deposit team marker, park in crater
  */
 
 
-@Autonomous(name="TEST AUTO DEPOT 2.0", group="LinearOpMode")
-public class AutoTestDep extends LinearOpMode {
+@Autonomous(name="FULL AUTO DEPOT", group="LinearOpMode")
+public class FULL_AUTO_DEPOT extends LinearOpMode {
 
     /*
      * MOTORS, SERVOS, and SENSORS
@@ -147,11 +147,9 @@ public class AutoTestDep extends LinearOpMode {
          * AUTONOMOUS MAIN METHOD
          * The start of our autonomous code
          */
-
-
         waitForStart();
-        landing();
 
+        landing();
         sampling();
         deposit();
         crater();
@@ -164,8 +162,6 @@ public class AutoTestDep extends LinearOpMode {
      * we rotate our robot in order to unhook.
      */
     public void landing() {
-        //cases, naming, data types
-        //double distanceFromGround = depotSensor.getDistance(DistanceUnit.INCH);
         telemetry.addData("distance", depotSensor.getDistance(DistanceUnit.INCH));
         telemetry.update();
         boolean landed = false;
@@ -188,14 +184,6 @@ public class AutoTestDep extends LinearOpMode {
                 liftMotor.setPower(0.3);
             }
         }
-        /*
-        while (distanceFromGround > 2.5) {
-            double landingspeed = 0.3;
-            liftMotor.setPower(landingspeed);
-        }
-        if (distanceFromGround <= 2.8){
-            liftMotor.setPower(0);
-        }*/
     }
     /*
      * SAMPLING Method
@@ -251,44 +239,36 @@ public class AutoTestDep extends LinearOpMode {
                             //MOVES BASED OFF OF WHAT WE DETECT, HITTING THE GOLD ORE
                             if (pos == 1) { //RIGHT
                                 move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
-                                telemetry.addLine("moving backwards");
-                                telemetry.update();
                                 sleep(400);
                                 stop(leftFront, rightFront, leftBack, rightBack);
-                                telemetry.addLine("stop");
-                                telemetry.update();
                                 sleep(500);
-                                gyro(315); //value for testing
+                                gyro(315);
                                 move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
-                                telemetry.addLine("moving backwards");
-                                telemetry.update();
                                 sleep(830);
                                 stop(leftFront, rightFront, leftBack, rightBack);
-                                telemetry.addLine("stop");
-                                telemetry.update();
                                 sleep(500);
                                 break;
                             } else if (pos == 2) { //LEFT
-
-                                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
+                                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
                                 sleep(400);
                                 stop(leftFront, rightFront, leftBack, rightBack);
                                 sleep(500);
-                                gyro(45); //value for testing
+                                gyro(45);
                                 move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
-                                sleep(700);
+                                sleep(830);
                                 stop(leftFront, rightFront, leftBack, rightBack);
+                                sleep(500);
                                 break;
 
                             } else if (pos == 0) { //CENTER
-
-                                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
+                                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
                                 sleep(400);
                                 stop(leftFront, rightFront, leftBack, rightBack);
                                 sleep(500);
                                 move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
-                                sleep(700);
+                                sleep(830);
                                 stop(leftFront, rightFront, leftBack, rightBack);
+                                sleep(500);
                                 break;
                             } else {
                                 telemetry.addData("Error Report", "Error, fix pos va;ue :(");
@@ -330,6 +310,8 @@ public class AutoTestDep extends LinearOpMode {
                 break;
         }
         //the robot checks how far it is from the depot
+        //& moves towards it until it detects that it is 20 inches away from it.
+        //once it is there, our robot stops moving and deposits the marker
         boolean wallcheck2 = false;
         while(!wallcheck2){
             if(rangeSensor.getDistance(DistanceUnit.INCH) < 20){
@@ -369,6 +351,9 @@ public class AutoTestDep extends LinearOpMode {
                     gyro(200);
                     break;
             }
+        //the robot checks how far it is from the crater
+        //& moves towards it until it detects that it is 8 inches away from it.
+        //once it is there, our robot parks
         boolean wallcheck3 = false;
         while(!wallcheck3){
             if(rangeSensor.getDistance(DistanceUnit.INCH) < 8.0){

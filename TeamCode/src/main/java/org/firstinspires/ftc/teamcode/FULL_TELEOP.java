@@ -14,8 +14,8 @@ author: 7890 Software (Akira, Erin, Stephen, Kyra, Anthony)
 GOALS: 2019, deposite silver minerals, possibly also gold, lower and raise on the lander
  */
 
-@TeleOp(name="TeleOp For Big Kids", group="Tele Op")
-public class TeleOpForBigKids extends OpMode {
+@TeleOp(name="FULL TELEOP", group="Tele Op")
+public class FULL_TELEOP extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     /*
@@ -112,7 +112,7 @@ public class TeleOpForBigKids extends OpMode {
         // LIFTING
         /*
         * The following code creates variables for the lift controls. We decided to map these to 
-        * the triggers for Driver 1. This would allow the driver to control the speed of the lift 
+        * the triggers for driver 1. This would allow the driver to control the speed of the lift
         * motors for more accuracy instead of a constant speed which would likely force us to 
         * guess the timing. We no longer need to make multiple unnessary adjustments to get the
         * lift where we need it.
