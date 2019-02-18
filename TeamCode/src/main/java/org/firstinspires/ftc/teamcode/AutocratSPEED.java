@@ -52,8 +52,8 @@ GOALS: 2019, land, sample, deposit team marker, park in crater
  */
 
 
-@Autonomous(name="FULL_AUTO_CRATER", group="LinearOpMode")
-public class FULL_AUTO_CRATER extends LinearOpMode {
+@Autonomous(name="The speedy beedy beedo", group="LinearOpMode")
+public class AutocratSPEED extends LinearOpMode {
 
     /*
      * MOTORS, SERVOS, and SENSORS
@@ -147,10 +147,23 @@ public class FULL_AUTO_CRATER extends LinearOpMode {
          * AUTONOMOUS MAIN METHOD
          * The start of our autonomous code
          */
+        MRGyro.calibrate();
+        sleep(4000);
+
         waitForStart();
 
+
         landing();
-        sampling();
+        //  sampling();
+        /*
+        move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
+        sleep(400);
+        stop(leftFront, rightFront, leftBack, rightBack);
+        sleep(500);
+        */
+        outtake.setPosition(1.0);
+        gyro(45);
+        pos = 2;
         deposit();
         crater();
     }
@@ -169,17 +182,15 @@ public class FULL_AUTO_CRATER extends LinearOpMode {
         while(!landed){
             if(depotSensor.getDistance(DistanceUnit.INCH) < 2.5){
                 liftMotor.setPower(0);
-                MRGyro.calibrate();
-                sleep(4000);
                 //GETS US OFF THE HOOK
                 liftMotor.setPower(0.2);
                 sleep(100);
                 liftMotor.setPower(0);
                 landingGyro(315);
-                liftMotor.setPower(-0.3);
-                sleep(1000);
+                liftMotor.setPower(-0.8);
+                sleep(300);
                 liftMotor.setPower(0.0);
-                gyro(0);
+                //gyro(0);
                 landed = true;
             }
             else if(depotSensor.getDistance(DistanceUnit.INCH) >= 2.5){
@@ -187,117 +198,7 @@ public class FULL_AUTO_CRATER extends LinearOpMode {
             }
         }
     }
-    /*
-     * SAMPLING Method
-     * This method uses VUFORIA in order to detect which
-     * minerals are silver and which are gold. Our robot
-     * uses this information to then rotate and knock the
-     * gold mineral out of its starting position.
-     */
-    public void sampling() {
-        if (opModeIsActive()) {
-            if (tfod != null) {
-                tfod.activate();
-            }
-            while (opModeIsActive()) {
-                if (tfod != null) {
 
-                    // getUpdatedRecognitions() will return null if no new information is available since
-                    // the last time that call was made.
-                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                    if (updatedRecognitions != null) {
-
-                        telemetry.addData("# Object Detected", updatedRecognitions.size());
-                        telemetry.update();
-                        if (updatedRecognitions.size() == 3) {
-                            int goldMineralX = -1;
-                            int silverMineral1X = -1;
-                            int silverMineral2X = -1;
-                            for (Recognition recognition : updatedRecognitions) {
-                                if (recognition.getLabel().equals(LABEL_GOLD_MINERAL)) {
-                                    goldMineralX = (int) recognition.getLeft();
-                                } else if (silverMineral1X == -1) {
-                                    silverMineral1X = (int) recognition.getLeft();
-                                } else {
-                                    silverMineral2X = (int) recognition.getLeft();
-                                }
-                            }
-                            if (goldMineralX != -1 && silverMineral1X != -1 && silverMineral2X != -1) {
-                                if (goldMineralX < silverMineral1X && goldMineralX < silverMineral2X) {
-                                    //GOLD IS ON THE LEFT
-                                    pos = 2;
-                                    telemetry.addData("Gold Mineral Position", "Left");
-                                    telemetry.update();
-                                } else if (goldMineralX > silverMineral1X && goldMineralX > silverMineral2X) {
-                                    //GOLD IS ON THE RIGHT
-                                    pos = 1;
-                                    telemetry.addData("Gold Mineral Position", "Right");
-                                    telemetry.update();
-                                } else {
-                                    //GOLD IS IN THE CENTER
-                                    pos = 0;
-                                    telemetry.addData("Gold Mineral Position", "Center");
-                                    telemetry.update();
-                                }
-                            }
-                            //MOVES BASED OFF OF WHAT WE DETECT, HITTING THE GOLD ORE
-                            if (pos == 1) { //RIGHT
-                                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
-                                sleep(400);
-                                stop(leftFront, rightFront, leftBack, rightBack);
-                                sleep(500);
-                                outtake.setPosition(1.0);
-                                gyro(315);
-                                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
-                                sleep(700);
-                                stop(leftFront, rightFront, leftBack, rightBack);
-                                sleep(500);
-                                move(leftFront, rightFront, leftBack, rightBack, "FORWARDS", 0.3);
-                                sleep(700);
-                                stop(leftFront, rightFront, leftBack, rightBack);
-                                break;
-                            } else if (pos == 2) { //LEFT
-                                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
-                                sleep(400);
-                                stop(leftFront, rightFront, leftBack, rightBack);
-                                sleep(500);
-                                outtake.setPosition(1.0);
-                                gyro(45);
-                                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
-                                sleep(700);
-                                stop(leftFront, rightFront, leftBack, rightBack);
-                                sleep(500);
-                                move(leftFront, rightFront, leftBack, rightBack, "FORWARDS", 0.3);
-                                sleep(700);
-                                stop(leftFront, rightFront, leftBack, rightBack);
-                                break;
-                            } else if (pos == 0) { //CENTER
-                                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
-                                sleep(400);
-                                stop(leftFront, rightFront, leftBack, rightBack);
-                                sleep(500);
-                                outtake.setPosition(1.0);
-                                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
-                                sleep(700);
-                                stop(leftFront, rightFront, leftBack, rightBack);
-                                sleep(500);
-                                move(leftFront, rightFront, leftBack, rightBack, "FORWARDS", 0.3);
-                                sleep(700);
-                                stop(leftFront, rightFront, leftBack, rightBack);
-                                break;
-                            } else {
-                                telemetry.addData("Error Report", "Error, fix pos va;ue :(");
-                                telemetry.update();
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        if (tfod != null) {
-            tfod.shutdown();
-        }
-    }
     /*
      * DEPOSITING Method
      * This method is used to deposit our
@@ -310,11 +211,11 @@ public class FULL_AUTO_CRATER extends LinearOpMode {
         // in this portion of the deposit method the robot backs up from the lander
         // and finds its current angle.
         MRGyro.calibrate();
-        sleep(3000);
         /*
          * We use a switch-case because depending on where the gold ore was in sampling,
          * we have to turn a different angle.
          */
+        /*
         switch(pos){
             case 0: //CENTER
                 gyro(45);
@@ -323,9 +224,9 @@ public class FULL_AUTO_CRATER extends LinearOpMode {
                 gyro(135);
                 break;
             case 2: //LEFT
-                gyro(45);
+                gyro(60);
                 break;
-        }
+        }*/
         /* The robot moves, using a range sensor to detect its distance from the wall
          * and moves towards it until it detects that it is 10 inches away from it.
          * once it is there, our robot turns so that we can navigate around the lander bin
@@ -350,7 +251,7 @@ public class FULL_AUTO_CRATER extends LinearOpMode {
                 gyro(180);
                 break;
             case 2://LEFT
-                gyro(90);
+                gyro(100);
                 break;
         }
         /* The robot moves until it is 20 inches away from the depot, at which point
@@ -366,7 +267,7 @@ public class FULL_AUTO_CRATER extends LinearOpMode {
                 wallcheck2 = true;
             }
             else if(rangeSensor.getDistance(DistanceUnit.INCH) >= 20) {
-                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
+                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
                 telemetry.addData("distance", depotSensor.getDistance(DistanceUnit.INCH));
                 telemetry.update();
             }
@@ -408,7 +309,7 @@ public class FULL_AUTO_CRATER extends LinearOpMode {
                 wallcheck3 = true;
             }
             else if(rangeSensor.getDistance(DistanceUnit.INCH) >= 6.0) {
-                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
+                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.6);
                 telemetry.addData("distance", depotSensor.getDistance(DistanceUnit.INCH));
                 telemetry.update();
             }

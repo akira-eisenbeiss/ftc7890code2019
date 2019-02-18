@@ -52,8 +52,8 @@ GOALS: 2019, land, sample, deposit team marker, park in crater
  */
 
 
-@Autonomous(name="FULL_AUTO_CRATER", group="LinearOpMode")
-public class FULL_AUTO_CRATER extends LinearOpMode {
+@Autonomous(name="NO VUF FULL AUTO DEPOT", group="LinearOpMode")
+public class AutodepNOVUF extends LinearOpMode {
 
     /*
      * MOTORS, SERVOS, and SENSORS
@@ -150,9 +150,20 @@ public class FULL_AUTO_CRATER extends LinearOpMode {
         waitForStart();
 
         landing();
-        sampling();
+        move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
+        sleep(400);
+        stop(leftFront, rightFront, leftBack, rightBack);
+        sleep(500);
+        gyro(315);
+        move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
+        sleep(830);
+        stop(leftFront, rightFront, leftBack, rightBack);
+        sleep(500);
+        pos = 1;
+       // sampling();
         deposit();
         crater();
+
     }
     /*
      * LANDING Method
@@ -161,8 +172,6 @@ public class FULL_AUTO_CRATER extends LinearOpMode {
      * we rotate our robot in order to unhook.
      */
     public void landing() {
-        //cases, naming, data types
-        //double distanceFromGround = depotSensor.getDistance(DistanceUnit.INCH);
         telemetry.addData("distance", depotSensor.getDistance(DistanceUnit.INCH));
         telemetry.update();
         boolean landed = false;
@@ -174,7 +183,7 @@ public class FULL_AUTO_CRATER extends LinearOpMode {
                 //GETS US OFF THE HOOK
                 liftMotor.setPower(0.2);
                 sleep(100);
-                liftMotor.setPower(0);
+                liftMotor.setPower(0.0);
                 landingGyro(315);
                 liftMotor.setPower(-0.3);
                 sleep(1000);
@@ -201,12 +210,10 @@ public class FULL_AUTO_CRATER extends LinearOpMode {
             }
             while (opModeIsActive()) {
                 if (tfod != null) {
-
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
-
                         telemetry.addData("# Object Detected", updatedRecognitions.size());
                         telemetry.update();
                         if (updatedRecognitions.size() == 3) {
@@ -246,44 +253,33 @@ public class FULL_AUTO_CRATER extends LinearOpMode {
                                 sleep(400);
                                 stop(leftFront, rightFront, leftBack, rightBack);
                                 sleep(500);
-                                outtake.setPosition(1.0);
                                 gyro(315);
                                 move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
-                                sleep(700);
+                                sleep(830);
                                 stop(leftFront, rightFront, leftBack, rightBack);
                                 sleep(500);
-                                move(leftFront, rightFront, leftBack, rightBack, "FORWARDS", 0.3);
-                                sleep(700);
-                                stop(leftFront, rightFront, leftBack, rightBack);
                                 break;
                             } else if (pos == 2) { //LEFT
                                 move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
                                 sleep(400);
                                 stop(leftFront, rightFront, leftBack, rightBack);
                                 sleep(500);
-                                outtake.setPosition(1.0);
                                 gyro(45);
                                 move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
-                                sleep(700);
+                                sleep(830);
                                 stop(leftFront, rightFront, leftBack, rightBack);
                                 sleep(500);
-                                move(leftFront, rightFront, leftBack, rightBack, "FORWARDS", 0.3);
-                                sleep(700);
-                                stop(leftFront, rightFront, leftBack, rightBack);
                                 break;
+
                             } else if (pos == 0) { //CENTER
                                 move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
                                 sleep(400);
                                 stop(leftFront, rightFront, leftBack, rightBack);
                                 sleep(500);
-                                outtake.setPosition(1.0);
                                 move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
-                                sleep(700);
+                                sleep(830);
                                 stop(leftFront, rightFront, leftBack, rightBack);
                                 sleep(500);
-                                move(leftFront, rightFront, leftBack, rightBack, "FORWARDS", 0.3);
-                                sleep(700);
-                                stop(leftFront, rightFront, leftBack, rightBack);
                                 break;
                             } else {
                                 telemetry.addData("Error Report", "Error, fix pos va;ue :(");
@@ -307,62 +303,32 @@ public class FULL_AUTO_CRATER extends LinearOpMode {
      * tape on the floor.
      */
     public void deposit() {
-        // in this portion of the deposit method the robot backs up from the lander
-        // and finds its current angle.
         MRGyro.calibrate();
-        sleep(3000);
+        sleep(4000);
+        //TURNS ROBOT TOWARDS DEPOT
         /*
-         * We use a switch-case because depending on where the gold ore was in sampling,
-         * we have to turn a different angle.
+         * Depending on whether the gold ore was in the center, right, or left, the robot will
+         * have to turn at a different angle towards the depot.
          */
         switch(pos){
             case 0: //CENTER
-                gyro(45);
                 break;
             case 1: //RIGHT
-                gyro(135);
+                gyro(77);
                 break;
             case 2: //LEFT
-                gyro(45);
+                gyro(283);
                 break;
         }
-        /* The robot moves, using a range sensor to detect its distance from the wall
-         * and moves towards it until it detects that it is 10 inches away from it.
-         * once it is there, our robot turns so that we can navigate around the lander bin
-         */
-        boolean wallcheck = false;
-        while(!wallcheck){
-            if(rangeSensor.getDistance(DistanceUnit.INCH) < 10.0){
-                stop(leftFront,rightFront,leftBack,rightBack);
-                wallcheck = true;
-            }
-            else if(rangeSensor.getDistance(DistanceUnit.INCH) >= 10.0) {
-                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
-                telemetry.addData("distance", depotSensor.getDistance(DistanceUnit.INCH));
-                telemetry.update();
-            }
-        }
-        switch(pos) {
-            case 0: //CENTER
-                gyro(135);
-                break;
-            case 1://RIGHT
-                gyro(180);
-                break;
-            case 2://LEFT
-                gyro(90);
-                break;
-        }
-        /* The robot moves until it is 20 inches away from the depot, at which point
-         * it begins to slow down and come to a stop. It then deposits the team marker
-         * by rotating our marker mechanism servo
-         */
+        //the robot checks how far it is from the depot
+        //& moves towards it until it detects that it is 20 inches away from it.
+        //once it is there, our robot stops moving and deposits the marker
         boolean wallcheck2 = false;
         while(!wallcheck2){
             if(rangeSensor.getDistance(DistanceUnit.INCH) < 20){
                 stop(leftFront,rightFront,leftBack,rightBack);
                 outtake.setPosition(0.0);
-                sleep(500);
+                sleep(1000);
                 wallcheck2 = true;
             }
             else if(rangeSensor.getDistance(DistanceUnit.INCH) >= 20) {
@@ -379,35 +345,33 @@ public class FULL_AUTO_CRATER extends LinearOpMode {
      * drive our robot to park.
      */
     public void crater() {
+        //TURNS US TOWARDS CRATER
         /*
-         * We have a switch-case because we have to turn a different angle depending
-         * on where the gold ore is. This is because we reset the gyro sensor's zero at different
-         * places depending on where the gold ore was in sampling.
+         * Because the Gyro was calibrated at different angles,
+         * the heading we need to turn to is different based on
+         * where the gold ore was.
          */
-
-        switch(pos) {
+        switch(pos){
             case 0: //CENTER
-                gyro(315);
+                gyro(245);
                 break;
             case 1: //RIGHT
-                gyro(0);
+                gyro(290);
                 break;
             case 2: //LEFT
-                gyro(270);
+                gyro(200);
                 break;
         }
-
-        /* We again use a while loop in order to check our distance, this time from
-         * the edge of the crater. Once we are six inches away, we slow down towards
-         * the crater and park our robot on the edge.
-         */
+        //the robot checks how far it is from the crater
+        //& moves towards it until it detects that it is 8 inches away from it.
+        //once it is there, our robot parks
         boolean wallcheck3 = false;
         while(!wallcheck3){
-            if(rangeSensor.getDistance(DistanceUnit.INCH) < 6.0){
+            if(rangeSensor.getDistance(DistanceUnit.INCH) < 8.0){
                 stop(leftFront,rightFront,leftBack,rightBack);
                 wallcheck3 = true;
             }
-            else if(rangeSensor.getDistance(DistanceUnit.INCH) >= 6.0) {
+            else if(rangeSensor.getDistance(DistanceUnit.INCH) >= 8.0) {
                 move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
                 telemetry.addData("distance", depotSensor.getDistance(DistanceUnit.INCH));
                 telemetry.update();
@@ -419,16 +383,13 @@ public class FULL_AUTO_CRATER extends LinearOpMode {
      * In this code we use a switch case in order to create
      * more code-efficient robot driving. This means that instead
      * of having to individually control each motor everytime we
-     * want to move, we can instead just call the move() method.
-     * And specify the wanted direction with a case-valid string.
+     * want to move, we can instead just call the move() method. And specify the wanted direction with a case-valid string.
      * This makes our program a lot shorter than it would
      * normally have been, and makes it easier to program and read our code. It
-     * assigns the proper motor speed assigned when the method is called,
-     * and sets the rotation of the motors so that the robot moves in the specified direction
-     *(with either positive or negative speed)
+     * assigns the proper motor speed assigned when the method is called, and sets the rotation of the motors so that the robot moves in the specified direction
+     * (with either positive or negative speed)
      */
-    public void move(DcMotor motorlf, DcMotor motorrf, DcMotor motorlb, DcMotor motorrb,
-                     String direction, double speed) {
+    public void move(DcMotor motorlf, DcMotor motorrf, DcMotor motorlb, DcMotor motorrb, String direction, double speed) {
         switch(direction) {
             case "BACKWARDS":
                 //robot moves backwards
@@ -514,8 +475,8 @@ public class FULL_AUTO_CRATER extends LinearOpMode {
      * Similar to the move method, our stop method
      * takes in the different wheels as parameters
      * and sets all of their powers to 0, stopping
-     * them. This reduces the number of lines needed
-     * to stop the robot from four to only one.
+     * them. This reduces the number of lines
+     * needed to stop the robot from four to only one.
      */
     public void stop(DcMotor motorlf, DcMotor motorrf, DcMotor motorlb, DcMotor motorrb) {
         //robot stops moving

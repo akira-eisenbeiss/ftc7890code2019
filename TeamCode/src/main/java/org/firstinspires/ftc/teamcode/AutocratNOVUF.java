@@ -52,8 +52,8 @@ GOALS: 2019, land, sample, deposit team marker, park in crater
  */
 
 
-@Autonomous(name="FULL_AUTO_CRATER", group="LinearOpMode")
-public class FULL_AUTO_CRATER extends LinearOpMode {
+@Autonomous(name="NO VUF FULL_AUTO_CRATER", group="LinearOpMode")
+public class AutocratNOVUF extends LinearOpMode {
 
     /*
      * MOTORS, SERVOS, and SENSORS
@@ -150,7 +150,16 @@ public class FULL_AUTO_CRATER extends LinearOpMode {
         waitForStart();
 
         landing();
-        sampling();
+      //  sampling();
+        /*
+        move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
+        sleep(400);
+        stop(leftFront, rightFront, leftBack, rightBack);
+        sleep(500);
+        */
+        outtake.setPosition(1.0);
+        gyro(45);
+        pos = 2;
         deposit();
         crater();
     }
@@ -179,7 +188,7 @@ public class FULL_AUTO_CRATER extends LinearOpMode {
                 liftMotor.setPower(-0.3);
                 sleep(1000);
                 liftMotor.setPower(0.0);
-                gyro(0);
+                //gyro(0);
                 landed = true;
             }
             else if(depotSensor.getDistance(DistanceUnit.INCH) >= 2.5){
@@ -315,6 +324,7 @@ public class FULL_AUTO_CRATER extends LinearOpMode {
          * We use a switch-case because depending on where the gold ore was in sampling,
          * we have to turn a different angle.
          */
+        /*
         switch(pos){
             case 0: //CENTER
                 gyro(45);
@@ -323,9 +333,9 @@ public class FULL_AUTO_CRATER extends LinearOpMode {
                 gyro(135);
                 break;
             case 2: //LEFT
-                gyro(45);
+                gyro(60);
                 break;
-        }
+        }*/
         /* The robot moves, using a range sensor to detect its distance from the wall
          * and moves towards it until it detects that it is 10 inches away from it.
          * once it is there, our robot turns so that we can navigate around the lander bin
@@ -350,7 +360,7 @@ public class FULL_AUTO_CRATER extends LinearOpMode {
                 gyro(180);
                 break;
             case 2://LEFT
-                gyro(90);
+                gyro(100);
                 break;
         }
         /* The robot moves until it is 20 inches away from the depot, at which point
@@ -366,7 +376,7 @@ public class FULL_AUTO_CRATER extends LinearOpMode {
                 wallcheck2 = true;
             }
             else if(rangeSensor.getDistance(DistanceUnit.INCH) >= 20) {
-                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
+                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.5);
                 telemetry.addData("distance", depotSensor.getDistance(DistanceUnit.INCH));
                 telemetry.update();
             }

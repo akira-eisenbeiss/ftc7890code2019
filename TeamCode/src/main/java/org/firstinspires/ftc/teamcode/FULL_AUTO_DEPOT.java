@@ -173,7 +173,8 @@ public class FULL_AUTO_DEPOT extends LinearOpMode {
                 //GETS US OFF THE HOOK
                 liftMotor.setPower(0.2);
                 sleep(100);
-                gyro(315);
+                liftMotor.setPower(0.0);
+                landingGyro(315);
                 liftMotor.setPower(-0.3);
                 sleep(1000);
                 liftMotor.setPower(0.0);
@@ -321,7 +322,7 @@ public class FULL_AUTO_DEPOT extends LinearOpMode {
                 wallcheck2 = true;
             }
             else if(rangeSensor.getDistance(DistanceUnit.INCH) >= 20) {
-                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.8);
+                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
                 telemetry.addData("distance", depotSensor.getDistance(DistanceUnit.INCH));
                 telemetry.update();
             }
@@ -361,7 +362,7 @@ public class FULL_AUTO_DEPOT extends LinearOpMode {
                 wallcheck3 = true;
             }
             else if(rangeSensor.getDistance(DistanceUnit.INCH) >= 8.0) {
-                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.8);
+                move(leftFront, rightFront, leftBack, rightBack, "BACKWARDS", 0.3);
                 telemetry.addData("distance", depotSensor.getDistance(DistanceUnit.INCH));
                 telemetry.update();
             }
@@ -447,6 +448,18 @@ public class FULL_AUTO_DEPOT extends LinearOpMode {
         }
         stop(leftFront, leftBack, rightFront, rightBack);
     }
+    public void landingGyro(int targetHeading) {
+        int heading = MRGyro.getHeading();
+        while(heading < targetHeading - 10 || heading > targetHeading + 10) {
+            heading = MRGyro.getHeading();
+
+            move(leftFront, leftBack, rightFront, rightBack, "TURN LEFT", 0.3);
+            telemetry.addData("heading: ", heading);
+            telemetry.update();
+        }
+        stop(leftFront, leftBack, rightFront, rightBack);
+    }
+
     /*
      * STOP Method
      * Similar to the move method, our stop method
