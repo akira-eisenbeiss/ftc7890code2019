@@ -137,6 +137,7 @@ public class NewAUTOnomous extends LinearOpMode {
         deposit();
         crater();
     }
+
     /*
      * LANDING Method
      * This method allows us to land our robot by detecting our distance
@@ -149,8 +150,8 @@ public class NewAUTOnomous extends LinearOpMode {
         telemetry.addData("distance", depotSensor.getDistance(DistanceUnit.INCH));
         telemetry.update();
         boolean landed = false;
-        while(!landed){
-            if(depotSensor.getDistance(DistanceUnit.INCH) < 2.5){
+        while (!landed) {
+            if (depotSensor.getDistance(DistanceUnit.INCH) < 2.5) {
                 liftMotor.setPower(0);
                 //GETS US OFF THE HOOK
                 liftMotor.setPower(0.2);
@@ -162,47 +163,44 @@ public class NewAUTOnomous extends LinearOpMode {
                 liftMotor.setPower(0.0);
                 move("RIGHT", 0.3);
                 landed = true;
-            }
-            else if(depotSensor.getDistance(DistanceUnit.INCH) >= 2.5){
+            } else if (depotSensor.getDistance(DistanceUnit.INCH) >= 2.5) {
                 liftMotor.setPower(0.3);
             }
         }
     }
+
     /*
      * SAMPLING Method
      *
      */
     public void sampling() {
-        if(detect()){
+        if (detect()) {
             telemetry.addData("pos", "center");
             telemetry.update();
             detected = true;
-        }
-        else if(!detect()){
+        } else if (!detect()) {
             telemetry.addData("pos", "NOT center");
             telemetry.update();
             gyro(45, 'L');
-            if(detect()){
+            if (detect()) {
                 telemetry.addData("pos", "left");
                 telemetry.update();
                 detected = true;
-            }
-            else if(!detect()){
+            } else if (!detect()) {
                 telemetry.addData("pos", "NOT left");
                 telemetry.update();
                 gyro(315, 'R');
-                if(detect()){
+                if (detect()) {
                     telemetry.addData("pos", "right");
                     telemetry.update();
                     detected = true;
-                }
-                else if(!detect()){
+                } else if (!detect()) {
                     telemetry.addData("pos", "NOT right, giving up");
                     telemetry.update();
                 }
             }
         }
-        if(detected) {
+        if (detected) {
             move("north", 0.3);
             sleep(500); //TODO TEST
             move("south", 0.3);
@@ -211,14 +209,12 @@ public class NewAUTOnomous extends LinearOpMode {
         }
     }
 
-    public boolean detect(){
-        if(detector.getAligned()){
+    public boolean detect() {
+        if (detector.getAligned()) {
             return true;
-        }
-        else if (!detector.getAligned()){
+        } else if (!detector.getAligned()) {
             return false;
-        }
-        else{
+        } else {
             telemetry.addLine("Oops, an error did a happen.");
             telemetry.update();
             return false;
@@ -247,37 +243,36 @@ public class NewAUTOnomous extends LinearOpMode {
          */
         gyro(90, 'L');
         boolean wallcheck = false;
-        while(!wallcheck){
-            if(rangeSensor.getDistance(DistanceUnit.INCH) < 10.0){
+        while (!wallcheck) {
+            if (rangeSensor.getDistance(DistanceUnit.INCH) < 10.0) {
                 stopMove();
                 wallcheck = true;
-            }
-            else if(rangeSensor.getDistance(DistanceUnit.INCH) >= 10.0) {
+            } else if (rangeSensor.getDistance(DistanceUnit.INCH) >= 10.0) {
                 move("BACKWARDS", 0.3);
                 telemetry.addData("distance", depotSensor.getDistance(DistanceUnit.INCH));
                 telemetry.update();
             }
         }
-        gyro(90,'L');
+        gyro(90, 'L');
         /* The robot moves until it is 20 inches away from the depot, at which point
          * it begins to slow down and come to a stop. It then deposits the team marker
          * by rotating our marker mechanism servo
          */
         boolean wallcheck2 = false;
-        while(!wallcheck2){
-            if(rangeSensor.getDistance(DistanceUnit.INCH) < 20){
+        while (!wallcheck2) {
+            if (rangeSensor.getDistance(DistanceUnit.INCH) < 20) {
                 stopMove();
                 //deposit marker, please
                 sleep(500);
                 wallcheck2 = true;
-            }
-            else if(rangeSensor.getDistance(DistanceUnit.INCH) >= 20) {
+            } else if (rangeSensor.getDistance(DistanceUnit.INCH) >= 20) {
                 move("BACKWARDS", 0.5);
                 telemetry.addData("distance", depotSensor.getDistance(DistanceUnit.INCH));
                 telemetry.update();
             }
         }
     }
+
     /*
      * CRATER Method
      * In our crater method we turn our robot
@@ -294,24 +289,24 @@ public class NewAUTOnomous extends LinearOpMode {
         //gyro(225,'R');
 
         //this is for crater side
-        gyro(315,'R');
+        gyro(315, 'R');
         /* We again use a while loop in order to check our distance, this time from
          * the edge of the crater. Once we are six inches away, we slow down towards
          * the crater and park our robot on the edge.
          */
         boolean wallcheck3 = false;
-        while(!wallcheck3){
-            if(rangeSensor.getDistance(DistanceUnit.INCH) < 6.0){
+        while (!wallcheck3) {
+            if (rangeSensor.getDistance(DistanceUnit.INCH) < 6.0) {
                 stopMove();
                 wallcheck3 = true;
-            }
-            else if(rangeSensor.getDistance(DistanceUnit.INCH) >= 6.0) {
-                move( "BACKWARDS", 0.3);
+            } else if (rangeSensor.getDistance(DistanceUnit.INCH) >= 6.0) {
+                move("BACKWARDS", 0.3);
                 telemetry.addData("distance", depotSensor.getDistance(DistanceUnit.INCH));
                 telemetry.update();
             }
         }
     }
+
     /*
      * MOVEMENT Method
      * In this code we use a switch case in order to create
@@ -326,7 +321,7 @@ public class NewAUTOnomous extends LinearOpMode {
      *(with either positive or negative speed)
      */
     public void move(String direction, double speed) {
-        switch(direction) {
+        switch (direction) {
             case "north":
                 //robot moves backwards
                 leftFront.setPower(speed);
@@ -395,6 +390,7 @@ public class NewAUTOnomous extends LinearOpMode {
                 break;
         }
     }
+
     /*
      * GYRO Method
      * Our gyro method uses the gyro sensor in order
@@ -409,13 +405,12 @@ public class NewAUTOnomous extends LinearOpMode {
      */
     public void gyro(int targetHeading, char dir) {
         int heading = MRGyro.getHeading();
-        while(heading < targetHeading - 10 || heading > targetHeading + 10) {
+        while (heading < targetHeading - 10 || heading > targetHeading + 10) {
             heading = MRGyro.getHeading();
 
-            if(dir == 'L'){
-                move( "TURN LEFT", 0.3);
-            }
-            else if(dir == 'R'){
+            if (dir == 'L') {
+                move("TURN LEFT", 0.3);
+            } else if (dir == 'R') {
                 move("TURN RIGHT", 0.3);
             }
             telemetry.addData("heading: ", heading);
@@ -423,12 +418,13 @@ public class NewAUTOnomous extends LinearOpMode {
         }
         stopMove();
     }
+
     public void landingGyro(int targetHeading) {
         int heading = MRGyro.getHeading();
-        while(heading < targetHeading - 10 || heading > targetHeading + 10) {
+        while (heading < targetHeading - 10 || heading > targetHeading + 10) {
             heading = MRGyro.getHeading();
 
-            move( "TURN LEFT", 0.3);
+            move("TURN LEFT", 0.3);
             telemetry.addData("heading: ", heading);
             telemetry.update();
         }
