@@ -38,29 +38,46 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-/*
-  7890 Space Lions 2018 "FULL AUTO FINAL"
-  GOALS: lowering robot, deposit marker, parking
-*/
-@Autonomous(name="marker mech test", group="LinearOpMode")
-public class MarkerMechTest extends LinearOpMode {
-    private ElapsedTime runtime = new ElapsedTime();
 
-    Servo markerMech;
+@Autonomous(name="deposit marker closer side", group="LinearOpMode")
+public class DepositMarker extends LinearOpMode {
+    private ElapsedTime runtime = new ElapsedTime();
 
     @Override
     public void runOpMode() throws InterruptedException {
-        markerMech = hardwareMap.servo.get("marker");
+        //wheel motors
+        leftFront = hardwareMap.dcMotor.get("left front");
+        leftBack = hardwareMap.dcMotor.get("left back");
+        rightFront = hardwareMap.dcMotor.get("right front");
+        rightBack = hardwareMap.dcMotor.get("right back");
+        //distance sensor
+        distanceSensor = hardwareMap.get(DistanceSensor.class, "distance sensor");
+        depotSensor = hardwareMap.get(ColorSensor.class, "depot sensor");
+        //arm motors
+        motorArm1 = hardwareMap.dcmotor.get("ARM MOTOR NAME 1");
+        motorArm2 = hardwareMap.dcmotor.get("ARM MOTOR NAME 2");
+        intakeMotor = hardwareMap.dcmotor.get("INTAKE MOTOR NAME");
+
         waitForStart();
-
-            sleep(2000);
-            markerMech.setPosition(0.5);
-            sleep(5000);
-            markerMech.setPosition(1.0);
-            sleep(5000);
-            markerMech.setPosition(-0.5);
-            sleep(5000);
-            markerMech.setPosition(-1.0);
-
+        while(!(depotSensor.blue() > depotSensor.green()) && !(depotSensor.red() > depotSensor.green())){
+          move ( leftFront,  rightFront, leftBack,  rightBack,
+                     FORWARD, 0.3);
+        }
+        //unfolds arm, spins intake to deposit
+        motorArm1.setPower(0.5);
+        sleep(2000);
+        motorArm2.setPower(0.5);
+        sleep(2000);
+        motorIntake.setPower(0.5);
+        sleep(2000);
     }
 }
+/*
+* Senario 1 [This Class]:
+*   * Drive forward until ~35cm from wall
+*   DROP THE Marker (
+* Senario 2:
+* On the far side [Different Class]
+* Senario 3:[Worse Case, Supernatural Chain of Unfortune Leaves Us Here]
+* https://youtu.be/mWWAZBKvizg?t=255
+*/
