@@ -56,8 +56,8 @@ GOALS: 2019, land, sample, deposit team marker, park in crater
  */
 //ur mum
 
-@Autonomous(name="NEW AUTO TEST", group="LinearOpMode")
-public class NewAUTOnomous extends LinearOpMode {
+@Autonomous(name="NEW AUTO CRATER", group="LinearOpMode")
+public class NewAutoCrater extends LinearOpMode {
 
     /*
      * MOTORS, SERVOS, and SENSORS

@@ -105,7 +105,6 @@ public class DogeCVTest extends LinearOpMode {
 
         detector.enable();
 
-
         /*
          * AUTONOMOUS MAIN METHOD
          * The start of our autonomous code
