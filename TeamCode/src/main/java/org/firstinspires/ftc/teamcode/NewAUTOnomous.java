@@ -132,7 +132,6 @@ public class NewAUTOnomous extends LinearOpMode {
 
         landing();
         sampling();
-        //gyro(45);
 
         deposit();
         crater();
@@ -153,6 +152,7 @@ public class NewAUTOnomous extends LinearOpMode {
         while (!landed) {
             if (depotSensor.getDistance(DistanceUnit.INCH) < 2.5) {
                 liftMotor.setPower(0);
+
                 //GETS US OFF THE HOOK
                 liftMotor.setPower(0.2);
                 sleep(100);
@@ -413,18 +413,6 @@ public class NewAUTOnomous extends LinearOpMode {
             } else if (dir == 'R') {
                 move("TURN RIGHT", 0.3);
             }
-            telemetry.addData("heading: ", heading);
-            telemetry.update();
-        }
-        stopMove();
-    }
-
-    public void landingGyro(int targetHeading) {
-        int heading = MRGyro.getHeading();
-        while (heading < targetHeading - 10 || heading > targetHeading + 10) {
-            heading = MRGyro.getHeading();
-
-            move("TURN LEFT", 0.3);
             telemetry.addData("heading: ", heading);
             telemetry.update();
         }
