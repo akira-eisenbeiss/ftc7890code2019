@@ -188,7 +188,9 @@ public class NewAUTOnomous extends LinearOpMode {
     * The robot begins by 'looking' at the ore through the phones camera
     * The robot checks if the gold cube is in the center first because
     * it is closest to us after landing from the lander.
-    * If the robot sees the gold cube in the center, the detect
+    * If the detect method is true, which means that the phone has seen the mineral,
+    * and the detected variable is false, which means that the robot hasn't already seen the gold,
+    * then our robot moves towards the position where these conditions are met.
     * */
     public void sampling() {
         move("south", 0.3);
