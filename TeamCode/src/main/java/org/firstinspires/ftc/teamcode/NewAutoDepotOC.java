@@ -49,16 +49,15 @@ import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.disnodeteam.dogecv.detectors.roverrukus.SamplingOrderDetector;
-
 /*
 7890 Space Lions 2019 "Crater Autonomous for Big Kids"
 author: 7890 Software (Akira, Erin, Stephen, Kyra, Anthony)
 GOALS: 2019, land, sample, deposit team marker, park in crater
  */
+//ur mum
 
-
-@Autonomous(name="NEW AUTO TEST", group="LinearOpMode")
-public class NewAUTOnomous extends LinearOpMode {
+@Autonomous(name="NEW AUTO DEPOT Opp Crater", group="LinearOpMode")
+public class NewAutoDepotOC extends LinearOpMode {
 
     /*
      * MOTORS, SERVOS, and SENSORS
@@ -86,6 +85,7 @@ public class NewAUTOnomous extends LinearOpMode {
     ModernRoboticsI2cRangeSensor sideSensor1, sideSensor2;
 
     boolean detected = false;
+    char pos;
     GoldAlignDetector detector;
 
     @Override
@@ -181,15 +181,6 @@ public class NewAUTOnomous extends LinearOpMode {
      * SAMPLING Method
      *
      */
-    /*This block of code is the logic for our sampling during autonomous
-    * with our robot's goal being to find the gold cube.
-    * If our partner has already sampled this logic allows us to not
-    * circumvent the points gained by their autonomous.
-    * The robot begins by 'looking' at the ore through the phones camera
-    * The robot checks if the gold cube is in the center first because
-    * it is closest to us after landing from the lander.
-    * If the robot sees the gold cube in the center, the detect
-    * */
     public void sampling() {
         move("south", 0.3);
         sleep(2000);
@@ -197,6 +188,7 @@ public class NewAUTOnomous extends LinearOpMode {
         if (detect() && !detected) {
             telemetry.addData("pos", "center");
             telemetry.update();
+            pos = 'C';
             detected = true;
         } else if (!detect() && !detected) {
             gyro(45, 'L');
@@ -206,6 +198,7 @@ public class NewAUTOnomous extends LinearOpMode {
             if (detect() && !detected) {
                 telemetry.addData("pos", "left");
                 telemetry.update();
+                pos = 'L';
                 detected = true;
             } else if (!detect() && !detected) {
                 gyro(315, 'R');
@@ -215,6 +208,7 @@ public class NewAUTOnomous extends LinearOpMode {
                 if (detect() && !detected) {
                     telemetry.addData("pos", "right");
                     telemetry.update();
+                    pos = 'R';
                     detected = true;
                 } else if (!detect() && !detected) {
                     telemetry.addData("pos", "NOT right, giving up");
@@ -261,22 +255,18 @@ public class NewAUTOnomous extends LinearOpMode {
          * and moves towards it until it detects that it is 10 inches away from it.
          * once it is there, our robot turns so that we can navigate around the lander bin
          */
-        gyro(90, 'L');
-        boolean wallcheck = false;
-        while (!wallcheck) {
-            if (doubleSensor.getDistance(DistanceUnit.INCH) < 10.0) {
-                stopMove();
-                wallcheck = true;
-            } else if (doubleSensor.getDistance(DistanceUnit.INCH) >= 10.0) {
-                move("BACKWARDS", 0.3);
-                telemetry.addData("distance", doubleSensor.getDistance(DistanceUnit.INCH));
-                telemetry.update();
-            }
+
+        switch(pos) {
+            case 'C':
+                break;
+            case 'L':
+                gyro(315, 'R');
+                break;
+            case 'R':
+                gyro(45, 'L');
+                break;
         }
 
-
-        gyro(90, 'L');
-        parallel(1.3);
         /* The robot moves until it is 20 inches away from the depot, at which point
          * it begins to slow down and come to a stop. It then deposits the team marker
          * by rotating our marker mechanism servo
@@ -308,11 +298,7 @@ public class NewAUTOnomous extends LinearOpMode {
          * on where the gold ore is. This is because we reset the gyro sensor's zero at different
          * places depending on where the gold ore was in sampling.
          */
-        //this is for depot side
-        //gyro(225,'R');
-
-        //this is for crater side
-        gyro(315, 'R');
+        gyro(135, 'L');
         /* We again use a while loop in order to check our distance, this time from
          * the edge of the crater. Once we are six inches away, we slow down towards
          * the crater and park our robot on the edge.
@@ -334,7 +320,7 @@ public class NewAUTOnomous extends LinearOpMode {
      * MOVEMENT Method
      * In this code we use a switch case in order to create
      * more code-efficient robot driving. This means that instead
-     * of having to individually control each motor every time we
+     * of having to individually control each motor everytime we
      * want to move, we can instead just call the move() method.
      * And specify the wanted direction with a case-valid string.
      * This makes our program a lot shorter than it would
