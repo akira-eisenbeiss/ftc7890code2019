@@ -139,7 +139,7 @@ public class NewTeleOp extends OpMode {
         armMotor.setPower(-gamepad2.left_trigger);
         */
         armMotor.setPower(gamepad2.left_stick_y);
-        extendArm.setPower(gamepad2.right_stick_y);
+        extendArm.setPower(-gamepad2.right_stick_y);
 
         if (gamepad2.y){
             intakeCntr = 0;
