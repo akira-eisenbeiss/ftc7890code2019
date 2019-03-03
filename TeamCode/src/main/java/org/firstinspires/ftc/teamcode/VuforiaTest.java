@@ -45,7 +45,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.Came
 
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-
+@Disabled
 @Autonomous(name="vuforia test", group="LinearOpMode")
 public class VuforiaTest extends LinearOpMode {
 

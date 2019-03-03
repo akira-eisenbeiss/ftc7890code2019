@@ -51,7 +51,7 @@ author: 7890 Software (Akira, Erin, Stephen, Kyra, Anthony)
 GOALS: 2019, land, sample, deposit team marker, park in crater
  */
 
-
+@Disabled
 @Autonomous(name="auto depot", group="LinearOpMode")
 public class AutoDepot extends LinearOpMode {
 

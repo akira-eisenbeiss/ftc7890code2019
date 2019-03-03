@@ -82,6 +82,7 @@ public class NewAutoCrater extends LinearOpMode {
     ModernRoboticsI2cRangeSensor doubleSensor;
 
     Servo sensorSwitch;
+    Servo markerMech;
     ModernRoboticsI2cRangeSensor sideSensor1, sideSensor2;
 
     boolean detected = false;
@@ -119,7 +120,9 @@ public class NewAutoCrater extends LinearOpMode {
         liftMotor = hardwareMap.dcMotor.get("lift motor");
 
         //SERVOS
-        sensorSwitch = hardwareMap.servo.get("servo switch");
+        sensorSwitch = hardwareMap.servo.get("sensor switch");
+        markerMech = hardwareMap.servo.get("marker mech");
+
 
         //SENSORS
         MRGyro = hardwareMap.get(ModernRoboticsI2cGyro.class, "gyro");
@@ -132,12 +135,13 @@ public class NewAutoCrater extends LinearOpMode {
          * AUTONOMOUS MAIN METHOD
          * The start of our autonomous code
          */
+        markerMech.setPosition(-1);
+        sensorSwitch.setPosition(0);
 
-        sensorSwitch.setPosition(1);
         waitForStart();
 
         landing();
-        sensorSwitch.setPosition(0);
+        sensorSwitch.setPosition(-0.5);
         sampling();
 
         deposit();
@@ -275,8 +279,9 @@ public class NewAutoCrater extends LinearOpMode {
         while (!wallcheck2) {
             if (doubleSensor.getDistance(DistanceUnit.INCH) < 20) {
                 stopMove();
-                //deposit marker, please
+                markerMech.setPosition(0);
                 sleep(500);
+                markerMech.setPosition(-1);
                 wallcheck2 = true;
             } else if (doubleSensor.getDistance(DistanceUnit.INCH) >= 20) {
                 move("BACKWARDS", 0.5);

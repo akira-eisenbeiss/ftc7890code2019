@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.util.Range;
 author: 7890 Software (Akira, Erin, Stephen, Kyra, Anthony)
 GOALS: 2019, deposite silver minerals, possibly also gold, lower and raise on the lander
  */
-
+@Disabled
 @TeleOp(name="outtake test", group="Tele Op")
 public class Outtaketest extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
