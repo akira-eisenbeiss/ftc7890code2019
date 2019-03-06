@@ -252,16 +252,16 @@ public class NewAUTOnomous extends LinearOpMode {
      * tape on the floor.
      */
     public void deposit() {
-        // in this portion of the deposit method the robot backs up from the lander
+        // In this portion of the deposit method the robot moves away from the lander
         // and finds its current angle.
         /*
-         * We use a switch-case because depending on where the gold ore was in sampling,
-         * we have to turn a different angle.
+         * We use a switch-case because depending on where the gold mineral was in sampling,
+         * we turn a different angle.
          */
 
         /* The robot moves, using a range sensor to detect its distance from the wall
          * and moves towards it until it detects that it is 10 inches away from it.
-         * once it is there, our robot turns so that we can navigate around the lander bin
+         * once it is there, our robot turns left so that we can navigate around the lander bin
          */
         gyro(90, 'L');
         boolean wallcheck = false;
