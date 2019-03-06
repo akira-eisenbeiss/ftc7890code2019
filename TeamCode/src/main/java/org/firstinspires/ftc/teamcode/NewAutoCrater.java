@@ -144,8 +144,10 @@ public class NewAutoCrater extends LinearOpMode {
         sensorSwitch.setPosition(-0.5);
         sampling();
 
+        /*
         deposit();
         crater();
+        */
     }
 
     /*
@@ -153,40 +155,47 @@ public class NewAutoCrater extends LinearOpMode {
      * This method allows us to land our robot by detecting our distance
      * from the ground using our MR range sensor. Once we reach the ground
      * we rotate our robot in order to unhook.
+     *
+     *
+     * SAMPLING Method
+     *
      */
     public void landing() {
         //cases, naming, data types
         //double distanceFromGround = depotSensor.getDistance(DistanceUnit.INCH);
-        telemetry.addData("distance", doubleSensor.getDistance(DistanceUnit.INCH));
-        telemetry.update();
+
         boolean landed = false;
         while (!landed) {
-            if (doubleSensor.getDistance(DistanceUnit.INCH) < 2.5) {
+            if (doubleSensor.getDistance(DistanceUnit.INCH) <= 1.6) {
                 liftMotor.setPower(0);
-
                 //GETS US OFF THE HOOK
-                liftMotor.setPower(0.2);
-                sleep(100);
-                liftMotor.setPower(0);
-                move("LEFT", 0.3);
-                liftMotor.setPower(-0.3);
-                sleep(1000);
+                liftMotor.setPower(0.8);
+                sleep(2000);
                 liftMotor.setPower(0.0);
-                move("RIGHT", 0.3);
+                move("east", 0.8);
+                sleep(500);
+                stopMove();
+                liftMotor.setPower(-1.0);
+                sleep(1400);
+                liftMotor.setPower(0.0);
+                move("west", 0.8);
+                sleep(250);
+                telemetry.addLine("moved off hook");
+                telemetry.update();
+                stopMove();
                 landed = true;
-            } else if (doubleSensor.getDistance(DistanceUnit.INCH) >= 2.5) {
-                liftMotor.setPower(0.3);
+            } else if (doubleSensor.getDistance(DistanceUnit.INCH) > 1.6) {
+                liftMotor.setPower(1.0);
+                telemetry.addData("distance", doubleSensor.getDistance(DistanceUnit.INCH));
+                telemetry.update();
             }
         }
     }
 
-    /*
-     * SAMPLING Method
-     *
-     */
     public void sampling() {
         move("south", 0.3);
-        sleep(2000);
+        sleep(500);
+        stopMove();
 
         if (detect() && !detected) {
             telemetry.addData("pos", "center");
@@ -234,6 +243,7 @@ public class NewAutoCrater extends LinearOpMode {
             return false;
         }
     }
+
 
     /*
      * DEPOSITING Method
@@ -432,6 +442,7 @@ public class NewAutoCrater extends LinearOpMode {
                 move("TURN RIGHT", 0.3);
             }
             telemetry.addData("heading: ", heading);
+            telemetry.addData("target", targetHeading);
             telemetry.update();
         }
         stopMove();

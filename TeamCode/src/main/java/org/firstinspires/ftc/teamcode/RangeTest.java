@@ -18,7 +18,7 @@ public class RangeTest extends LinearOpMode {
     @Override public void runOpMode() {
 
         // get a reference to our compass
-        depotSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range sensor");
+        depotSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "depot sensor");
 
         // wait for the start button to be pressed
         waitForStart();

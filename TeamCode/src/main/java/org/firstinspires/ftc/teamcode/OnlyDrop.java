@@ -54,7 +54,6 @@ import com.disnodeteam.dogecv.detectors.roverrukus.SamplingOrderDetector;
 author: 7890 Software (Akira, Erin, Stephen, Kyra, Anthony)
 GOALS: 2019, land, sample, deposit team marker, park in crater
  */
-//ur mum
 
 @Autonomous(name="Landing ONLY", group="LinearOpMode")
 public class OnlyDrop extends LinearOpMode {
@@ -75,7 +74,7 @@ public class OnlyDrop extends LinearOpMode {
 
     //Our gyro sensor that calibrates at a target heading and detects our angle away from that heading
     //We can use this to accurately turn
-    ModernRoboticsI2cGyro MRGyro;
+    //ModernRoboticsI2cGyro MRGyro;
 
     //Our range sensor that uses ODS and ultrasonic to detect our distance from objects:
     //Used to detect the distance from the ground
@@ -83,7 +82,7 @@ public class OnlyDrop extends LinearOpMode {
 
     Servo sensorSwitch;
     Servo markerMech;
-    ModernRoboticsI2cRangeSensor sideSensor1, sideSensor2;
+    //ModernRoboticsI2cRangeSensor sideSensor1, sideSensor2;
 
     boolean detected = false;
     GoldAlignDetector detector;
@@ -125,10 +124,10 @@ public class OnlyDrop extends LinearOpMode {
 
 
         //SENSORS
-        MRGyro = hardwareMap.get(ModernRoboticsI2cGyro.class, "gyro");
+       // MRGyro = hardwareMap.get(ModernRoboticsI2cGyro.class, "gyro");
         doubleSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "depot sensor");
 
-        MRGyro.calibrate();
+        //MRGyro.calibrate();
         sleep(4000);
 
         /*
@@ -141,7 +140,7 @@ public class OnlyDrop extends LinearOpMode {
 
         landing();
         sensorSwitch.setPosition(-0.5);
-       // sampling();
+        sampling();
 
         //deposit();
         //crater();
@@ -156,43 +155,46 @@ public class OnlyDrop extends LinearOpMode {
     public void landing() {
         //cases, naming, data types
         //double distanceFromGround = depotSensor.getDistance(DistanceUnit.INCH);
-        telemetry.addData("distance", doubleSensor.getDistance(DistanceUnit.INCH));
-        telemetry.update();
+
         boolean landed = false;
         while (!landed) {
-            if (doubleSensor.getDistance(DistanceUnit.INCH) < 2.5) {
+            if (doubleSensor.getDistance(DistanceUnit.INCH) <= 1.6) {
                 liftMotor.setPower(0);
-
                 //GETS US OFF THE HOOK
-                liftMotor.setPower(0.2);
-                sleep(100);
-                liftMotor.setPower(0);
-                move("LEFT", 0.3);
-                liftMotor.setPower(-0.3);
-                sleep(1000);
+                liftMotor.setPower(0.8);
+                sleep(2000);
                 liftMotor.setPower(0.0);
-                move("RIGHT", 0.3);
+                move("east", 0.8);
+                sleep(500);
+                stopMove();
+                liftMotor.setPower(-1.0);
+                sleep(1400);
+                liftMotor.setPower(0.0);
+                move("west", 0.8);
+                sleep(250);
+                telemetry.addLine("moved off hook");
+                telemetry.update();
+                stopMove();
                 landed = true;
-            } else if (doubleSensor.getDistance(DistanceUnit.INCH) >= 2.5) {
-                liftMotor.setPower(0.3);
+            } else if (doubleSensor.getDistance(DistanceUnit.INCH) > 1.6) {
+                liftMotor.setPower(1.0);
+                telemetry.addData("distance", doubleSensor.getDistance(DistanceUnit.INCH));
+                telemetry.update();
             }
         }
     }
 
-    /*
-     * SAMPLING Method
-     *
-     */
     public void sampling() {
         move("south", 0.3);
-        sleep(2000);
+        sleep(500);
+        stopMove();
 
         if (detect() && !detected) {
             telemetry.addData("pos", "center");
             telemetry.update();
             detected = true;
         } else if (!detect() && !detected) {
-            gyro(45, 'L');
+            //gyro(45, 'L');
             telemetry.addData("pos", "NOT center");
             telemetry.addLine("turning left");
             telemetry.update();
@@ -201,7 +203,7 @@ public class OnlyDrop extends LinearOpMode {
                 telemetry.update();
                 detected = true;
             } else if (!detect() && !detected) {
-                gyro(315, 'R');
+                //gyro(315, 'R');
                 telemetry.addData("pos", "NOT left");
                 telemetry.addLine("turning right");
                 telemetry.update();
@@ -235,94 +237,11 @@ public class OnlyDrop extends LinearOpMode {
     }
 
     /*
-     * DEPOSITING Method
-     * This method is used to deposit our
-     * team marker into the depot. We use
-     * a color sensor to detect the depot
-     * box by scanning for the colored
-     * tape on the floor.
-     */
-    public void deposit() {
-        // in this portion of the deposit method the robot backs up from the lander
-        // and finds its current angle.
-        /*
-         * We use a switch-case because depending on where the gold ore was in sampling,
-         * we have to turn a different angle.
-         */
-
-        /* The robot moves, using a range sensor to detect its distance from the wall
-         * and moves towards it until it detects that it is 10 inches away from it.
-         * once it is there, our robot turns so that we can navigate around the lander bin
-         */
-        gyro(90, 'L');
-        boolean wallcheck = false;
-        while (!wallcheck) {
-            if (doubleSensor.getDistance(DistanceUnit.INCH) < 10.0) {
-                stopMove();
-                wallcheck = true;
-            } else if (doubleSensor.getDistance(DistanceUnit.INCH) >= 10.0) {
-                move("BACKWARDS", 0.3);
-                telemetry.addData("distance", doubleSensor.getDistance(DistanceUnit.INCH));
-                telemetry.update();
-            }
-        }
-
-
-        gyro(90, 'L');
-        parallel(1.3);
-        /* The robot moves until it is 20 inches away from the depot, at which point
-         * it begins to slow down and come to a stop. It then deposits the team marker
-         * by rotating our marker mechanism servo
-         */
-        boolean wallcheck2 = false;
-        while (!wallcheck2) {
-            if (doubleSensor.getDistance(DistanceUnit.INCH) < 20) {
-                stopMove();
-                markerMech.setPosition(0);
-                sleep(500);
-                markerMech.setPosition(1);
-                wallcheck2 = true;
-            } else if (doubleSensor.getDistance(DistanceUnit.INCH) >= 20) {
-                move("BACKWARDS", 0.5);
-                telemetry.addData("distance", doubleSensor.getDistance(DistanceUnit.INCH));
-                telemetry.update();
-            }
-        }
-    }
-
-    /*
      * CRATER Method
      * In our crater method we turn our robot
      * so that it is facing the crater and then
      * drive our robot to park.
      */
-    public void crater() {
-        /*
-         * We have a switch-case because we have to turn a different angle depending
-         * on where the gold ore is. This is because we reset the gyro sensor's zero at different
-         * places depending on where the gold ore was in sampling.
-         */
-        //this is for depot side
-        //gyro(225,'R');
-
-        //this is for crater side
-        gyro(315, 'R');
-        /* We again use a while loop in order to check our distance, this time from
-         * the edge of the crater. Once we are six inches away, we slow down towards
-         * the crater and park our robot on the edge.
-         */
-        boolean wallcheck3 = false;
-        while (!wallcheck3) {
-            if (doubleSensor.getDistance(DistanceUnit.INCH) < 6.0) {
-                stopMove();
-                wallcheck3 = true;
-            } else if (doubleSensor.getDistance(DistanceUnit.INCH) >= 6.0) {
-                move("BACKWARDS", 0.3);
-                telemetry.addData("distance", doubleSensor.getDistance(DistanceUnit.INCH));
-                telemetry.update();
-            }
-        }
-    }
 
     /*
      * MOVEMENT Method
@@ -407,61 +326,6 @@ public class OnlyDrop extends LinearOpMode {
                 break;
         }
     }
-
-    /*
-     * GYRO Method
-     * Our gyro method uses the gyro sensor in order
-     * to accurately turn our robot. We save a target
-     * heading, which is the angle that our robot saves when
-     * we calibrate the sensor. We can then compare all
-     * subsequent angles to this target heading allowing us
-     * to know how much we have rotated. This means that we can
-     * make angle-perfect turns such as 90 degrees or 180 degrees.
-     * This leaves less of our autonomous to chance and more to
-     * the technology behind our gyro sensor.
-     */
-    public void gyro(int targetHeading, char dir) {
-        int heading = MRGyro.getHeading();
-        while (heading < targetHeading - 10 || heading > targetHeading + 10) {
-            heading = MRGyro.getHeading();
-
-            if (dir == 'L') {
-                move("TURN LEFT", 0.3);
-            } else if (dir == 'R') {
-                move("TURN RIGHT", 0.3);
-            }
-            telemetry.addData("heading: ", heading);
-            telemetry.update();
-        }
-        stopMove();
-    }
-
-    public void parallel(double dist){
-        boolean aligned = false;
-        while(!aligned){
-            if(sideSensor1.getDistance(DistanceUnit.INCH) > sideSensor2.getDistance(DistanceUnit.INCH)){
-                move("CW", 0.3);
-            } else if (sideSensor1.getDistance(DistanceUnit.INCH) < sideSensor2.getDistance(DistanceUnit.INCH)){
-                move("CCW", 0.3);
-            } else {
-                telemetry.addLine("good. parallel now.");
-                telemetry.update();
-                aligned = true;
-            }
-        }
-        boolean correctDist = false;
-        while(!correctDist){
-            if(sideSensor1.getDistance(DistanceUnit.INCH) >= dist || sideSensor2.getDistance(DistanceUnit.INCH) >= dist){
-                move("west", 0.3);
-            }else if(sideSensor1.getDistance(DistanceUnit.INCH) <= dist || sideSensor2.getDistance(DistanceUnit.INCH) <= dist){
-                move("east", 0.3);
-            } else{
-                telemetry.addLine("good! correct dist away");
-                correctDist = true;
-            }
-        }
-    }
-
     /*
      * STOP Method
      * Similar to the move method, our stop method

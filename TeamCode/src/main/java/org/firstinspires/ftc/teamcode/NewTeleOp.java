@@ -145,11 +145,18 @@ public class NewTeleOp extends OpMode {
          * guess the timing. We no longer need to make multiple unnessary adjustments to get the
          * lift where we need it.
          */
-        float liftControlUp = gamepad2.right_trigger;
-        float liftControlDown = -gamepad2.left_trigger;
+        //float liftControlUp = gamepad2.right_trigger;
+        //float liftControlDown = -gamepad2.left_trigger;
 
-        liftMotor.setPower(liftControlDown);
-        liftMotor.setPower(liftControlUp);
+        if(gamepad1.right_bumper){
+            liftMotor.setPower(1);
+        }
+        else if(gamepad1.left_bumper){
+            liftMotor.setPower(-1);
+        }
+        else{
+            liftMotor.setPower(0);
+        }
 
         /*
         telemetry.addData("triggers", gamepad2.left_trigger);
