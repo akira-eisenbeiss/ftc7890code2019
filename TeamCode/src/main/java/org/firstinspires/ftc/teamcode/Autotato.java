@@ -51,7 +51,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 author: 7890 Software (Akira, Erin, Stephen, Kyra, Anthony)
 GOALS: 2019, land, sample, deposit team marker, park in crater
  */
-
+@Disabled
 @Autonomous(name="potato auto", group="LinearOpMode")
 public class Autotato extends LinearOpMode {
 

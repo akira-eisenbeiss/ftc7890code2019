@@ -14,8 +14,8 @@ author: 7890 Software (Akira, Erin, Stephen, Kyra, Anthony)
 GOALS: 2019, deposite silver minerals, possibly also gold, lower and raise on the lander
  */
 
-@TeleOp(name="NEW TELEOP CHAMPS", group="Tele Op")
-public class NewTeleOp extends OpMode {
+@TeleOp(name="servo test", group="Tele Op")
+public class ServoTests extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     /*
@@ -40,6 +40,8 @@ public class NewTeleOp extends OpMode {
     DcMotor armMotor;
 
     DcMotor intakeMotor;
+    Servo sensorSwitch;
+    Servo markerMech;
 
     //DIRECTIONS
     //Controls the directions of our robot's motors.
@@ -66,6 +68,11 @@ public class NewTeleOp extends OpMode {
         intakeMotor = hardwareMap.dcMotor.get("intake motor");
         armMotor = hardwareMap.dcMotor.get("arm motor");
 
+        sensorSwitch = hardwareMap.servo.get("sensor switch");
+        markerMech = hardwareMap.servo.get("marker mech");
+
+
+
         //outtake = hardwareMap.servo.get("outtake");
 
         /*
@@ -79,6 +86,7 @@ public class NewTeleOp extends OpMode {
         leftBack.setDirection(LEFTDIRECTION);
         rightFront.setDirection(RIGHTDIRECTION);
         rightBack.setDirection(RIGHTDIRECTION);
+
 
         //outtake.setPosition(1.0);
     }
@@ -98,103 +106,10 @@ public class NewTeleOp extends OpMode {
  * ((de)activating the intake/outake) to the triggers so that the driver doesn't have to
  * reposition their hands.
  */
-        //In this section, we are creating floats for drive, turn, and strafe.
-        float drive;
-        float turn;
-        float strafe;
-
-        //Setting controls on the gamepad for drive, turn, and strafe
-        drive = -gamepad1.left_stick_y;
-        turn = -gamepad1.right_stick_x;
-        strafe = -gamepad1.left_stick_x;
-
-        //Setting driver mechanics for the gamepad
-        double lfDrive = Range.clip(drive + turn - strafe, -1.0, 1.0);
-        double lbDrive = Range.clip(drive + turn + strafe, -1.0, 1.0);
-        double rfDrive = Range.clip(drive - turn + strafe, -1.0, 1.0);
-        double rbDrive = Range.clip(drive - turn - strafe, -1.0, 1.0);
-
-
-        double ratio = (1.1 - gamepad1.right_trigger);
-        //This code sets the power of the various motors to the variable drive
-        leftFront.setPower(lfDrive / ratio);
-        leftBack.setPower(lbDrive / ratio);
-        rightFront.setPower(rfDrive / ratio);
-        rightBack.setPower(rbDrive / ratio);
-
-        if(gamepad1.b){
-            leftFront.setPower(0.3);
-            leftBack.setPower(0.3);
-            rightFront.setPower(-0.3);
-            rightBack.setPower(-0.3);
-        }
-        if(gamepad1.x){
-            leftFront.setPower(-0.3);
-            leftBack.setPower(-0.3);
-            rightFront.setPower(0.3);
-            rightBack.setPower(0.3);
-        }
+    sensorSwitch.setPosition(gamepad1.left_stick_y);
+    markerMech.setPosition(gamepad1.right_stick_y);
 
 
 
-        // LIFTING
-        /*
-         * The following code creates variables for the lift controls. We decided to map these to
-         * the triggers for driver 1. This would allow the driver to control the speed of the lift
-         * motors for more accuracy instead of a constant speed which would likely force us to
-         * guess the timing. We no longer need to make multiple unnessary adjustments to get the
-         * lift where we need it.
-         */
-        //float liftControlUp = gamepad2.right_trigger;
-        //float liftControlDown = -gamepad2.left_trigger;
-
-        if(gamepad1.right_bumper){
-            liftMotor.setPower(1);
-        }
-        else if(gamepad1.left_bumper){
-            liftMotor.setPower(-1);
-        }
-        else{
-            liftMotor.setPower(0);
-        }
-
-        /*
-        telemetry.addData("triggers", gamepad2.left_trigger);
-        telemetry.update();
-        */
-
-        //Arm
-        armMotor.setPower(gamepad2.left_stick_y);
-        extendArm.setPower(-gamepad2.right_stick_y);
-
-        if (gamepad2.y){
-            intakeCntr = 0;
-        }
-        else if (gamepad2.a) {
-            intakeCntr = 1;
-        }
-        else if (gamepad2.x) {
-            intakeCntr = 2;
-        }
-        switch (intakeCntr) {
-            case 0:
-                intakeMotor.setPower(0.0);
-                break;
-            case 1:
-                intakeMotor.setPower(1.0);
-                break;
-            case 2:
-                intakeMotor.setPower(-1.0);
-                break;
-        }
-
-        // TELEMETRY
-        /* The telemetry displays useful information on the phone such as
-         * How long the code has been running for and the power sent to our motors.
-         */
-        telemetry.addData("Status", "Run Time: " + runtime.toString());
-        telemetry.addData("Motors", "left (%.2f), right (%.2f)",
-                rfDrive, rbDrive, lbDrive, rbDrive);
-        telemetry.update();
     }
 }

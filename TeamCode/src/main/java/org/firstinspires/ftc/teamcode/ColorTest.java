@@ -32,7 +32,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 /**
  * Created by wenhuizhao on 11/24/18.
  */
-
+@Disabled
 @Autonomous(name="Color Test", group="LinearOpMode")
 public class ColorTest extends LinearOpMode{
     private ElapsedTime     runtime = new ElapsedTime();

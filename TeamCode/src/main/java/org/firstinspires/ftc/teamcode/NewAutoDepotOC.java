@@ -82,6 +82,7 @@ public class NewAutoDepotOC extends LinearOpMode {
     ModernRoboticsI2cRangeSensor doubleSensor;
 
     Servo sensorSwitch;
+    Servo markerMech;
     ModernRoboticsI2cRangeSensor sideSensor1, sideSensor2;
 
     boolean detected = false;
@@ -121,6 +122,7 @@ public class NewAutoDepotOC extends LinearOpMode {
 
         //SERVOS
         sensorSwitch = hardwareMap.servo.get("servo switch");
+        markerMech = hardwareMap.servo.get("marker mech");
 
         //SENSORS
         MRGyro = hardwareMap.get(ModernRoboticsI2cGyro.class, "gyro");
@@ -134,7 +136,8 @@ public class NewAutoDepotOC extends LinearOpMode {
          * The start of our autonomous code
          */
 
-        sensorSwitch.setPosition(1);
+        markerMech.setPosition(-1);
+        sensorSwitch.setPosition(0);
         waitForStart();
 
         landing();
@@ -275,8 +278,9 @@ public class NewAutoDepotOC extends LinearOpMode {
         while (!wallcheck2) {
             if (doubleSensor.getDistance(DistanceUnit.INCH) < 20) {
                 stopMove();
-                //deposit marker, please
+                markerMech.setPosition(0);
                 sleep(500);
+                markerMech.setPosition(-1);
                 wallcheck2 = true;
             } else if (doubleSensor.getDistance(DistanceUnit.INCH) >= 20) {
                 move("BACKWARDS", 0.5);

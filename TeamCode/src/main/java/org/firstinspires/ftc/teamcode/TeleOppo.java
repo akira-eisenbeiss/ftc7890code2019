@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.util.Range;
 7890 Space Lions 2019 "Tele Op For Big Kids"
 GOALS: 2019, deposit silver minerals, possibly also gold, lower and raise on the lander
  */
-
+@Disabled
 @TeleOp(name="TeleOppo", group="Tele Op")
 public class TeleOppo extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
