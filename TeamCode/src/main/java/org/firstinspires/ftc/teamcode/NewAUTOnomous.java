@@ -301,14 +301,14 @@ public class NewAUTOnomous extends LinearOpMode {
     /*
      * CRATER Method
      * In our crater method we turn our robot
-     * so that it is facing the crater and then
+     * so that it is facing the crater and then we
      * drive our robot to park.
      */
     public void crater() {
         /*
          * We have a switch-case because we have to turn a different angle depending
-         * on where the gold ore is. This is because we reset the gyro sensor's zero at different
-         * places depending on where the gold ore was in sampling.
+         * on where the gold mineral is. This is because we recalibrate the gyro sensor to zero at different
+         * places depending on where the gold mineral was in sampling.
          */
         //this is for depot side
         //gyro(225,'R');
