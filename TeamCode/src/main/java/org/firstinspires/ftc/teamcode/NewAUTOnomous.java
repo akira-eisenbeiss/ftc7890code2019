@@ -310,10 +310,10 @@ public class NewAUTOnomous extends LinearOpMode {
          * on where the gold mineral is. This is because we recalibrate the gyro sensor to zero at different
          * places depending on where the gold mineral was in sampling.
          */
-        //this is for depot side
+        //this is for the depot side of the field
         //gyro(225,'R');
 
-        //this is for crater side
+        //this is for the crater side
         gyro(315, 'R');
         /* We again use a while loop in order to check our distance, this time from
          * the edge of the crater. Once we are six inches away, we slow down towards
