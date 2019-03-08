@@ -56,7 +56,7 @@ GOALS: 2019, land, sample, deposit team marker, park in crater
  */
 //ur mum
 
-@Autonomous(name="NEW AUTO CRATER", group="LinearOpMode")
+@Autonomous(name="NEW AUTO CRATER 2.0", group="LinearOpMode")
 public class NewAutoCrater extends LinearOpMode {
 
     /*
@@ -135,19 +135,19 @@ public class NewAutoCrater extends LinearOpMode {
          * AUTONOMOUS MAIN METHOD
          * The start of our autonomous code
          */
-        markerMech.setPosition(-1);
-        sensorSwitch.setPosition(0);
+        markerMech.setPosition(0.8);
+        sensorSwitch.setPosition(.25);
 
         waitForStart();
+        //gyro(90, "ccw");
 
-        landing();
-        sensorSwitch.setPosition(-0.5);
-        sampling();
+       // landing();
 
-        /*
+       // sampling();
         deposit();
-        crater();
-        */
+
+        //crater();
+
     }
 
     /*
@@ -161,22 +161,21 @@ public class NewAutoCrater extends LinearOpMode {
      *
      */
     public void landing() {
-        //cases, naming, data types
-        //double distanceFromGround = depotSensor.getDistance(DistanceUnit.INCH);
 
         boolean landed = false;
         while (!landed) {
             if (doubleSensor.getDistance(DistanceUnit.INCH) <= 1.6) {
+                sleep(1000);
                 liftMotor.setPower(0);
                 //GETS US OFF THE HOOK
                 liftMotor.setPower(0.8);
-                sleep(2000);
+                sleep(2100);
                 liftMotor.setPower(0.0);
                 move("east", 0.8);
-                sleep(500);
+                sleep(550);
                 stopMove();
                 liftMotor.setPower(-1.0);
-                sleep(1400);
+                sleep(1500);
                 liftMotor.setPower(0.0);
                 move("west", 0.8);
                 sleep(250);
@@ -194,7 +193,7 @@ public class NewAutoCrater extends LinearOpMode {
 
     public void sampling() {
         move("south", 0.3);
-        sleep(500);
+        sleep(300);
         stopMove();
 
         if (detect() && !detected) {
@@ -202,7 +201,7 @@ public class NewAutoCrater extends LinearOpMode {
             telemetry.update();
             detected = true;
         } else if (!detect() && !detected) {
-            gyro(45, 'L');
+            gyro(45, "ccw");
             telemetry.addData("pos", "NOT center");
             telemetry.addLine("turning left");
             telemetry.update();
@@ -211,7 +210,7 @@ public class NewAutoCrater extends LinearOpMode {
                 telemetry.update();
                 detected = true;
             } else if (!detect() && !detected) {
-                gyro(315, 'R');
+                gyro(315, "cw");
                 telemetry.addData("pos", "NOT left");
                 telemetry.addLine("turning right");
                 telemetry.update();
@@ -226,10 +225,18 @@ public class NewAutoCrater extends LinearOpMode {
             }
         }
         if (detected) {
+            move("south", 0.8);
+            sleep(800);
+            stopMove();
             telemetry.addLine("we are now moving");
             telemetry.update();
-            sleep(4000);
+            sensorSwitch.setPosition(1.25);
+            sensorSwitch.setPosition(1.00);
+            telemetry.addLine("moved forward");
+            telemetry.update();
+            deposit();
         }
+
     }
 
     public boolean detect() {
@@ -265,40 +272,53 @@ public class NewAutoCrater extends LinearOpMode {
          * and moves towards it until it detects that it is 10 inches away from it.
          * once it is there, our robot turns so that we can navigate around the lander bin
          */
-        gyro(90, 'L');
+     //   telemetry.addLine("got to deposit method");
+       // telemetry.update();
+       // move("north", 0.8);
+        sensorSwitch.setPosition(.75);
+        telemetry.addLine("moved backwards");
+        telemetry.update();
+        sleep(800);
+      //  gyro(90, "ccw");
+        telemetry.addLine("turned");
+        telemetry.update();
         boolean wallcheck = false;
         while (!wallcheck) {
             if (doubleSensor.getDistance(DistanceUnit.INCH) < 10.0) {
                 stopMove();
                 wallcheck = true;
             } else if (doubleSensor.getDistance(DistanceUnit.INCH) >= 10.0) {
-                move("BACKWARDS", 0.3);
+                move("south", 0.3);
+                telemetry.addLine("started looking for distance");
                 telemetry.addData("distance", doubleSensor.getDistance(DistanceUnit.INCH));
                 telemetry.update();
             }
         }
 
 
-        gyro(90, 'L');
-        parallel(1.3);
+
+        //gyro(90, "ccw");
+        //parallel(1.3);
         /* The robot moves until it is 20 inches away from the depot, at which point
          * it begins to slow down and come to a stop. It then deposits the team marker
          * by rotating our marker mechanism servo
          */
+        /*
         boolean wallcheck2 = false;
         while (!wallcheck2) {
             if (doubleSensor.getDistance(DistanceUnit.INCH) < 20) {
                 stopMove();
-                markerMech.setPosition(0);
+                markerMech.setPosition(0.25);
                 sleep(500);
-                markerMech.setPosition(-1);
+                markerMech.setPosition(0.75);
                 wallcheck2 = true;
             } else if (doubleSensor.getDistance(DistanceUnit.INCH) >= 20) {
-                move("BACKWARDS", 0.5);
+                move("south", 0.5);
                 telemetry.addData("distance", doubleSensor.getDistance(DistanceUnit.INCH));
                 telemetry.update();
             }
         }
+        */
     }
 
     /*
@@ -317,7 +337,7 @@ public class NewAutoCrater extends LinearOpMode {
         //gyro(225,'R');
 
         //this is for crater side
-        gyro(315, 'R');
+        gyro(315,  "cw");
         /* We again use a while loop in order to check our distance, this time from
          * the edge of the crater. Once we are six inches away, we slow down towards
          * the crater and park our robot on the edge.
@@ -328,7 +348,7 @@ public class NewAutoCrater extends LinearOpMode {
                 stopMove();
                 wallcheck3 = true;
             } else if (doubleSensor.getDistance(DistanceUnit.INCH) >= 6.0) {
-                move("BACKWARDS", 0.3);
+                move("south", 0.3);
                 telemetry.addData("distance", doubleSensor.getDistance(DistanceUnit.INCH));
                 telemetry.update();
             }
@@ -378,14 +398,14 @@ public class NewAutoCrater extends LinearOpMode {
                 leftBack.setPower(-speed);
                 rightBack.setPower(-speed);
                 break;
-            case "cc":
+            case "ccw":
                 //robot turns clockwise(to the right)
                 leftFront.setPower(-speed);
                 rightFront.setPower(-speed);
                 leftBack.setPower(-speed);
                 rightBack.setPower(-speed);
                 break;
-            case "ccw":
+            case "cw":
                 //robot turns counterclockwise(to the left)
                 leftFront.setPower(speed);
                 rightFront.setPower(speed);
@@ -431,21 +451,31 @@ public class NewAutoCrater extends LinearOpMode {
      * This leaves less of our autonomous to chance and more to
      * the technology behind our gyro sensor.
      */
-    public void gyro(int targetHeading, char dir) {
+    public void gyro(int targetHeading, String dir) {
         int heading = MRGyro.getHeading();
         while (heading < targetHeading - 10 || heading > targetHeading + 10) {
             heading = MRGyro.getHeading();
 
+            if (dir.equals("ccw")) {
+                move("ccw", 0.3);
+            }
+            else if (dir.equals("cw")) {
+                move("cw", 0.3);
+            }
+
+            /*
             if (dir == 'L') {
                 move("TURN LEFT", 0.3);
             } else if (dir == 'R') {
                 move("TURN RIGHT", 0.3);
             }
+            */
             telemetry.addData("heading: ", heading);
             telemetry.addData("target", targetHeading);
             telemetry.update();
         }
         stopMove();
+
     }
 
     public void parallel(double dist){

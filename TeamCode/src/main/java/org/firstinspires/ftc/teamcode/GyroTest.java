@@ -42,81 +42,117 @@ public class GyroTest extends LinearOpMode {
 
         waitForStart();
         while(opModeIsActive()){
-            gyro(270);
-            gyro(90);
+           // gyro(270);
+            gyro(90, "ccw");
             int heading = MRGyro.getHeading();
             telemetry.addData("heading: ", heading);
             telemetry.update();
         }
 
     }
-    public void gyro(int targetHeading) {
-        //MRGyro.calibrate();
+    public void gyro(int targetHeading, String dir) {
         int heading = MRGyro.getHeading();
-            move(leftFront, leftBack, rightFront, rightBack, "CLOCKWISE", 0.5);
-        telemetry.addData("heading: ", heading);
-        telemetry.update();
-        if (heading > targetHeading - 10 && heading < targetHeading + 10) {
-            stop(leftFront, leftBack, rightFront, rightBack);
-            sleep(3000);
+        while (heading < targetHeading - 10 || heading > targetHeading + 10) {
+            heading = MRGyro.getHeading();
 
+            if (dir.equals("ccw")) {
+                move("ccw", 0.3);
+            }
+            else if (dir.equals("cw")) {
+                move("cw", 0.3);
+            }
+
+            /*
+            if (dir == 'L') {
+                move("TURN LEFT", 0.3);
+            } else if (dir == 'R') {
+                move("TURN RIGHT", 0.3);
+            }
+            */
+            telemetry.addData("heading: ", heading);
+            telemetry.addData("target", targetHeading);
+            telemetry.update();
         }
+        stopMove();
 
     }
 
-    public void move(DcMotor motorlf, DcMotor motorrf, DcMotor motorlb, DcMotor motorrb,
-                     String direction, double speed) {
-        switch(direction) {
-            case "BACKWARDS":
+    public void move(String direction, double speed) {
+        switch (direction) {
+            case "north":
                 //robot moves backwards
-                motorlf.setPower(-speed);
-                motorrf.setPower(-speed);
-                motorlb.setPower(speed);
-                motorrb.setPower(speed);
+                leftFront.setPower(speed);
+                rightFront.setPower(-speed);
+                leftBack.setPower(speed);
+                rightBack.setPower(-speed);
                 break;
-            case "FORWARDS":
+            case "south":
                 //robot moves forwards
-                motorlf.setPower(speed);
-                motorrf.setPower(speed);
-                motorlb.setPower(-speed);
-                motorrb.setPower(-speed);
+                leftFront.setPower(-speed);
+                rightFront.setPower(speed);
+                leftBack.setPower(-speed);
+                rightBack.setPower(speed);
                 break;
-            case "RIGHT":
+            case "east":
                 //robot strafes right
-                motorlf.setPower(speed);
-                motorrf.setPower(-speed);
-                motorlb.setPower(speed);
-                motorrb.setPower(-speed);
+                leftFront.setPower(-speed);
+                rightFront.setPower(-speed);
+                leftBack.setPower(speed);
+                rightBack.setPower(speed);
                 break;
-            case "LEFT":
+            case "west":
                 //robot strafes left
-                motorlf.setPower(-speed);
-                motorrf.setPower(speed);
-                motorlb.setPower(-speed);
-                motorrb.setPower(speed);
+                leftFront.setPower(speed);
+                rightFront.setPower(speed);
+                leftBack.setPower(-speed);
+                rightBack.setPower(-speed);
                 break;
-            case "CLOCKWISE":
+            case "cc":
                 //robot turns clockwise(to the right)
-                motorlf.setPower(-speed);
-                motorrf.setPower(-speed);
-                motorlb.setPower(-speed);
-                motorrb.setPower(-speed);
+                leftFront.setPower(-speed);
+                rightFront.setPower(-speed);
+                leftBack.setPower(-speed);
+                rightBack.setPower(-speed);
                 break;
-            case "COUNTERCLOCKWISE":
+            case "ccw":
                 //robot turns counterclockwise(to the left)
-                motorlf.setPower(speed);
-                motorrf.setPower(speed);
-                motorlb.setPower(speed);
-                motorrb.setPower(speed);
+                leftFront.setPower(speed);
+                rightFront.setPower(speed);
+                leftBack.setPower(speed);
+                rightBack.setPower(speed);
+                break;
+            case "north east":
+                leftFront.setPower(speed);
+                rightFront.setPower(0.0);
+                leftBack.setPower(0.0);
+                rightBack.setPower(-speed);
+                break;
+            case "north west":
+                leftFront.setPower(0.0);
+                rightFront.setPower(-speed);
+                leftBack.setPower(speed);
+                rightBack.setPower(0.0);
+                break;
+            case "south east":
+                leftFront.setPower(0.0);
+                rightFront.setPower(speed);
+                leftBack.setPower(-speed);
+                rightBack.setPower(0.0);
+                break;
+            case "south west":
+                leftFront.setPower(-speed);
+                rightFront.setPower(0.0);
+                leftBack.setPower(0.0);
+                rightBack.setPower(speed);
                 break;
         }
     }
 
-    public void stop(DcMotor motorlf, DcMotor motorrf, DcMotor motorlb, DcMotor motorrb) {
+    public void stopMove() {
         //robot stops moving
-        motorlf.setPower(0.0);
-        motorrf.setPower(0.0);
-        motorlb.setPower(0.0);
-        motorrb.setPower(0.0);
+        leftFront.setPower(0.0);
+        rightBack.setPower(0.0);
+        leftBack.setPower(0.0);
+        rightFront.setPower(0.0);
     }
 }

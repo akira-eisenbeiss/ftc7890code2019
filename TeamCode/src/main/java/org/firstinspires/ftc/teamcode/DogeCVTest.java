@@ -54,7 +54,6 @@ import com.disnodeteam.dogecv.detectors.roverrukus.SamplingOrderDetector;
 author: 7890 Software (Akira, Erin, Stephen, Kyra, Anthony)
 GOALS: 2019, land, sample, deposit team marker, park in crater
  */
-//ur mum
 
 @Autonomous(name="Doge CV Test", group="LinearOpMode")
 public class DogeCVTest extends LinearOpMode {
