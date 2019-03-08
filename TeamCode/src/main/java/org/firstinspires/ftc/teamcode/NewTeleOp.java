@@ -104,9 +104,9 @@ public class NewTeleOp extends OpMode {
         float strafe;
 
         //Setting controls on the gamepad for drive, turn, and strafe
-        drive = -gamepad1.left_stick_y;
+        drive = gamepad1.left_stick_y;
         turn = -gamepad1.right_stick_x;
-        strafe = -gamepad1.left_stick_x;
+        strafe = gamepad1.left_stick_x;
 
         //Setting driver mechanics for the gamepad
         double lfDrive = Range.clip(drive + turn - strafe, -1.0, 1.0);

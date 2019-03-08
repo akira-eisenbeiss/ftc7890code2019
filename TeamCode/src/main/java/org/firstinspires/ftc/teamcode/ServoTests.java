@@ -109,6 +109,20 @@ public class ServoTests extends OpMode {
     sensorSwitch.setPosition(gamepad1.left_stick_y);
     markerMech.setPosition(gamepad1.right_stick_y);
 
+    while(gamepad2.a) {
+        markerMech.setPosition(1.0);
+    }
+    while(gamepad2.x) {
+        sensorSwitch.setPosition(0.5);
+    }
+    while(gamepad2.y) {
+        sensorSwitch.setPosition(1.0);
+    }
+    while(gamepad2.b) {
+        markerMech.setPosition(-1.0);
+    }
+
+
 
 
     }

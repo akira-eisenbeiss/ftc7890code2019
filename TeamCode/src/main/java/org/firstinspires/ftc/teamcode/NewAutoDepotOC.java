@@ -136,7 +136,7 @@ public class NewAutoDepotOC extends LinearOpMode {
          * The start of our autonomous code
          */
 
-        markerMech.setPosition(-1);
+        markerMech.setPosition(0);
         sensorSwitch.setPosition(0);
         waitForStart();
 
