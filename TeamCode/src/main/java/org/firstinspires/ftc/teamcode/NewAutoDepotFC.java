@@ -136,15 +136,15 @@ public class NewAutoDepotFC extends LinearOpMode {
          * The start of our autonomous code
          */
 
-        markerMech.setPosition(0);
-        sensorSwitch.setPosition(0);
+        markerMech.setPosition(0.8);
+        sensorSwitch.setPosition(.25);
         waitForStart();
 
         landing();
-        sensorSwitch.setPosition(0);
+
         sampling();
 
-        deposit();
+        //deposit();
         crater();
     }
 
@@ -155,63 +155,65 @@ public class NewAutoDepotFC extends LinearOpMode {
      * we rotate our robot in order to unhook.
      */
     public void landing() {
-        //cases, naming, data types
-        //double distanceFromGround = depotSensor.getDistance(DistanceUnit.INCH);
-        telemetry.addData("distance", doubleSensor.getDistance(DistanceUnit.INCH));
-        telemetry.update();
+
         boolean landed = false;
         while (!landed) {
-            if (doubleSensor.getDistance(DistanceUnit.INCH) < 2.5) {
-                liftMotor.setPower(0);
-
-                //GETS US OFF THE HOOK
-                liftMotor.setPower(0.2);
-                sleep(100);
-                liftMotor.setPower(0);
-                move("LEFT", 0.3);
-                liftMotor.setPower(-0.3);
+            if (doubleSensor.getDistance(DistanceUnit.INCH) <= 1.6) {
                 sleep(1000);
+                liftMotor.setPower(0);
+                //GETS US OFF THE HOOK
+                liftMotor.setPower(0.8);
+                sleep(2100);
                 liftMotor.setPower(0.0);
-                move("RIGHT", 0.3);
+                move("east", 0.8);
+                sleep(550);
+                stopMove();
+                liftMotor.setPower(-1.0);
+                sleep(1500);
+                liftMotor.setPower(0.0);
+                move("west", 0.8);
+                sleep(250);
+                telemetry.addLine("moved off hook");
+                telemetry.update();
+                stopMove();
                 landed = true;
-            } else if (doubleSensor.getDistance(DistanceUnit.INCH) >= 2.5) {
-                liftMotor.setPower(0.3);
+            } else if (doubleSensor.getDistance(DistanceUnit.INCH) > 1.6) {
+                liftMotor.setPower(1.0);
+                telemetry.addData("distance", doubleSensor.getDistance(DistanceUnit.INCH));
+                telemetry.update();
             }
         }
     }
 
-    /*
-     * SAMPLING Method
-     *
-     */
     public void sampling() {
         move("south", 0.3);
-        sleep(2000);
+        sleep(300);
+        stopMove();
 
         if (detect() && !detected) {
+            pos = 'C';
             telemetry.addData("pos", "center");
             telemetry.update();
-            pos ='C';
             detected = true;
         } else if (!detect() && !detected) {
-            gyro(45, 'L');
+            gyro(53, "ccw");
             telemetry.addData("pos", "NOT center");
             telemetry.addLine("turning left");
             telemetry.update();
             if (detect() && !detected) {
+                pos = 'S';
                 telemetry.addData("pos", "left");
                 telemetry.update();
-                pos = 'L';
                 detected = true;
             } else if (!detect() && !detected) {
-                gyro(315, 'R');
+                gyro(315, "cw");
                 telemetry.addData("pos", "NOT left");
                 telemetry.addLine("turning right");
                 telemetry.update();
                 if (detect() && !detected) {
+                    pos = 'S';
                     telemetry.addData("pos", "right");
                     telemetry.update();
-                    pos = 'R';
                     detected = true;
                 } else if (!detect() && !detected) {
                     telemetry.addData("pos", "NOT right, giving up");
@@ -220,10 +222,18 @@ public class NewAutoDepotFC extends LinearOpMode {
             }
         }
         if (detected) {
+            move("south", 0.8);
+            sleep(800);
+            stopMove();
             telemetry.addLine("we are now moving");
             telemetry.update();
-            sleep(4000);
+            //sensorSwitch.setPosition(1.25);
+            //sensorSwitch.setPosition(1.00);
+            //telemetry.addLine("moved forward");
+            //telemetry.update();
+            deposit();
         }
+
     }
 
     public boolean detect() {
@@ -259,14 +269,16 @@ public class NewAutoDepotFC extends LinearOpMode {
          * once it is there, our robot turns so that we can navigate around the lander bin
          */
 
+        sensorSwitch.setPosition(.5);
+
         switch(pos) {
             case 'C':
                 break;
             case 'L':
-                gyro(315, 'R');
+                gyro(315, "cw");
                 break;
             case 'R':
-                gyro(45, 'L');
+                gyro(45, "ccw");
                 break;
         }
 
@@ -278,9 +290,9 @@ public class NewAutoDepotFC extends LinearOpMode {
         while (!wallcheck2) {
             if (doubleSensor.getDistance(DistanceUnit.INCH) < 20) {
                 stopMove();
-                markerMech.setPosition(0);
+                markerMech.setPosition(0.0);
                 sleep(500);
-                markerMech.setPosition(-1);
+                markerMech.setPosition(0.70);
                 wallcheck2 = true;
             } else if (doubleSensor.getDistance(DistanceUnit.INCH) >= 20) {
                 move("BACKWARDS", 0.5);
@@ -304,7 +316,7 @@ public class NewAutoDepotFC extends LinearOpMode {
          */
         //this is for depot side
         //gyro(225,'R');
-        gyro(225, 'R');
+        gyro(235, "ccw");
         /* We again use a while loop in order to check our distance, this time from
          * the edge of the crater. Once we are six inches away, we slow down towards
          * the crater and park our robot on the edge.
@@ -315,7 +327,7 @@ public class NewAutoDepotFC extends LinearOpMode {
                 stopMove();
                 wallcheck3 = true;
             } else if (doubleSensor.getDistance(DistanceUnit.INCH) >= 6.0) {
-                move("BACKWARDS", 0.3);
+                move("south", 0.3);
                 telemetry.addData("distance", doubleSensor.getDistance(DistanceUnit.INCH));
                 telemetry.update();
             }
@@ -365,14 +377,14 @@ public class NewAutoDepotFC extends LinearOpMode {
                 leftBack.setPower(-speed);
                 rightBack.setPower(-speed);
                 break;
-            case "cc":
+            case "ccw":
                 //robot turns clockwise(to the right)
                 leftFront.setPower(-speed);
                 rightFront.setPower(-speed);
                 leftBack.setPower(-speed);
                 rightBack.setPower(-speed);
                 break;
-            case "ccw":
+            case "cw":
                 //robot turns counterclockwise(to the left)
                 leftFront.setPower(speed);
                 rightFront.setPower(speed);
@@ -418,22 +430,32 @@ public class NewAutoDepotFC extends LinearOpMode {
      * This leaves less of our autonomous to chance and more to
      * the technology behind our gyro sensor.
      */
-    public void gyro(int targetHeading, char dir) {
+    public void gyro(int targetHeading, String dir) {
         int heading = MRGyro.getHeading();
         while (heading < targetHeading - 10 || heading > targetHeading + 10) {
             heading = MRGyro.getHeading();
 
+            if (dir.equals("ccw")) {
+                move("ccw", 0.3);
+            }
+            else if (dir.equals("cw")) {
+                move("cw", 0.3);
+            }
+
+            /*
             if (dir == 'L') {
                 move("TURN LEFT", 0.3);
             } else if (dir == 'R') {
                 move("TURN RIGHT", 0.3);
             }
+            */
             telemetry.addData("heading: ", heading);
+            telemetry.addData("target", targetHeading);
             telemetry.update();
         }
         stopMove();
-    }
 
+    }
     public void parallel(double dist){
         boolean aligned = false;
         while(!aligned){

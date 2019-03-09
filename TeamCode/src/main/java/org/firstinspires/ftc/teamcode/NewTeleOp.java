@@ -122,13 +122,13 @@ public class NewTeleOp extends OpMode {
         rightFront.setPower(rfDrive / ratio);
         rightBack.setPower(rbDrive / ratio);
 
-        if(gamepad1.b){
+        if(gamepad1.x){
             leftFront.setPower(0.3);
             leftBack.setPower(0.3);
             rightFront.setPower(-0.3);
             rightBack.setPower(-0.3);
         }
-        if(gamepad1.x){
+        if(gamepad1.b){
             leftFront.setPower(-0.3);
             leftBack.setPower(-0.3);
             rightFront.setPower(0.3);

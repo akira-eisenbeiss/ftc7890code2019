@@ -41,13 +41,13 @@ public class GyroTest extends LinearOpMode {
         //IT TAKE 4 SECONDS TO CALIBRATE
 
         waitForStart();
-        while(opModeIsActive()){
+        //while(opModeIsActive()){
            // gyro(270);
             gyro(90, "ccw");
             int heading = MRGyro.getHeading();
             telemetry.addData("heading: ", heading);
             telemetry.update();
-        }
+        //}
 
     }
     public void gyro(int targetHeading, String dir) {
@@ -56,10 +56,10 @@ public class GyroTest extends LinearOpMode {
             heading = MRGyro.getHeading();
 
             if (dir.equals("ccw")) {
-                move("ccw", 0.3);
+                move("ccw", 0.8);
             }
             else if (dir.equals("cw")) {
-                move("cw", 0.3);
+                move("cw", 0.8);
             }
 
             /*
@@ -74,6 +74,8 @@ public class GyroTest extends LinearOpMode {
             telemetry.update();
         }
         stopMove();
+        telemetry.addLine("done!");
+        telemetry.update();
 
     }
 
@@ -107,14 +109,14 @@ public class GyroTest extends LinearOpMode {
                 leftBack.setPower(-speed);
                 rightBack.setPower(-speed);
                 break;
-            case "cc":
+            case "ccw":
                 //robot turns clockwise(to the right)
                 leftFront.setPower(-speed);
                 rightFront.setPower(-speed);
                 leftBack.setPower(-speed);
                 rightBack.setPower(-speed);
                 break;
-            case "ccw":
+            case "cw":
                 //robot turns counterclockwise(to the left)
                 leftFront.setPower(speed);
                 rightFront.setPower(speed);
