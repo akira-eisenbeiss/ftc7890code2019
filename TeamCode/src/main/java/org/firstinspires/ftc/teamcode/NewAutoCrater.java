@@ -154,7 +154,7 @@ public class NewAutoCrater extends LinearOpMode {
      * LANDING Method
      * This method allows us to land our robot by detecting our distance
      * from the ground using our MR range sensor. Once we reach the ground
-     * we rotate our robot in order to unhook.
+     * we strafe our robot in order to unhook.
      */
     public void landing() {
 
