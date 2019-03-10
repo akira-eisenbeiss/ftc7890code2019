@@ -159,7 +159,11 @@ public class NewTeleOp extends OpMode {
         }
 
         //Arm
-        //This
+        /*
+        * since we use joysticks to extend the arm in and out as well as to flip the whole asssembly
+        * all we need to do is just take the values that the joysticks are putting out and assess them
+        * as values to power each of the motors.
+        */
         armMotor.setPower(gamepad2.left_stick_y);
         extendArm.setPower(-gamepad2.right_stick_y);
 
