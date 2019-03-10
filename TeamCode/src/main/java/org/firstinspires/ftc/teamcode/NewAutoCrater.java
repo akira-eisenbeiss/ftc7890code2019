@@ -54,7 +54,6 @@ import com.disnodeteam.dogecv.detectors.roverrukus.SamplingOrderDetector;
 author: 7890 Software (Akira, Erin, Stephen, Kyra, Anthony)
 GOALS: 2019, land, sample, deposit team marker, park in crater
  */
-//ur mum
 
 @Autonomous(name="NEW AUTO CRATER 2.0", group="LinearOpMode")
 public class NewAutoCrater extends LinearOpMode {
@@ -133,22 +132,19 @@ public class NewAutoCrater extends LinearOpMode {
         MRGyro.calibrate();
         sleep(4000);
 
+        markerMech.setPosition(0.8);
+        sensorSwitch.setPosition(.1);
+
         /*
          * AUTONOMOUS MAIN METHOD
          * The start of our autonomous code
          */
-        markerMech.setPosition(0.8);
-        sensorSwitch.setPosition(.1);
-
-
 
         waitForStart();
-        //gyro(90, "ccw");
 
         landing();
 
         sampling();
-        //deposit();
 
         crater();
 
@@ -159,10 +155,6 @@ public class NewAutoCrater extends LinearOpMode {
      * This method allows us to land our robot by detecting our distance
      * from the ground using our MR range sensor. Once we reach the ground
      * we rotate our robot in order to unhook.
-     *
-     *
-     * SAMPLING Method
-     *
      */
     public void landing() {
 
@@ -195,6 +187,19 @@ public class NewAutoCrater extends LinearOpMode {
         }
     }
 
+    /*
+     * SAMPLING METHOD
+     * This block of code is the logic for our sampling during autonomous
+     * with our robot's goal being to find the gold cube.
+     * If our partner has already sampled this logic allows us to not
+     * circumvent the points gained by their autonomous.
+     * The robot begins by 'looking' at the ore through the phones camera
+     * The robot checks if the gold cube is in the center first because
+     * it is closest to us after landing from the lander.
+     * If the detect method is true, which means that the phone has seen the mineral,
+     * and the detected variable is false, which means that the robot hasn't already seen the gold,
+     * then our robot moves towards the position where these conditions are met.
+     */
     public void sampling() {
         move("south", 0.3);
         sleep(300);
@@ -267,19 +272,17 @@ public class NewAutoCrater extends LinearOpMode {
      * tape on the floor.
      */
     public void deposit() {
-        // in this portion of the deposit method the robot backs up from the lander
+        // In this portion of the deposit method the robot moves away from the lander
         // and finds its current angle.
         /*
-         * We use a switch-case because depending on where the gold ore was in sampling,
-         * we have to turn a different angle.
+         * We use a switch-case because depending on where the gold mineral was in sampling,
+         * we turn a different angle.
          */
 
         /* The robot moves, using a range sensor to detect its distance from the wall
          * and moves towards it until it detects that it is 10 inches away from it.
-         * once it is there, our robot turns so that we can navigate around the lander bin
+         * once it is there, our robot turns left so that we can navigate around the lander bin
          */
-        //   telemetry.addLine("got to deposit method");
-       // telemetry.update();
         sensorSwitch.setPosition(.5);
         boolean craterCheck = false;
         switch(pos){
@@ -310,9 +313,6 @@ public class NewAutoCrater extends LinearOpMode {
         telemetry.addLine("moved backwards");
         telemetry.update();
         sleep(500);
-
-
-        //sleep(800);
         gyro(90, "ccw");
         telemetry.addLine("turned");
         telemetry.update();
@@ -331,7 +331,6 @@ public class NewAutoCrater extends LinearOpMode {
         }
 
         gyro(135, "ccw");
-        //parallel(1.3);
         /* The robot moves until it is 20 inches away from the depot, at which point
          * it begins to slow down and come to a stop. It then deposits the team marker
          * by rotating our marker mechanism servo
@@ -360,13 +359,6 @@ public class NewAutoCrater extends LinearOpMode {
      * drive our robot to park.
      */
     public void crater() {
-        /*
-         * We have a switch-case because we have to turn a different angle depending
-         * on where the gold ore is. This is because we reset the gyro sensor's zero at different
-         * places depending on where the gold ore was in sampling.
-         */
-
-        //this is for crater side
         gyro(325,  "cw");
         /* We again use a while loop in order to check our distance, this time from
          * the edge of the crater. Once we are six inches away, we slow down towards
@@ -482,6 +474,8 @@ public class NewAutoCrater extends LinearOpMode {
      * make angle-perfect turns such as 90 degrees or 180 degrees.
      * This leaves less of our autonomous to chance and more to
      * the technology behind our gyro sensor.
+     * We also have a second parameter so that we can turn both
+     * clockwise (cw) and counterclockwise
      */
     public void gyro(int targetHeading, String dir) {
         int heading = MRGyro.getHeading();
