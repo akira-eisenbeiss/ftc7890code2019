@@ -79,8 +79,9 @@ public class NewAutoCrater extends LinearOpMode {
     //Our range sensor that uses ODS and ultrasonic to detect our distance from objects:
     //Used to detect the distance from the ground
     ModernRoboticsI2cRangeSensor doubleSensor;
+    ModernRoboticsI2cRangeSensor forwardSensor;
 
-    Servo sensorSwitch;
+    //Servo sensorSwitch;
     Servo markerMech;
     ModernRoboticsI2cRangeSensor sideSensor1, sideSensor2;
 
@@ -91,22 +92,6 @@ public class NewAutoCrater extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-
-        detector = new GoldAlignDetector();
-        detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance(), 0, false);
-        detector.useDefaults();
-
-        detector.alignSize = 900;
-        detector.alignPosOffset = 0;
-        detector.downscale = 0.4;
-
-        detector.areaScoringMethod = DogeCV.AreaScoringMethod.MAX_AREA;
-        detector.maxAreaScorer.weight = 0.005;
-
-        detector.ratioScorer.weight = 5;
-        detector.ratioScorer.perfectRatio = 1.0;
-
-        detector.enable();
 
         /*
          * The HARDWARE MAP
@@ -121,19 +106,20 @@ public class NewAutoCrater extends LinearOpMode {
         liftMotor = hardwareMap.dcMotor.get("lift motor");
 
         //SERVOS
-        sensorSwitch = hardwareMap.servo.get("sensor switch");
+        //sensorSwitch = hardwareMap.servo.get("sensor switch");
         markerMech = hardwareMap.servo.get("marker mech");
 
 
         //SENSORS
         MRGyro = hardwareMap.get(ModernRoboticsI2cGyro.class, "gyro");
         doubleSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "depot sensor");
+        forwardSensor = hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "sensor");
 
         MRGyro.calibrate();
         sleep(4000);
 
         markerMech.setPosition(0.8);
-        sensorSwitch.setPosition(.1);
+      //  sensorSwitch.setPosition(.5);
 
         /*
          * AUTONOMOUS MAIN METHOD
@@ -158,23 +144,45 @@ public class NewAutoCrater extends LinearOpMode {
      */
     public void landing() {
 
+
+        detector = new GoldAlignDetector();
+        detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance(), 0, false);
+        detector.useDefaults();
+
+        detector.alignSize = 900;
+        detector.alignPosOffset = 0;
+        detector.downscale = 0.4;
+
+        detector.areaScoringMethod = DogeCV.AreaScoringMethod.MAX_AREA;
+        detector.maxAreaScorer.weight = 0.005;
+
+        detector.ratioScorer.weight = 5;
+        detector.ratioScorer.perfectRatio = 1.0;
+
+        detector.enable();
+
         boolean landed = false;
         while (!landed) {
             if (doubleSensor.getDistance(DistanceUnit.INCH) <= 1.6) {
                 sleep(1000);
                 liftMotor.setPower(0);
                 //GETS US OFF THE HOOK
-                liftMotor.setPower(0.8);
+                liftMotor.setPower(1.0);
                 sleep(1900);
+                /*
+                liftMotor.setPower(-0.8);
+                sleep(200);
+                */
                 liftMotor.setPower(0.0);
-                move("east", 0.8);
-                sleep(550);
-                stopMove();
+              //  move("east", 0.7);
+               // sleep(550);
+                move("east", 0.5);
+                sleep(500);
+                gyro(90, "ccw");
                 liftMotor.setPower(-1.0);
                 sleep(1500);
                 liftMotor.setPower(0.0);
-                move("west", 0.8);
-                sleep(250);
+                gyro(0, "cw");
                 telemetry.addLine("moved off hook");
                 telemetry.update();
                 stopMove();
@@ -204,14 +212,17 @@ public class NewAutoCrater extends LinearOpMode {
         move("south", 0.3);
         sleep(300);
         stopMove();
-
+        detect();
         if (detect() && !detected) {
             pos = 'C';
+            gyro(12, "ccw");
             telemetry.addData("pos", "center");
             telemetry.update();
             detected = true;
         } else if (!detect() && !detected) {
             gyro(53, "ccw");
+            stopMove();
+            sleep(400);
             telemetry.addData("pos", "NOT center");
             telemetry.addLine("turning left");
             telemetry.update();
@@ -222,6 +233,8 @@ public class NewAutoCrater extends LinearOpMode {
                 detected = true;
             } else if (!detect() && !detected) {
                 gyro(315, "cw");
+                stopMove();
+                sleep(400);
                 telemetry.addData("pos", "NOT left");
                 telemetry.addLine("turning right");
                 telemetry.update();
@@ -233,6 +246,7 @@ public class NewAutoCrater extends LinearOpMode {
                 } else if (!detect() && !detected) {
                     telemetry.addData("pos", "NOT right, giving up");
                     telemetry.update();
+                    deposit();
                 }
             }
         }
@@ -283,15 +297,15 @@ public class NewAutoCrater extends LinearOpMode {
          * and moves towards it until it detects that it is 10 inches away from it.
          * once it is there, our robot turns left so that we can navigate around the lander bin
          */
-        sensorSwitch.setPosition(.5);
+      //  sensorSwitch.setPosition(1.0);
         boolean craterCheck = false;
         switch(pos){
             case 'S':
                 while(!craterCheck) {
-                    if (doubleSensor.getDistance(DistanceUnit.INCH) <= 21) {
+                    if (forwardSensor.getDistance(DistanceUnit.INCH) <= 21) {
                         move("north", 0.8);
                         craterCheck = false;
-                    } else if (doubleSensor.getDistance(DistanceUnit.INCH) > 21) {
+                    } else if (forwardSensor.getDistance(DistanceUnit.INCH) > 21) {
                         stopMove();
                         craterCheck = true;
                     }
@@ -299,10 +313,10 @@ public class NewAutoCrater extends LinearOpMode {
                 break;
             case 'C':
                 while(!craterCheck) {
-                    if (doubleSensor.getDistance(DistanceUnit.INCH) <= 13) {
+                    if (forwardSensor.getDistance(DistanceUnit.INCH) <= 5 ){
                         move("north", 0.8);
                         craterCheck = false;
-                    } else if (doubleSensor.getDistance(DistanceUnit.INCH) > 13) {
+                    } else if (forwardSensor.getDistance(DistanceUnit.INCH) > 5) {
                         stopMove();
                         craterCheck = true;
                     }
@@ -319,10 +333,10 @@ public class NewAutoCrater extends LinearOpMode {
 
         boolean wallcheck = false;
         while (!wallcheck) {
-            if (doubleSensor.getDistance(DistanceUnit.INCH) < 13.0) {
+            if (forwardSensor.getDistance(DistanceUnit.INCH) < 13.0) {
                 stopMove();
                 wallcheck = true;
-            } else if (doubleSensor.getDistance(DistanceUnit.INCH) >= 13.0) {
+            } else if (forwardSensor.getDistance(DistanceUnit.INCH) >= 13.0) {
                 move("south", 0.9);
                 telemetry.addLine("started looking for distance");
                 telemetry.addData("distance", doubleSensor.getDistance(DistanceUnit.INCH));
@@ -338,13 +352,13 @@ public class NewAutoCrater extends LinearOpMode {
 
         boolean wallcheck2 = false;
         while (!wallcheck2) {
-            if (doubleSensor.getDistance(DistanceUnit.INCH) < 20) {
+            if (forwardSensor.getDistance(DistanceUnit.INCH) < 20) {
                 stopMove();
                 markerMech.setPosition(0.0);
                 sleep(500);
                 markerMech.setPosition(0.70);
                 wallcheck2 = true;
-            } else if (doubleSensor.getDistance(DistanceUnit.INCH) >= 20) {
+            } else if (forwardSensor.getDistance(DistanceUnit.INCH) >= 20) {
                 move("south", 0.9);
                 telemetry.addData("distance", doubleSensor.getDistance(DistanceUnit.INCH));
                 telemetry.update();
@@ -368,10 +382,10 @@ public class NewAutoCrater extends LinearOpMode {
         sleep(1000);
         boolean wallcheck3 = false;
         while (!wallcheck3) {
-            if (doubleSensor.getDistance(DistanceUnit.INCH) < 6.0) {
+            if (forwardSensor.getDistance(DistanceUnit.INCH) < 6.0) {
                 stopMove();
                 wallcheck3 = true;
-            } else if (doubleSensor.getDistance(DistanceUnit.INCH) >= 6.0) {
+            } else if (forwardSensor.getDistance(DistanceUnit.INCH) >= 6.0) {
                 move("south", 0.9);
                 telemetry.addData("distance", doubleSensor.getDistance(DistanceUnit.INCH));
                 telemetry.update();

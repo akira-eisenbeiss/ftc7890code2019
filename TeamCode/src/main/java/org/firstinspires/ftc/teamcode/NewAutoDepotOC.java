@@ -54,8 +54,8 @@ import com.disnodeteam.dogecv.detectors.roverrukus.SamplingOrderDetector;
 author: 7890 Software (Akira, Erin, Stephen, Kyra, Anthony)
 GOALS: 2019, land, sample, deposit team marker, park in crater
  */
-//ur mum
 
+@Disabled
 @Autonomous(name="NEW AUTO DEPOT Opp Crater", group="LinearOpMode")
 public class NewAutoDepotOC extends LinearOpMode {
 

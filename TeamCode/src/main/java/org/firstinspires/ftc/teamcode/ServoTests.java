@@ -108,6 +108,9 @@ public class ServoTests extends OpMode {
  */
     sensorSwitch.setPosition(gamepad1.left_stick_y);
     markerMech.setPosition(gamepad1.right_stick_y);
+    telemetry.addData("stick value", gamepad1.left_stick_y);
+    telemetry.addData("servo", sensorSwitch.getPosition());
+    telemetry.update();
 
     while(gamepad2.a) {
         markerMech.setPosition(1.0);
@@ -121,9 +124,6 @@ public class ServoTests extends OpMode {
     while(gamepad2.b) {
         markerMech.setPosition(-1.0);
     }
-
-
-
 
     }
 }
