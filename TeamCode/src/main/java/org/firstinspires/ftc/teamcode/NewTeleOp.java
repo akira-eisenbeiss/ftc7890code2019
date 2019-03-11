@@ -94,8 +94,8 @@ public class NewTeleOp extends OpMode {
  * types of actions are usually associated with a button/trigger to make driver training easier.
 --------------------
  * For example, (as with Driver 2) for actions that can be done simultaenously to save time, it is
- * more efficient to assign one action (unfolding the arm motors) to the joysticks and the other
- * ((de)activating the intake/outake) to the triggers so that the driver doesn't have to
+ * more efficient to assign one action (unfolding the arm motor) to the joystick and the other
+ * ((de)activating the intake/outake) to the buttons so that the driver doesn't have to
  * reposition their hands.
  */
         //In this section, we are creating floats for drive, turn, and strafe.
@@ -115,12 +115,15 @@ public class NewTeleOp extends OpMode {
         double rbDrive = Range.clip(drive - turn - strafe, -1.0, 1.0);
 
 
-        double ratio = (1.1 - gamepad1.right_trigger);
+        //This ratio allows us to slow down our driving to be more precise.
+        //This allows our drivers to not be as sensitive while driving, as
+        //it can be hard to be calm and accurate during the middle of a match.
+        double ratio = (gamepad1.right_trigger);
         //This code sets the power of the various motors to the variable drive
-        leftFront.setPower(lfDrive / ratio);
-        leftBack.setPower(lbDrive / ratio);
-        rightFront.setPower(rfDrive / ratio);
-        rightBack.setPower(rbDrive / ratio);
+        leftFront.setPower(lfDrive - ratio);
+        leftBack.setPower(lbDrive - ratio);
+        rightFront.setPower(rfDrive - ratio);
+        rightBack.setPower(rbDrive - ratio);
 
         if(gamepad1.x){
             leftFront.setPower(0.3);
@@ -140,14 +143,11 @@ public class NewTeleOp extends OpMode {
         // LIFTING
         /*
          * The following code creates variables for the lift controls. We decided to map these to
-         * the triggers for driver 1. This would allow the driver to control the speed of the lift
+         * the bumpers for driver 1. This would allow the driver to control the speed of the lift
          * motors for more accuracy instead of a constant speed which would likely force us to
          * guess the timing. We no longer need to make multiple unnessary adjustments to get the
          * lift where we need it.
          */
-        //float liftControlUp = gamepad2.right_trigger;
-        //float liftControlDown = -gamepad2.left_trigger;
-
         if(gamepad1.right_bumper){
             liftMotor.setPower(1);
         }
@@ -158,15 +158,17 @@ public class NewTeleOp extends OpMode {
             liftMotor.setPower(0);
         }
 
-        /*
-        telemetry.addData("triggers", gamepad2.left_trigger);
-        telemetry.update();
-        */
-
         //Arm
+        /*
+         * Because we use joysticks to extend the arm in and out as well as to flip the whole mechanism,
+         * all we need to do is just take the values that the joysticks are outputting and plug them in as input
+         * values to power each of the motors.
+         */
         armMotor.setPower(gamepad2.left_stick_y);
         extendArm.setPower(-gamepad2.right_stick_y);
 
+        //We use a switch-case here in order to use the buttons in order to switch
+        //between the intake spinning in, out, or being off.
         if (gamepad2.y){
             intakeCntr = 0;
         }

@@ -50,9 +50,9 @@ import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.disnodeteam.dogecv.detectors.roverrukus.SamplingOrderDetector;
 /*
-7890 Space Lions 2019 "Crater Autonomous for Big Kids"
+7890 Space Lions 2019 "Full Crater Autonomous"
 author: 7890 Software (Akira, Erin, Stephen, Kyra, Anthony)
-GOALS: 2019, land, sample, deposit team marker, park in crater
+GOALS: land, sample, deposit team marker, park in crater
  */
 
 @Autonomous(name="NEW AUTO CRATER 2.0", group="LinearOpMode")
@@ -60,7 +60,7 @@ public class NewAutoCrater extends LinearOpMode {
 
     /*
      * MOTORS, SERVOS, and SENSORS
-     * In this section of the code, we declare our motors, servos, and sensors
+     * In this section of the code, we declare our motors, servos, and sensors.
      */
 
     //This code declares the four wheels on our robot:
@@ -68,9 +68,6 @@ public class NewAutoCrater extends LinearOpMode {
 
     //The motor for our lift:
     DcMotor liftMotor;
-
-    //Our range sensor that uses ODS and ultrasonic to detect our distance from objects:
-    //Used to detect the wall
 
     //Our gyro sensor that calibrates at a target heading and detects our angle away from that heading
     //We can use this to accurately turn
@@ -80,14 +77,21 @@ public class NewAutoCrater extends LinearOpMode {
     //Used to detect the distance from the ground
     ModernRoboticsI2cRangeSensor doubleSensor;
     ModernRoboticsI2cRangeSensor forwardSensor;
-
+    
     //Servo sensorSwitch;
+
+    //The servo that we use in order to change the direction of the range sensor.
+    //This means we only need one range sensor to look forward and to the bottom.
+    Servo sensorSwitch;
+
+    //The servo which deposits our team marker into the depot.
+
     Servo markerMech;
     ModernRoboticsI2cRangeSensor sideSensor1, sideSensor2;
 
-    boolean detected = false;
     GoldAlignDetector detector;
 
+    //A variable which stores the position of our gold mineral.
     char pos = 'N';
 
     @Override
@@ -125,7 +129,6 @@ public class NewAutoCrater extends LinearOpMode {
          * AUTONOMOUS MAIN METHOD
          * The start of our autonomous code
          */
-
         waitForStart();
 
         landing();
@@ -140,7 +143,7 @@ public class NewAutoCrater extends LinearOpMode {
      * LANDING Method
      * This method allows us to land our robot by detecting our distance
      * from the ground using our MR range sensor. Once we reach the ground
-     * we rotate our robot in order to unhook.
+     * we strafe our robot in order to unhook.
      */
     public void landing() {
 
@@ -198,14 +201,14 @@ public class NewAutoCrater extends LinearOpMode {
     /*
      * SAMPLING METHOD
      * This block of code is the logic for our sampling during autonomous
-     * with our robot's goal being to find the gold cube.
+     * with our robot’s goal being to find the gold cube.
      * If our partner has already sampled this logic allows us to not
      * circumvent the points gained by their autonomous.
-     * The robot begins by 'looking' at the ore through the phones camera
+     * The robot begins by ‘looking’ at the ore through the phones camera
      * The robot checks if the gold cube is in the center first because
      * it is closest to us after landing from the lander.
      * If the detect method is true, which means that the phone has seen the mineral,
-     * and the detected variable is false, which means that the robot hasn't already seen the gold,
+     * and the detected variable is false, which means that the robot hasn’t already seen the gold,
      * then our robot moves towards the position where these conditions are met.
      */
     public void sampling() {
@@ -213,6 +216,9 @@ public class NewAutoCrater extends LinearOpMode {
         sleep(300);
         stopMove();
         detect();
+
+
+        boolean detected = false;
         if (detect() && !detected) {
             pos = 'C';
             gyro(12, "ccw");
@@ -256,10 +262,6 @@ public class NewAutoCrater extends LinearOpMode {
             stopMove();
             telemetry.addLine("we are now moving");
             telemetry.update();
-            //sensorSwitch.setPosition(1.25);
-            //sensorSwitch.setPosition(1.00);
-            //telemetry.addLine("moved forward");
-            //telemetry.update();
             deposit();
         }
 
@@ -281,18 +283,10 @@ public class NewAutoCrater extends LinearOpMode {
      * DEPOSITING Method
      * This method is used to deposit our
      * team marker into the depot. We use
-     * a color sensor to detect the depot
-     * box by scanning for the colored
-     * tape on the floor.
+     * a range sensor to detect the depot
+     * box by scanning for the wall.
      */
     public void deposit() {
-        // In this portion of the deposit method the robot moves away from the lander
-        // and finds its current angle.
-        /*
-         * We use a switch-case because depending on where the gold mineral was in sampling,
-         * we turn a different angle.
-         */
-
         /* The robot moves, using a range sensor to detect its distance from the wall
          * and moves towards it until it detects that it is 10 inches away from it.
          * once it is there, our robot turns left so that we can navigate around the lander bin
@@ -395,28 +389,28 @@ public class NewAutoCrater extends LinearOpMode {
 
     /*
      * MOVEMENT Method
-     * In this code we use a switch case in order to create
-     * more code-efficient robot driving. This means that instead
-     * of having to individually control each motor everytime we
-     * want to move, we can instead just call the move() method.
-     * And specify the wanted direction with a case-valid string.
-     * This makes our program a lot shorter than it would
-     * normally have been, and makes it easier to program and read our code. It
-     * assigns the proper motor speed assigned when the method is called,
-     * and sets the rotation of the motors so that the robot moves in the specified direction
-     *(with either positive or negative speed)
+     * In this code we use a switch case in order to create more
+     * code-efficient robot driving. This means that instead of
+     * having to individually control each motor everytime we want
+     * to move, we can instead just call the move() method and specify
+     * the wanted direction with a case-valid string. This makes our
+     * program a lot shorter than it would normally have been, and
+     * makes it easier to program and read our code. It assigns the
+     * proper motor speed assigned when the method is called, and
+     * sets the rotation of the motors so that the robot moves in
+     * the specified direction.
      */
     public void move(String direction, double speed) {
         switch (direction) {
             case "north":
-                //robot moves backwards
+                //robot moves forwards
                 leftFront.setPower(speed);
                 rightFront.setPower(-speed);
                 leftBack.setPower(speed);
                 rightBack.setPower(-speed);
                 break;
             case "south":
-                //robot moves forwards
+                //robot moves backwards
                 leftFront.setPower(-speed);
                 rightFront.setPower(speed);
                 leftBack.setPower(-speed);
@@ -489,7 +483,7 @@ public class NewAutoCrater extends LinearOpMode {
      * This leaves less of our autonomous to chance and more to
      * the technology behind our gyro sensor.
      * We also have a second parameter so that we can turn both
-     * clockwise (cw) and counterclockwise
+     * clockwise (cw) and counterclockwise (ccw).
      */
     public void gyro(int targetHeading, String dir) {
         int heading = MRGyro.getHeading();
@@ -518,6 +512,22 @@ public class NewAutoCrater extends LinearOpMode {
 
     }
 
+    /*
+     * PARALLEL METHOD
+     * This method uses two range sensors on the left side of our robot
+     * in order to stay parallel to the wall of the field. One range sensor
+     * is towards the front of the robot and the second is towards the back.
+     * We make sure we stay parallel to the wall by comparing the distances
+     * between the two sensors. When the distances are uneven, the robot
+     * rotates until the sensors read rougly the same value. We also use
+     * this to stay a set distance away from the wall. This is necessary
+     * because we sometimes want to park in our opponent’s crater instead
+     * of ours to avoid crashing but do not want to have a major penalty.
+     * It also allows us to avoid having our sensors detect the wall because
+     * the robot is not exactly parallel. We make sure to use a range of a few
+     * inches, because if we made the values exact, then the robot would keep
+     * correcting and possibly overcorrect.
+     */
     public void parallel(double dist){
         boolean aligned = false;
         while(!aligned){
