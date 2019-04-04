@@ -77,7 +77,7 @@ public class NewAutoCrater extends LinearOpMode {
     //Used to detect the distance from the ground
     ModernRoboticsI2cRangeSensor doubleSensor;
     ModernRoboticsI2cRangeSensor forwardSensor;
-    
+
     //Servo sensorSwitch;
 
     //The servo that we use in order to change the direction of the range sensor.
